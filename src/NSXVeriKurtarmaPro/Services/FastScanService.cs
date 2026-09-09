@@ -20,7 +20,6 @@ public sealed class FastScanService : IDisposable
     }
 
     public event EventHandler<ScanProgressEventArgs>? ProgressChanged;
-    public event EventHandler<ScanCompletedEventArgs>? ScanCompleted;
 
     public async Task<ScanResultInfo> ScanDeviceAsync(
         string devicePath,
@@ -81,7 +80,7 @@ public sealed class FastScanService : IDisposable
                 FileAccess.Read,
                 FileShare.ReadWrite,
                 BufferSize,
-                FileOptions.SequentialScan | FileOptions.ReadAhead);
+                FileOptions.SequentialScan);
 
             long totalBytes = fileStream.Length;
             long bytesRead = 0;
