@@ -7,10 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSXVeriKurtarmaPro", "src\N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSXVeriKurtarmaPro.Updater", "src\NSXVeriKurtarmaPro\NSXVeriKurtarmaPro.Updater\NSXVeriKurtarmaPro.Updater.csproj", "{C986D7E1-9A4F-4AF4-8D83-10C3C4F3A941}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSXVeriKurtarmaPro.VideoBenchmarks", "tests\NSXVeriKurtarmaPro.VideoBenchmarks\NSXVeriKurtarmaPro.VideoBenchmarks.csproj", "{105DC501-922E-48BE-AC70-3EB07B6CB95A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
 Global
@@ -35,18 +31,6 @@ Global
 		{6B06A651-BB6D-4C10-A2F9-0EF05AEF1E47}.Release|x64.Build.0 = Release|Any CPU
 		{6B06A651-BB6D-4C10-A2F9-0EF05AEF1E47}.Release|x86.ActiveCfg = Release|Any CPU
 		{6B06A651-BB6D-4C10-A2F9-0EF05AEF1E47}.Release|x86.Build.0 = Release|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Debug|x64.Build.0 = Debug|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Debug|x86.Build.0 = Debug|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Release|x64.ActiveCfg = Release|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Release|x64.Build.0 = Release|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Release|x86.ActiveCfg = Release|Any CPU
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A}.Release|x86.Build.0 = Release|Any CPU
 		{C986D7E1-9A4F-4AF4-8D83-10C3C4F3A941}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C986D7E1-9A4F-4AF4-8D83-10C3C4F3A941}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C986D7E1-9A4F-4AF4-8D83-10C3C4F3A941}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -64,7 +48,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{105DC501-922E-48BE-AC70-3EB07B6CB95A} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{C986D7E1-9A4F-4AF4-8D83-10C3C4F3A941} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal
