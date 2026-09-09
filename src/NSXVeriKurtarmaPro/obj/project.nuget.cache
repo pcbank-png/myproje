@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "M8RvkuPLHsY=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Server\\Desktop\\En_Yeni\\src\\NSXVeriKurtarmaPro\\NSXVeriKurtarmaPro.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Server\\.nuget\\packages\\libvlcsharp\\3.10.1\\libvlcsharp.3.10.1.nupkg.sha512",
+    "C:\\Users\\Server\\.nuget\\packages\\libvlcsharp.wpf\\3.10.1\\libvlcsharp.wpf.3.10.1.nupkg.sha512",
+    "C:\\Users\\Server\\.nuget\\packages\\magick.net-q8-anycpu\\14.16.0\\magick.net-q8-anycpu.14.16.0.nupkg.sha512",
+    "C:\\Users\\Server\\.nuget\\packages\\magick.net.core\\14.16.0\\magick.net.core.14.16.0.nupkg.sha512",
+    "C:\\Users\\Server\\.nuget\\packages\\videolan.libvlc.windows\\3.0.23.1\\videolan.libvlc.windows.3.0.23.1.nupkg.sha512"
+  ],
+  "logs": []
+}

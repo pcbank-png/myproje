@@ -1,0 +1,253 @@
+﻿<Window x:Class="NSXVeriKurtarmaPro.RecoveryProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Kurtarma"
+        Width="580"
+        Height="468"
+        MinHeight="448"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False">
+    <Border Margin="14"
+            Background="White"
+            CornerRadius="20"
+            BorderBrush="#DDE5EF"
+            BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="28" ShadowDepth="8" Opacity="0.24" Color="#172033"/>
+        </Border.Effect>
+
+        <Grid Margin="28,24,28,26">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="18"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="18"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Width="52" Height="52" CornerRadius="15" Background="#EAF2FF">
+                    <Viewbox Width="26" Height="26" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Path Data="M9,2 V13 M4.5,9 L9,13.5 L13.5,9 M3,17 H15"
+                              Stroke="#155DCC" StrokeThickness="1.9" Fill="Transparent"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                    </Viewbox>
+                </Border>
+
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock x:Name="TitleText"
+                               Text="Seçili dosyalar kurtarılıyor"
+                               FontSize="20" FontWeight="SemiBold" Foreground="#172033"/>
+                    <TextBlock x:Name="SubtitleText"
+                               Margin="0,4,0,0"
+                               Text="Kaynak disk yalnızca okunur; veriler hedef klasöre yazılır."
+                               FontSize="12.5" Foreground="#667085"/>
+                </StackPanel>
+
+                <Border Grid.Column="3" Padding="10,5" CornerRadius="10" Background="#F2F6FC" VerticalAlignment="Center">
+                    <TextBlock x:Name="FileCountText" Text="0 dosya" FontSize="12" FontWeight="SemiBold" Foreground="#344054"/>
+                </Border>
+            </Grid>
+
+            <StackPanel Grid.Row="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="ProgressTitleText" Text="Hazırlanıyor" FontSize="13" FontWeight="SemiBold" Foreground="#344054"/>
+                    <TextBlock x:Name="PercentText" Grid.Column="1" Text="0%" FontSize="24" FontWeight="Bold" Foreground="#155DCC"/>
+                </Grid>
+
+                <ProgressBar x:Name="RecoveryProgressBar"
+                             Margin="0,10,0,0"
+                             Height="12"
+                             Minimum="0" Maximum="100" Value="0"
+                             Background="#E9EEF5"
+                             Foreground="#1769D2"
+                             BorderThickness="0"/>
+
+                <TextBlock x:Name="DetailText"
+                           Margin="0,9,0,0"
+                           Text="Kurtarma hazırlanıyor..."
+                           TextTrimming="CharacterEllipsis"
+                           FontSize="12.5" Foreground="#667085"/>
+            </StackPanel>
+
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Padding="13,11" CornerRadius="12" Background="#F7F9FC" BorderBrush="#E8EDF4" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="AKTARILAN" FontSize="10" FontWeight="SemiBold" Foreground="#98A2B3"/>
+                        <TextBlock x:Name="TransferredText" Margin="0,4,0,0" Text="0 B" FontSize="13" FontWeight="SemiBold" Foreground="#344054"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Padding="13,11" CornerRadius="12" Background="#F7F9FC" BorderBrush="#E8EDF4" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="HIZ" FontSize="10" FontWeight="SemiBold" Foreground="#98A2B3"/>
+                        <TextBlock x:Name="SpeedText" Margin="0,4,0,0" Text="Hesaplanıyor" FontSize="13" FontWeight="SemiBold" Foreground="#344054"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="4" Padding="13,11" CornerRadius="12" Background="#F7F9FC" BorderBrush="#E8EDF4" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="KALAN SÜRE" FontSize="10" FontWeight="SemiBold" Foreground="#98A2B3"/>
+                        <TextBlock x:Name="EtaText" Margin="0,4,0,0" Text="—" FontSize="13" FontWeight="SemiBold" Foreground="#344054"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="6" Padding="13,10" CornerRadius="12" Background="#F0F7FF" BorderBrush="#D9E9FF" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="●" FontSize="12" Foreground="#1769D2" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="ResumeInfoText"
+                               Grid.Column="2"
+                               Text="Kurtarma tamamlandığında tarama kaldığı noktadan otomatik devam eder."
+                               TextWrapping="Wrap"
+                               FontSize="12" Foreground="#344054"/>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="8" MinHeight="42" VerticalAlignment="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock x:Name="DestinationText"
+                           VerticalAlignment="Center"
+                           MaxWidth="350"
+                           TextTrimming="CharacterEllipsis"
+                           FontSize="11.5" Foreground="#98A2B3"/>
+
+                <Button x:Name="PauseResumeButton"
+                        Grid.Column="1"
+                        Width="150" Height="40"
+                        VerticalAlignment="Center"
+                        BorderThickness="1"
+                        BorderBrush="{StaticResource LogoSoftBorderBrush}"
+                        Background="{StaticResource LogoSoftBrush}"
+                        Foreground="{StaticResource LogoBlueBrush}"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"
+                        Click="PauseResumeButton_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="PauseButtonBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="PauseButtonBorder" Property="Background" Value="{StaticResource LogoSoftHoverBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="PauseButtonBorder" Property="Opacity" Value="0.55"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="PauseResumeGlyph" Text="Ⅱ" Margin="0,0,7,0" FontWeight="Bold"/>
+                        <TextBlock x:Name="PauseResumeButtonText" Text="Kurtarmayı Duraklat"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="OpenFolderButton"
+                        Grid.Column="1"
+                        Width="168" Height="40"
+                        Visibility="Collapsed"
+                        VerticalAlignment="Center"
+                        BorderThickness="0"
+                        Background="{StaticResource LogoPrimaryBrush}"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"
+                        Click="OpenFolderButton_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="OpenFolderBorder" Background="{TemplateBinding Background}" CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="OpenFolderBorder" Property="Background" Value="{StaticResource LogoPrimaryHoverBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" Margin="0,0,7,0"/>
+                        <TextBlock x:Name="OpenFolderButtonText" Text="Kurtarılanları Görüntüle"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="CancelButton"
+                        Grid.Column="3"
+                        Width="136" Height="40"
+                        VerticalAlignment="Center"
+                        BorderThickness="1"
+                        BorderBrush="#D8E0EA"
+                        Background="White"
+                        Foreground="#344054"
+                        FontWeight="SemiBold"
+                        Cursor="Hand"
+                        Click="CancelButton_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="ButtonBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ButtonBorder" Property="Background" Value="#F6F8FB"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.55"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <TextBlock x:Name="CancelButtonText" Text="Kurtarmayı Durdur"/>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

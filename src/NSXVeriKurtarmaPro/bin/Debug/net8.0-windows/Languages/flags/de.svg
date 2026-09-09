@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80">
+  <clipPath id="rounded-corners">
+    <rect width="120" height="80" rx="8"/>
+  </clipPath>
+  <g clip-path="url(#rounded-corners)">
+    <rect width="120" height="26.67" fill="#000000"/>
+    <rect y="26.67" width="120" height="26.67" fill="#FF0000"/>
+    <rect y="53.33" width="120" height="26.67" fill="#FFCC00"/>
+  </g>
+</svg>

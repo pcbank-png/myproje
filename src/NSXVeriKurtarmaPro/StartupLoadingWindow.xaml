@@ -1,0 +1,110 @@
+﻿<Window x:Class="NSXVeriKurtarmaPro.StartupLoadingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="NSX Veri Kurtarma Pro"
+        Width="690"
+        Height="370"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="True"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True">
+    <!-- Kullanıcının verdiği 643x345 startup görseli birebir baz alınır.
+         Viewbox yalnız pencereyi kompakt ölçüye ölçekler; tasarım yeniden çizilmez. -->
+    <Viewbox Stretch="Fill" StretchDirection="Both">
+        <Canvas Width="643" Height="345">
+            <Image Width="643"
+                   Height="345"
+                   Stretch="Fill"
+                   Source="pack://application:,,,/Assets/startup_loading.png"/>
+
+            <!-- startup_loading.png Türkçe hazırlanmış sabit bir tasarım olduğu için,
+                 global dillerde metin bölgeleri seçili dile göre yerelleştirilmiş katmanla örtülür. -->
+            <Canvas Visibility="{Binding NonTurkishOverlayVisibility, Mode=OneWay}"
+                    IsHitTestVisible="False">
+                <Border Canvas.Left="132" Canvas.Top="145" Width="173" Height="48" Background="#F7FBFF"/>
+                <TextBlock Canvas.Left="139" Canvas.Top="155"
+                           Text="Veri Kurtarma"
+                           FontFamily="Segoe UI" FontSize="17" FontWeight="Bold" Foreground="#081A39"/>
+                <Border Canvas.Left="258" Canvas.Top="158" Width="34" Height="17"
+                        Background="#FFD92F" CornerRadius="4">
+                    <TextBlock Text="PRO" FontFamily="Segoe UI" FontSize="9.5" FontWeight="ExtraBold"
+                               Foreground="#172033" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+
+                <Border Canvas.Left="31" Canvas.Top="190" Width="246" Height="27" Background="#F7FBFF">
+                    <TextBlock Margin="8,3,0,0" Text="Başlatılıyor, lütfen bekleyin."
+                               FontFamily="Segoe UI" FontSize="11.5" Foreground="#355B91"/>
+                </Border>
+
+                <Border Canvas.Left="350" Canvas.Top="179" Width="67" Height="20" Background="#F7FBFF" RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform><RotateTransform Angle="17"/></Border.RenderTransform>
+                    <TextBlock Text="Resimler" FontFamily="Segoe UI" FontSize="7.3" Foreground="#47658E" HorizontalAlignment="Center"/>
+                </Border>
+                <Border Canvas.Left="292" Canvas.Top="272" Width="69" Height="20" Background="#F7FBFF" RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform><RotateTransform Angle="18"/></Border.RenderTransform>
+                    <TextBlock Text="Belgeler" FontFamily="Segoe UI" FontSize="7.1" Foreground="#47658E" HorizontalAlignment="Center"/>
+                </Border>
+                <Border Canvas.Left="421" Canvas.Top="306" Width="65" Height="20" Background="#F7FBFF" RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform><RotateTransform Angle="20"/></Border.RenderTransform>
+                    <TextBlock Text="Klasörler" FontFamily="Segoe UI" FontSize="7.3" Foreground="#47658E" HorizontalAlignment="Center"/>
+                </Border>
+                <Border Canvas.Left="580" Canvas.Top="255" Width="55" Height="20" Background="#F7FBFF" RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform><RotateTransform Angle="-23"/></Border.RenderTransform>
+                    <TextBlock Text="Videolar" FontFamily="Segoe UI" FontSize="7.3" Foreground="#47658E" HorizontalAlignment="Center"/>
+                </Border>
+            </Canvas>
+
+            <!-- Görseldeki statik progress alanının üstüne gerçek başlangıç ilerlemesi yazılır. -->
+            <Grid Canvas.Left="39"
+                  Canvas.Top="229"
+                  Width="225"
+                  Height="13">
+                <Border Background="#DDE6F1"
+                        CornerRadius="6.5"/>
+                <Border Width="{Binding ProgressFillWidth, Mode=OneWay}"
+                        HorizontalAlignment="Left"
+                        Background="#158DFF"
+                        CornerRadius="6.5"/>
+            </Grid>
+
+            <!-- Orijinal statik alt yazıyı temiz biçimde örter ve gerçek yüklenen adımı gösterir. -->
+            <Border Canvas.Left="34"
+                    Canvas.Top="248"
+                    Width="300"
+                    Height="32"
+                    Background="#F6FAFF">
+                <TextBlock Margin="5,2,0,0"
+                           Width="286"
+                           Text="{Binding StepTitle, Mode=OneWay}"
+                           TextTrimming="CharacterEllipsis"
+                           FontFamily="Segoe UI"
+                           FontSize="10.8"
+                           FontWeight="SemiBold"
+                           Foreground="#355B91"
+                           VerticalAlignment="Top"/>
+            </Border>
+
+            <Border Canvas.Left="270"
+                    Canvas.Top="224"
+                    MinWidth="48"
+                    Height="23"
+                    Padding="8,0"
+                    CornerRadius="11.5"
+                    Background="#EAF3FF"
+                    BorderBrush="#D3E5FF"
+                    BorderThickness="1">
+                <TextBlock Text="{Binding ProgressText, Mode=OneWay}"
+                           FontFamily="Segoe UI"
+                           FontSize="10.8"
+                           FontWeight="Bold"
+                           Foreground="#1264DD"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Border>
+        </Canvas>
+    </Viewbox>
+</Window>

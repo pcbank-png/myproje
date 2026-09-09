@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "4reJbqz/Jk4=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Server\\Desktop\\En_Yeni\\src\\NSXVeriKurtarmaPro\\NSXVeriKurtarmaPro.Updater\\NSXVeriKurtarmaPro.Updater.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Server\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.31\\microsoft.net.illink.tasks.8.0.31.nupkg.sha512",
+    "C:\\Users\\Server\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\8.0.31\\microsoft.aspnetcore.app.runtime.win-x64.8.0.31.nupkg.sha512",
+    "C:\\Users\\Server\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\8.0.31\\microsoft.windowsdesktop.app.runtime.win-x64.8.0.31.nupkg.sha512",
+    "C:\\Users\\Server\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\8.0.31\\microsoft.netcore.app.runtime.win-x64.8.0.31.nupkg.sha512"
+  ],
+  "logs": []
+}

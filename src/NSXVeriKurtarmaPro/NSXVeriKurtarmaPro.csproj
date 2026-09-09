@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <AssemblyName>NSXVeriKurtarmaPro</AssemblyName>
+    <RootNamespace>NSXVeriKurtarmaPro</RootNamespace>
+    <ApplicationManifest Condition="'$(Configuration)' == 'Debug'">app.debug.manifest</ApplicationManifest>
+    <ApplicationManifest Condition="'$(Configuration)' != 'Debug'">app.manifest</ApplicationManifest>
+    <ApplicationIcon Condition="Exists('Assets\logo.ico')">Assets\logo.ico</ApplicationIcon>
+
+    <Company>NSX Yazılım</Company>
+    <Authors>NSX Yazılım</Authors>
+    <Product>NSX Veri Kurtarma Pro</Product>
+    <Description>USB bellek, HDD, SSD, SD ve microSD depolama aygıtlarından fotoğraf, video ve dosya kurtarma yazılımı.</Description>
+    <Copyright>Copyright © 2026 NSX Yazılım. Tüm hakları saklıdır.</Copyright>
+    <Version>1.3.8</Version>
+    <AssemblyVersion>1.3.8.0</AssemblyVersion>
+    <FileVersion>1.3.8.0</FileVersion>
+    <InformationalVersion>1.3.8</InformationalVersion>
+    <NeutralLanguage>tr-TR</NeutralLanguage>
+  </PropertyGroup>
+
+  <!-- Updater ayri WinForms projesidir; ana WPF proje updater kaynaklarini derlemez. -->
+  <ItemGroup>
+    <Compile Remove="NSXVeriKurtarmaPro.Updater\**\*.cs" />
+    <None Remove="NSXVeriKurtarmaPro.Updater\**" />
+    <EmbeddedResource Remove="NSXVeriKurtarmaPro.Updater\**" />
+    <Page Remove="NSXVeriKurtarmaPro.Updater\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.16.0" />
+    <PackageReference Include="LibVLCSharp.WPF" Version="3.10.1" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23.1" />
+    <!-- Import libraries are for native development, not application runtime. -->
+    <VlcWindowsX64ExcludeFiles Include="%2A.lib" />
+    <VlcWindowsX86ExcludeFiles Include="%2A.lib" />
+    <VlcWindowsArm64ExcludeFiles Include="%2A.lib" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\logo.ico" Condition="Exists('Assets\logo.ico')" />
+    <Resource Include="Assets\logo.png" Condition="Exists('Assets\logo.png')" />
+    <Resource Include="Assets\logo_ui.png" Condition="Exists('Assets\logo_ui.png')" />
+    <Resource Include="Assets\logo_ui_en.png" Condition="Exists('Assets\logo_ui_en.png')" />
+    <Resource Include="Assets\startup_loading.png" Condition="Exists('Assets\startup_loading.png')" />
+    <Resource Include="Assets\DeviceVisuals\*.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Languages\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- VLC loads its native libraries and plugins from a directory beside the EXE. -->
+  <Target Name="KeepVlcFilesBesidePublishedExecutable" AfterTargets="CollectVlcFilesToCopyWindows">
+    <ItemGroup>
+      <Content Update="@(VlcWindowsX64IncludeFilesFullPath);@(VlcWindowsX86IncludeFilesFullPath);@(VlcWindowsArm64IncludeFilesFullPath)">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>
+</Project>

@@ -1,0 +1,13 @@
+{
+    "productCode":  "NSXDATARECOVERYPRO",
+    "version":  "1.3.5",
+    "fileVersion":  "1.3.5.0",
+    "architecture":  "win-x64",
+    "selfContained":  true,
+    "fileName":  "NSXVeriKurtarmaPro_Update_1.3.5.zip",
+    "sha256":  "5A67831A6CFB4A8B7F82B5F7936441CF0A8617835CB2C4BCB1A4D73A5C9EACF7",
+    "sizeBytes":  130146159,
+    "fileCount":  439,
+    "updaterIncluded":  false,
+    "createdUtc":  "2026-09-08T03:53:02.2055450Z"
+}

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)videolan.libvlc.windows\3.0.23.1\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('$(NuGetPackageRoot)videolan.libvlc.windows\3.0.23.1\build\VideoLAN.LibVLC.Windows.targets')" />
+    <Import Project="$(NuGetPackageRoot)magick.net-q8-anycpu\14.16.0\buildTransitive\netstandard20\Magick.NET-Q8-AnyCPU.targets" Condition="Exists('$(NuGetPackageRoot)magick.net-q8-anycpu\14.16.0\buildTransitive\netstandard20\Magick.NET-Q8-AnyCPU.targets')" />
+  </ImportGroup>
+</Project>
