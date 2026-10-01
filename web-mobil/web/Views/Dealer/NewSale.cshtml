@@ -1,0 +1,44 @@
+@model NSYazilim.Web.ViewModels.DealerNewSaleViewModel
+@{
+    ViewData["Title"] = "Yeni Bayi Sat\u0131\u015f\u0131";
+    var dealer = ViewBag.Dealer as NSYazilim.Web.Models.Dealer;
+}
+<div class="dealer-head"><div><div class="dealer-kicker">MUSTERIYE BAGLI LISANS</div><h1>Yeni Sat&#305;&#351;</h1><p>Sat&#305;&#351;&#305; bayi yapar; lisans se&#231;ti&#287;iniz mevcut site &#252;yesinin e-posta adresine ba&#287;lan&#305;r.</p></div><a class="dealer-btn light" href="/Bayi/Satislarim">Sat&#305;&#351;lara D&#246;n</a></div>
+<div class="dealer-card">
+    <form method="post" action="/Bayi/Satis/Yeni">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="dealer-note" style="margin-bottom:18px"><strong>&#214;nemli:</strong> M&#252;&#351;teri sitede &#246;nceden &#252;ye olmal&#305;d&#305;r. Bayi lisans sahibi olmaz; lisans m&#252;&#351;teri ad&#305;, soyad&#305; ve e-posta hesab&#305;na kaydedilir.</div>
+        <div class="dealer-form-grid">
+            <div class="dealer-field full">
+                <label>M&#252;&#351;teri Ara</label>
+                <input id="customerSearch" type="search" placeholder="Ad soyad veya e-posta yazin..." autocomplete="off" />
+            </div>
+            <div class="dealer-field full">
+                <label>M&#252;&#351;teri &#220;yeli&#287;i</label>
+                <select asp-for="CustomerUserId" id="customerSelect">
+                    <option value="0">M&#252;&#351;teri se&#231;in</option>
+                    @foreach (var customer in Model.Customers) { <option value="@customer.Id">@customer.FullName - @customer.Email</option> }
+                </select>
+                <span asp-validation-for="CustomerUserId"></span>
+            </div>
+            <div class="dealer-field full">
+                <label>&#220;r&#252;n</label>
+                <select asp-for="ProductId"><option value="0">&#220;r&#252;n se&#231;in</option>@foreach (var product in Model.Products) { <option value="@product.Id">@product.Name - Y&#305;ll&#305;k: @product.YearlyPrice.ToString("N2") TL / S&#305;n&#305;rs&#305;z: @product.LifetimePrice.ToString("N2") TL</option> }</select>
+                <span asp-validation-for="ProductId"></span>
+            </div>
+            <div class="dealer-field"><label>Lisans T&#252;r&#252;</label><select asp-for="LicenseType"><option value="Yearly">Y&#305;ll&#305;k</option><option value="Lifetime">S&#305;n&#305;rs&#305;z</option></select></div>
+            <div class="dealer-field"><label>Adet</label><input asp-for="Quantity" type="number" min="1" max="10" /><span asp-validation-for="Quantity"></span></div>
+        </div>
+        @if (dealer != null)
+        {
+            <div class="dealer-note" style="margin-top:18px">Bu sat&#305;&#351; i&#231;in bayi k&#226;r&#305;n&#305;z mevcut hesab&#305;n&#305;zdaki <strong>@(dealer.CommissionMode == "Fixed" ? $"sabit {dealer.CommissionFixedAmount:N2} TL" : $"%{dealer.CommissionPercent:N2}")</strong> kural&#305; ile hesaplan&#305;r ve sat&#305;&#351; an&#305;nda sabitlenir.</div>
+        }
+        <div class="dealer-actions" style="margin-top:20px"><button class="dealer-btn primary" type="submit">Sat&#305;&#351;&#305; Olu&#351;tur ve Havaleye Ge&#231;</button><a class="dealer-btn light" href="/Bayi">Vazge&#231;</a></div>
+    </form>
+</div>
+@section Scripts {
+<script>
+(function(){var q=document.getElementById('customerSearch'),s=document.getElementById('customerSelect');if(!q||!s)return;q.addEventListener('input',function(){var v=(q.value||'').toLocaleLowerCase('tr-TR');Array.from(s.options).forEach(function(o,i){if(i===0){o.hidden=false;return;}o.hidden=v.length>0&&!o.text.toLocaleLowerCase('tr-TR').includes(v);});});})();
+</script>
+}

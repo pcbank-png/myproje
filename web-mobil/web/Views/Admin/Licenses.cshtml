@@ -1,0 +1,184 @@
+@model List<NSYazilim.Web.Models.License>
+
+@{
+    ViewData["Title"] = "Lisans Yönetimi";
+    var totalCount = Model?.Count ?? 0;
+    var activeCount = Model?.Count(x => x.IsActive && (x.LicenseStatus == "Active" || string.IsNullOrWhiteSpace(x.LicenseStatus))) ?? 0;
+    var waitingDeviceCount = Model?.Count(x => string.IsNullOrWhiteSpace(x.MachineId)) ?? 0;
+}
+
+<style>
+    /* Lisans tablosu rozetleri: durumlar birbirinden sakin ve net ayrilsin. */
+    body.nsx-admin-body main.nsx-admin-main .nsx-license-table .nsx-license-match-pill {
+        color: #126748 !important;
+        background: #e9f7f1 !important;
+        border-color: #bfe7d5 !important;
+    }
+
+    body.nsx-admin-body main.nsx-admin-main .nsx-license-table .nsx-license-location-pill {
+        color: #65558f !important;
+        background: #f4f0ff !important;
+        border-color: #ddd3f4 !important;
+    }
+</style>
+
+<section class="nsx-admin-page nsx-licenses-page">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX Admin</span>
+            <h1>Lisans Yönetimi</h1>
+            <p>Satın alma, manuel lisans, cihaz eşleşmesi ve program konum bilgilerini tek ekrandan yönetin.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+            <a class="btn btn-outline-secondary" href="/Admin/LicenseCheckLogs">Kontrol Logları</a>
+            <a class="btn btn-outline-danger" href="/Admin/LicenseSecurityLogs">Şüpheli Kullanımlar</a>
+            <a class="btn btn-outline-info" href="/Admin/LicenseDevices">Cihazlar</a>
+            <a class="btn btn-outline-warning" href="/Admin/BlockedDevices">Engelli Cihazlar</a>
+            <a class="btn btn-primary" href="/Admin/ManualLicense">Manuel Lisans Oluştur</a>
+            <a class="btn btn-outline-dark" href="/Admin">Admin Panel</a>
+        </div>
+    </div>
+
+    <div class="nsx-admin-card">
+        <div class="nsx-admin-card-head">
+            <div>
+                <strong>Lisans Listesi</strong>
+                <small>@totalCount kayıt • @activeCount aktif • @waitingDeviceCount cihaz bekliyor</small>
+            </div>
+            <span class="nsx-admin-pill info">Kompakt görünüm</span>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="nsx-admin-empty">Henüz lisans yok.</div>
+        }
+        else
+        {
+            <div class="table-responsive nsx-license-table-wrap">
+                <table class="table align-middle nsx-license-table">
+                    <thead>
+                        <tr>
+                            <th>Lisans</th>
+                            <th>Ürün</th>
+                            <th>Üye</th>
+                            <th>Tip</th>
+                            <th>Ürün Kodu</th>
+                            <th>Cihaz</th>
+                            <th>Son Kontrol</th>
+                            <th>Program Konumu</th>
+                            <th>Başlangıç</th>
+                            <th>Bitiş</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var license in Model)
+                    {
+                        var licenseIp = license.LastIpAddress ?? string.Empty;
+                        var licenseLocationText = string.Join(" / ", new[] { license.LastCity, license.LastRegion, license.LastCountry }
+                            .Where(x => !string.IsNullOrWhiteSpace(x)));
+                        var isLocalTestIp = licenseIp == "::1" || licenseIp == "127.0.0.1" || licenseIp.StartsWith("192.168.") || licenseIp.StartsWith("10.");
+                        var isActiveLicense = license.IsActive && (license.LicenseStatus == "Active" || string.IsNullOrWhiteSpace(license.LicenseStatus));
+
+                        <tr>
+                            <td class="nsx-license-key-cell"><code title="@license.LicenseKey">@license.LicenseKey</code></td>
+                            <td>
+                                <span class="nsx-cell-title">@(license.Product?.Name ?? "-")</span>
+                            </td>
+                            <td class="nsx-license-user">
+                                <strong>@(license.User?.FullName ?? "-")</strong>
+                                <small class="text-muted">@license.User?.Email</small>
+                            </td>
+                            <td class="nsx-license-type">@(license.LicenseType == "Lifetime" ? "Sınırsız" : "1 Yıllık")</td>
+                            <td><code title="@(string.IsNullOrWhiteSpace(license.ProductCode) ? "-" : license.ProductCode)">@(string.IsNullOrWhiteSpace(license.ProductCode) ? "-" : license.ProductCode)</code></td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(license.MachineId))
+                                {
+                                    <span class="nsx-admin-pill nsx-license-match-pill">Eşleşti</span>
+                                    <small class="text-muted">@license.Devices.Count(x => !x.IsBlocked) cihaz</small>
+                                }
+                                else
+                                {
+                                    <span class="nsx-admin-pill warn">Bekliyor</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="nsx-license-date">@(license.LastCheckedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</span>
+                                @if (!string.IsNullOrWhiteSpace(license.LastIpAddress))
+                                {
+                                    <small class="text-muted">@license.LastIpAddress</small>
+                                }
+                            </td>
+                            <td class="nsx-license-location">
+                                @if (!string.IsNullOrWhiteSpace(licenseLocationText))
+                                {
+                                    <span class="nsx-admin-pill nsx-license-location-pill">@license.LastCity</span>
+                                    <small class="text-muted">@licenseLocationText</small>
+                                }
+                                else if (isLocalTestIp)
+                                {
+                                    <span class="nsx-admin-pill nsx-license-location-pill">Yerel Test</span>
+                                    <small class="text-muted">localhost — public IP gerekir</small>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(license.LastIpAddress))
+                                {
+                                    <span class="nsx-admin-pill nsx-license-location-pill">Konum bekleniyor</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">-</span>
+                                }
+                            </td>
+                            <td class="nsx-license-date">@license.StartDate.ToString("dd.MM.yyyy")</td>
+                            <td class="nsx-license-date">@(license.EndDate?.ToString("dd.MM.yyyy") ?? "Sınırsız")</td>
+                            <td class="nsx-license-status">
+                                @if (isActiveLicense)
+                                {
+                                    <span class="nsx-admin-pill ok">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="nsx-admin-pill bad">@(string.IsNullOrWhiteSpace(license.LicenseStatus) ? "Pasif" : license.LicenseStatus)</span>
+                                }
+                            </td>
+                            <td class="text-end nsx-license-action-cell">
+                                <div class="nsx-license-actions">
+                                    <a class="btn btn-sm btn-outline-primary" href="/Admin/LicenseEdit/@license.Id">Düzenle</a>
+                                    @if (license.IsActive && license.OfflineAllowed && !string.IsNullOrWhiteSpace(license.MachineId))
+                                    {
+                                        <a class="btn btn-sm btn-outline-success" href="/Admin/LicenseOfflineFile/@license.Id">Offline</a>
+                                    }
+
+                                    @* Sil butonu form yerleşiminden bağımsız, her lisans satırında doğrudan görünür. *@
+                                    <button type="submit"
+                                            form="license-delete-@license.Id"
+                                            class="btn btn-sm btn-outline-danger nsx-license-delete-btn"
+                                            title="Lisansı sil">Sil</button>
+                                </div>
+
+                                <form id="license-delete-@license.Id"
+                                      method="post"
+                                      action="/Admin/LicenseDelete/@license.Id"
+                                      style="display:none !important;"
+                                      onsubmit="return confirm('@(string.IsNullOrWhiteSpace(license.MachineId) ? "Bu lisans henüz bir cihazla eşleşmedi. Lisans kalıcı olarak silinsin mi?" : "Bu lisans kalıcı olarak silinsin mi?")');">
+                                    @Html.AntiForgeryToken()
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

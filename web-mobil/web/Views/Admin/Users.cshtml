@@ -1,0 +1,251 @@
+@model List<NSYazilim.Web.Models.User>
+@{ var users = Model ?? new List<NSYazilim.Web.Models.User>(); }
+
+@functions {
+    private static string NormalizeLocationKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        var decomposed = value.Trim().Normalize(System.Text.NormalizationForm.FormD);
+        var normalized = new System.Text.StringBuilder(decomposed.Length);
+        foreach (var character in decomposed)
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character) == System.Globalization.UnicodeCategory.NonSpacingMark)
+                continue;
+            if (char.IsLetterOrDigit(character))
+                normalized.Append(char.ToUpperInvariant(character));
+        }
+        return normalized.ToString();
+    }
+
+    private static string NormalizeCountryName(string? country)
+    {
+        if (string.IsNullOrWhiteSpace(country))
+            return string.Empty;
+
+        return NormalizeLocationKey(country) switch
+        {
+            "TR" or "TURKEY" or "TURKIYE" => "Türkiye",
+            _ => country.Trim()
+        };
+    }
+}
+
+@{
+    ViewData["Title"] = "Üye Yönetimi";
+    var userItems = users ?? new List<NSYazilim.Web.Models.User>();
+    var locationKnownCount = userItems.Count(x => !string.IsNullOrWhiteSpace(x.LastCity) || !string.IsNullOrWhiteSpace(x.LastCountry));
+
+    var topCountries = userItems
+        .Select(x => NormalizeCountryName(x.LastCountry))
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .GroupBy(x => NormalizeLocationKey(x))
+        .Select(group => new
+        {
+            Name = group.GroupBy(x => x, StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(x => x.Count())
+                .ThenBy(x => x.Key)
+                .First().Key,
+            Count = group.Count()
+        })
+        .OrderByDescending(x => x.Count)
+        .ThenBy(x => x.Name)
+        .Take(6)
+        .ToList();
+
+    var topCities = userItems
+        .Where(x => !string.IsNullOrWhiteSpace(x.LastCity))
+        .GroupBy(x => NormalizeLocationKey(x.LastCity))
+        .Select(group =>
+        {
+            var city = group.Select(x => x.LastCity!.Trim())
+                .GroupBy(x => x, StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true))
+                .OrderByDescending(x => x.Count())
+                .ThenBy(x => x.Key)
+                .First().Key;
+            var country = group.Select(x => NormalizeCountryName(x.LastCountry))
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .GroupBy(x => x, StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(x => x.Count())
+                .ThenBy(x => x.Key)
+                .Select(x => x.Key)
+                .FirstOrDefault();
+            return new
+            {
+                Name = string.IsNullOrWhiteSpace(country) ? city : $"{city} / {country}",
+                Count = group.Count()
+            };
+        })
+        .OrderByDescending(x => x.Count)
+        .ThenBy(x => x.Name)
+        .Take(8)
+        .ToList();
+}
+
+<section class="nsx-admin-page">
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX Admin</span>
+            <h1>Üye Yönetimi</h1>
+            <p>Üye hesaplarını, rol, aktiflik ve IP tahmini konum bilgilerini tek ekrandan kontrol edin.</p>
+        </div>
+        <a class="nsx-admin-btn" href="/Admin">Admin Panel</a>
+    </div>
+
+    @if (userItems.Any())
+    {
+        <div class="row g-3 mb-3">
+            <div class="col-xl-2 col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <div class="text-muted small">Toplam Üye</div>
+                        <div class="fs-4 fw-bold">@userItems.Count</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <div class="text-muted small">Tahmini Konumu Bulunan</div>
+                        <div class="fs-4 fw-bold">@locationKnownCount</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-2">Ülke Sıralaması</div>
+                        @if (topCountries.Any())
+                        {
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var country in topCountries)
+                                {
+                                    <span class="badge bg-dark rounded-pill">@country.Name: @country.Count</span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Henüz tahmini ülke verisi yok</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body">
+                        <div class="text-muted small mb-2">Şehir Sıralaması</div>
+                        @if (topCities.Any())
+                        {
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var city in topCities)
+                                {
+                                    <span class="badge bg-dark rounded-pill">@city.Name: @city.Count</span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Henüz tahmini şehir verisi yok</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="nsx-admin-card">
+        <div class="nsx-admin-card-head">
+            <div>
+                <strong>Üye Listesi</strong>
+                <small>@(userItems?.Count ?? 0) kayıt</small>
+            </div>
+        </div>
+
+        @if (!(userItems?.Any() ?? false))
+        {
+            <div class="nsx-admin-empty">Kayıtlı üye bulunmuyor.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table nsx-admin-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ad Soyad</th>
+                            <th>E-posta</th>
+                            <th>IP / Tahmini Konum</th>
+                            <th>Son Giriş</th>
+                            <th>Rol</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var user in userItems ?? new List<NSYazilim.Web.Models.User>())
+                    {
+                        var canDelete = !string.Equals(user.Role, "Admin", StringComparison.OrdinalIgnoreCase);
+
+                        <tr>
+                            <td><span class="nsx-muted-id">#@user.Id</span></td>
+                            <td>
+                                <strong>@user.FullName</strong>
+                                <small>@user.CreatedAt.ToString("dd.MM.yyyy")</small>
+                            </td>
+                            <td>@user.Email</td>
+                            <td>
+                                @{
+                                    var userIp = user.LastIpAddress ?? string.Empty;
+                                    var locationText = string.Join(" / ", new[] { user.LastCity, user.LastRegion, user.LastCountry }
+                                        .Where(x => !string.IsNullOrWhiteSpace(x)));
+                                    var isLocalTestIp = userIp == "::1" || userIp == "127.0.0.1" || userIp.StartsWith("192.168.") || userIp.StartsWith("10.");
+                                    var locationDisplayText = !string.IsNullOrWhiteSpace(locationText)
+                                        ? $"IP tahmini: {locationText}"
+                                        : isLocalTestIp ? "Yerel test / localhost — gerçek şehir için public IP gerekir" : "Tahmini konum bekleniyor";
+                                }
+                                @if (!string.IsNullOrWhiteSpace(user.LastIpAddress))
+                                {
+                                    <strong>@user.LastIpAddress</strong>
+                                    <small>@locationDisplayText</small>
+                                }
+                                else
+                                {
+                                    <span class="nsx-admin-pill neutral">IP yok</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.LastLoginAt.HasValue)
+                                {
+                                    <span>@user.LastLoginAt.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                                }
+                                else
+                                {
+                                    <span class="nsx-admin-pill neutral">Henüz yok</span>
+                                }
+                            </td>
+                            <td><span class="nsx-admin-pill neutral">@user.Role</span></td>
+                            <td><span class="nsx-admin-pill @(user.IsActive ? "ok" : "bad")">@(user.IsActive ? "Aktif" : "Pasif")</span></td>
+                            <td class="text-end">
+                                @if (canDelete)
+                                {
+                                    <form method="post" action="/Admin/UserDelete" class="d-inline" onsubmit="return confirm('Bu üyeyi silmek/pasife almak istiyor musun?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <button type="submit" class="nsx-admin-btn danger sm">Sil</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="nsx-admin-pill neutral">Korunuyor</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

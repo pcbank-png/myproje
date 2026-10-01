@@ -1,0 +1,276 @@
+@using NSYazilim.Web.Services
+@inject SiteLocalizationService SiteLocalization
+@{
+    var footerLanguage = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    var footerPath = Context.Request.Path.Value ?? string.Empty;
+    var footerReturnUrl = Context.Request.Query["returnUrl"].FirstOrDefault() ?? string.Empty;
+    var isFreeVeresiyeContext = footerPath.Equals("/urun/nsx-veresiye-takip-pro-free", StringComparison.OrdinalIgnoreCase)
+        || footerPath.StartsWith("/store/free-download-start", StringComparison.OrdinalIgnoreCase)
+        || ((footerPath.StartsWith("/Account/Login", StringComparison.OrdinalIgnoreCase)
+                || footerPath.StartsWith("/Account/Register", StringComparison.OrdinalIgnoreCase))
+            && footerReturnUrl.StartsWith("/store/free-download-start", StringComparison.OrdinalIgnoreCase));
+    async Task<string> FT(string source)
+    {
+        var translated = await SiteLocalization.TranslateAsync(source, footerLanguage.Code, Context.RequestAborted);
+        return CheckoutUiTranslations.Resolve(source, footerLanguage.Code, translated);
+    }
+}
+<footer class="nsx-footer-v2">
+    <div class="nsx-footer-v2__shell">
+        <div class="nsx-footer-v2__assurance" aria-label="@(await FT("NSX Yazılım hizmet güvenceleri"))">
+            <div><b>✓</b><span><strong>@(await FT("Güvenli Dijital Teslimat"))</strong><small>@(await FT(isFreeVeresiyeContext ? "Ücretsiz lisans ve güvenli indirme erişimi" : "Onay sonrası lisans ve indirme erişimi"))</small></span></div>
+            <div><b>⚙</b><span><strong>@(await FT("Hızlı Kurulum"))</strong><small>@(await FT("Kolay başlangıç ve uzaktan destek"))</small></span></div>
+            <div><b aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"><defs><mask id="nsx-local-crescent"><rect width="24" height="24" fill="#000"/><circle cx="9.5" cy="12" r="6.4" fill="#fff"/><circle cx="12.2" cy="10.3" r="5.35" fill="#000"/></mask></defs><rect width="24" height="24" fill="currentColor" mask="url(#nsx-local-crescent)"/><path fill="currentColor" transform="translate(0 -3.25)" d="m17.2 8.5 1.05 2.13 2.35.34-1.7 1.66.4 2.35-2.1-1.1-2.1 1.1.4-2.35-1.7-1.66 2.35-.34L17.2 8.5Z"/></svg></b><span><strong>@(await FT("Yerli Yazılım"))</strong><small>@(await FT("Türkiye'deki işletmelere özel çözümler"))</small></span></div>
+            <div><b>24</b><span><strong>@(await FT("Satış Sonrası Destek"))</strong><small>@(await FT("Lisans ve kullanım sürecinde yanınızda"))</small></span></div>
+        </div>
+        <div class="nsx-footer-v2__main">
+            <section class="nsx-footer-v2__brand" aria-label="NSX Yazılım">
+                <a href="/" class="nsx-footer-v2__logo" aria-label="NSX Yazılım">
+                    <img src="/nsx-assets/logo-brand.webp" asp-append-version="true" alt="NSX Yazılım" width="400" height="105" loading="lazy" decoding="async" fetchpriority="low" />
+                </a>
+                <p>@(await FT("Veresiye ve cari takipten teknik servise, klinikten otomotive kadar işletmeler için modern Windows yazılımları."))</p>
+                <div class="nsx-footer-v2__trust">
+                    <span><b>✓</b> @(await FT("Güvenli teslimat"))</span>
+                    <span><b>✓</b> @(await FT("Hızlı lisans"))</span>
+                    <span><b>✓</b> @(await FT("Kurulum desteği"))</span>
+                </div>
+            </section>
+
+            <nav class="nsx-footer-v2__column" aria-label="@(await FT("Yazılım kategorileri"))">
+                <h3>@(await FT("Yazılım Kategorileri"))</h3>
+                <a href="/store">@(await FT("Tüm Yazılımlar"))</a>
+                <a href="/urun/nsx-barkodlu-satis-cari-ve-stok-takip-pro">@(await FT("Barkodlu Satış & Stok"))</a>
+                <a href="/urun/nsx-cari-takip-pro-2">@(await FT("Cari & Veresiye Takip"))</a>
+                <a href="/urun/nsx-teknik-servis-pro-2">@(await FT("Teknik Servis Yönetimi"))</a>
+                <a href="/oto-tamir-programi">@(await FT("Otomotiv Yazılımları"))</a>
+                <a href="/urun/nsx-dugun-salonu-pro">@(await FT("Düğün & Organizasyon"))</a>
+                <a href="/klinik-programi">@(await FT("Klinik & Randevu"))</a>
+            </nav>
+
+            <nav class="nsx-footer-v2__column" aria-label="@(await FT("Sektörel çözümler"))">
+                <h3>@(await FT("Sektörel Çözümler"))</h3>
+                <a href="/urun/nsx-dugun-salonu-pro">@(await FT("Düğün Salonu Programı"))</a>
+                <a href="/blog/nsx-sigorta-acente-pro-programi">@(await FT("Sigorta Acente Programı"))</a>
+                <a href="/klinik-programi">@(await FT("Klinik Programı"))</a>
+                <a href="/randevu-programi">@(await FT("Randevu Programı"))</a>
+                <a href="/ucretsiz-bilgisayar-hizlandirma-programi">@(await FT("PC Hızlandırma Programı"))</a>
+                <a href="/urun/nsx-komisyonlu-cari-takip-pro">@(await FT("Komisyonlu Cari Takip"))</a>
+                <a href="/blog">@(await FT("Yazılım Rehberleri"))</a>
+            </nav>
+
+            <nav class="nsx-footer-v2__column" aria-label="@(await FT("Kurumsal ve yasal"))">
+                <h3>@(await FT("Kurumsal & Yasal"))</h3>
+                <a href="/hakkimizda">@(await FT("Hakkımızda"))</a>
+                <a href="/sikca-sorulan-sorular">@(await FT("Sıkça Sorulan Sorular"))</a>
+                <a href="/iade-politikasi">@(await FT("İade Politikası"))</a>
+                <a href="/gizlilik-politikasi">@(await FT("Gizlilik Politikası"))</a>
+                <a href="/kvkk">@(await FT("KVKK Aydınlatma Metni"))</a>
+                <a href="/videolar">@(await FT("Tanıtım Videoları"))</a>
+            </nav>
+
+            <aside class="nsx-footer-v2__support" aria-label="@(await FT("NSX müşteri desteği"))">
+                <div class="nsx-footer-v2__support-head">
+                    <span>@(await FT("NSX DESTEK"))</span>
+                    <i></i>
+                </div>
+                <strong>@(await FT("Tek noktadan hızlı destek."))</strong>
+                <a class="nsx-footer-v2__phone" href="tel:+905434624226">
+                    <span class="nsx-footer-v2__phone-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M7.1 3.5 4.7 5.1c-.8.5-1.1 1.5-.8 2.4 1.8 5.8 6.2 10.2 12 12 .9.3 1.9 0 2.4-.8l1.6-2.4c.4-.7.3-1.6-.3-2.1l-2.5-2c-.6-.5-1.5-.5-2.1 0l-1.4 1.1a14.5 14.5 0 0 1-3-3L11.7 9c.5-.6.5-1.5 0-2.1l-2-2.5c-.6-.7-1.8-.8-2.6-.3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span><small>@(await FT("Telefon"))</small><b>0543 462 42 26</b></span>
+                </a>
+                <div class="nsx-footer-v2__support-links">
+                    <a href="https://wa.me/905434624226" target="_blank" rel="noreferrer">WhatsApp</a>
+                    <a href="mailto:destek@@nsxyazilim.com">@(await FT("E-posta"))</a>
+                    <a href="/iletisim">@(await FT("Destek Merkezi"))</a>
+                </div>
+            </aside>
+        </div>
+
+        <div class="nsx-footer-v2__bar">
+            <div class="nsx-footer-v2__payment">
+                <span class="nsx-footer-v2__payment-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M4 7h16v11H4zM4 10h16M7 15h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="nsx-footer-v2__payment-copy">
+                    <strong>@(await FT(isFreeVeresiyeContext ? "Ömür boyu ücretsiz lisans" : "Havale / EFT ile güvenli satın alma"))</strong>
+                    <small>@(await FT(isFreeVeresiyeContext ? "Ödeme veya kart bilgisi gerekmez; ücretsiz lisans hesabınıza otomatik tanımlanır." : "Ödeme onayından sonra dijital lisansınız hesabınıza tanımlanır."))</small>
+                </span>
+                @if (!isFreeVeresiyeContext)
+                {
+                    <div class="nsx-footer-v2__card-brands" aria-label="Visa, Mastercard, American Express, Troy">
+                        @await Html.PartialAsync("_PaymentBrandMarks")
+                    </div>
+                }
+            </div>
+
+            <div class="nsx-footer-v2__account-links">
+                <a href="/Account/MyAccount">@(await FT("Hesabım"))</a>
+                <a href="/Account/Licenses">@(await FT("Lisanslarım"))</a>
+                <a href="/Account/Downloads">@(await FT("İndirmelerim"))</a>
+            </div>
+
+            <div class="nsx-footer-v2__social" aria-label="@(await FT("NSX Yazılım sosyal medya hesapları"))">
+                <span>@(await FT("Bizi takip edin"))</span>
+                <a href="https://www.facebook.com/nsxyazilim" target="_blank" rel="noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14.4 8.3V6.5c0-.8.5-1 1-1h2.5V1.2L14.4 1C10.9 1 9 3.1 9 6.1v2.2H6v4.8h3V23h5.4v-9.9H18l.7-4.8h-4.3Z"/></svg></a>
+                <a href="https://www.instagram.com/nsxyazilim" target="_blank" rel="noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.8" cy="6.3" r="1" fill="currentColor"/></svg></a>
+                <a href="https://x.com/nsxyazilim" target="_blank" rel="noopener noreferrer" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/></svg></a>
+                <a href="https://www.tiktok.com/@@nsxyazilim" target="_blank" rel="noreferrer" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15 2c.4 2.4 1.8 3.8 4.2 4.2v4.1a9 9 0 0 1-4.2-1.2v6.2a6.4 6.4 0 1 1-5.5-6.4v4.2a2.4 2.4 0 1 0 1.4 2.2V2H15Z"/></svg></a>
+                <a href="https://www.youtube.com/@@nsxyazilim" target="_blank" rel="noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.5 7.1a2.8 2.8 0 0 0-2-2C17.8 4.6 12 4.6 12 4.6s-5.8 0-7.5.5a2.8 2.8 0 0 0-2 2C2 8.8 2 12 2 12s0 3.2.5 4.9a2.8 2.8 0 0 0 2 2c1.7.5 7.5.5 7.5.5s5.8 0 7.5-.5a2.8 2.8 0 0 0 2-2c.5-1.7.5-4.9.5-4.9s0-3.2-.5-4.9Z"/><path fill="#fff" d="m10 15.2 5.2-3.2L10 8.8v6.4Z"/></svg></a>
+                <a href="https://wa.me/905434624226" target="_blank" rel="noreferrer" aria-label="WhatsApp"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3.2A12.8 12.8 0 0 0 5.2 22.7l-1.7 6.1 6.3-1.7A12.8 12.8 0 1 0 16 3.2Zm0 23.4c-2.1 0-4.2-.6-5.9-1.6l-.4-.3-3.7 1 1-3.6-.3-.5A10.6 10.6 0 1 1 16 26.6Zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.1l-1 1.3c-.2.2-.4.2-.7.1-2-.9-3.4-2-4.3-3.8-.2-.3 0-.5.1-.7l.8-1.1c.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.6-.5-.8-.5h-.6c-.2 0-.6.1-.9.4-1.1 1.2-1.1 2.7-.4 4.3 1.4 3.2 4.1 5.8 7.3 6.7 1.8.5 3.4.3 4.6-.8.4-.4.6-1.5.5-1.8-.1-.1-.4-.2-.7-.4Z"/></svg></a>
+            </div>
+        </div>
+
+        <div class="nsx-footer-v2__bottom">
+            <span>@(await FT("© 2026 NSX Yazılım. Tüm hakları saklıdır."))</span>
+            <div>
+                <a href="/gizlilik-politikasi">@(await FT("Gizlilik"))</a>
+                <a href="/kvkk">@(await FT("KVKK"))</a>
+                <a href="/iade-politikasi">@(await FT("İade Politikası"))</a>
+            </div>
+            <span>@(await FT("Türkiye genelinde işletmeler için güvenilir dijital yazılım çözümleri."))</span>
+        </div>
+    </div>
+</footer>
+
+<style id="nsx-footer-payment-brands-pro">
+/* Always loaded: homepage uses a deferred footer bundle, so the new payment marks must not depend on wwwroot. */
+.nsx-footer-v2__payment{display:grid!important;grid-template-columns:38px minmax(180px,1fr) auto!important;align-items:center!important;gap:11px!important;min-width:0!important}.nsx-footer-v2__payment-copy{display:flex!important;min-width:0!important;flex-direction:column!important;gap:3px!important}.nsx-footer-v2__card-brands{min-width:270px;padding:6px 10px 6px 16px;border-inline-start:1px solid #e3e8ed;border-radius:11px;background:#fff}.nsx-footer-v2__card-brands .nsx-payment-brands{display:flex;align-items:center;justify-content:flex-end;gap:15px;min-height:34px}.nsx-footer-v2__card-brands .nsx-payment-brand{display:inline-flex;align-items:center;justify-content:center;flex:none;white-space:nowrap}.nsx-footer-v2__card-brands .nsx-payment-brand--visa{color:#1a2a76;font-size:22px;font-weight:1000;font-style:italic;letter-spacing:-.08em}.nsx-footer-v2__card-brands .nsx-payment-brand--mastercard{display:grid;justify-items:center;gap:0}.nsx-footer-v2__card-brands .nsx-payment-brand__mc-circles{position:relative;display:block;width:35px;height:21px}.nsx-footer-v2__card-brands .nsx-payment-brand__mc-circles b{position:absolute;top:1px;width:20px;height:20px;border-radius:50%}.nsx-footer-v2__card-brands .nsx-payment-brand__mc-circles b:first-child{left:1px;background:#e91d2d}.nsx-footer-v2__card-brands .nsx-payment-brand__mc-circles b:last-child{right:1px;background:#f7a61b;opacity:.94}.nsx-footer-v2__card-brands .nsx-payment-brand--mastercard small{margin-top:-1px;color:#171717;font-size:5.8px;font-weight:800}.nsx-footer-v2__card-brands .nsx-payment-brand--amex{display:grid;place-items:center;width:47px;height:28px;padding:2px;border-radius:3px;background:#1478c9;color:#fff;font-size:6.4px;font-weight:1000;line-height:.9;letter-spacing:-.05em}.nsx-footer-v2__card-brands .nsx-payment-brand--troy{color:#333b46;font-size:21px;font-weight:1000;font-style:italic;letter-spacing:-.08em}.nsx-footer-v2__card-brands .nsx-payment-brand--troy span{margin-inline-start:1px;color:#26a8a4;font-size:9px}
+@@media(max-width:760px){.nsx-footer-v2__payment{grid-template-columns:38px minmax(0,1fr)!important}.nsx-footer-v2__card-brands{grid-column:1 / -1;min-width:0;padding:10px 12px;border-inline-start:0;border-top:1px solid #e7ebef}.nsx-footer-v2__card-brands .nsx-payment-brands{justify-content:flex-start;flex-wrap:wrap}}
+</style>
+
+@if (!(ViewData["UseHomePerformanceBundle"] is bool useHomePerformanceBundle && useHomePerformanceBundle))
+{
+<style>
+.nsx-footer-v2{
+    position:relative;
+    display:block!important;
+    grid-template-columns:none!important;
+    grid-template-rows:none!important;
+    grid-auto-columns:auto!important;
+    grid-auto-rows:auto!important;
+    gap:0!important;
+    align-items:initial!important;
+    justify-items:initial!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:34px 0 0!important;
+    padding:0!important;
+    background:#fff;
+    color:#151a20;
+    border-top:1px solid #e7eaee;
+    overflow:hidden;
+}
+.nsx-footer-v2 *{box-sizing:border-box;}
+.nsx-footer-v2 a{text-decoration:none;}
+.nsx-footer-v2__shell{
+    width:min(1505px,calc(100% - 48px))!important;
+    max-width:1505px!important;
+    margin:0 auto!important;
+    padding:32px 0 18px!important;
+}
+.nsx-footer-v2__main{
+    display:grid;
+    grid-template-columns:minmax(250px,1.24fr) repeat(3,minmax(155px,.78fr)) minmax(260px,1.06fr);
+    align-items:start;
+    gap:30px;
+    width:100%;
+}
+.nsx-footer-v2__brand{min-width:0;padding-right:18px;}
+.nsx-footer-v2__logo{display:inline-flex;align-items:center;width:158px;}
+.nsx-footer-v2__logo img{display:block;width:158px;height:auto;}
+.nsx-footer-v2__brand p{max-width:340px;margin:17px 0 18px;color:#697582;font-size:11px;line-height:1.72;}
+.nsx-footer-v2__trust{display:flex;flex-wrap:wrap;gap:7px;}
+.nsx-footer-v2__trust span{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 9px;border:1px solid #e3e7ea;border-radius:999px;background:#fafbfc;color:#4b5661;font-size:8.5px;font-weight:800;white-space:nowrap;}
+.nsx-footer-v2__trust b{color:#ff6e04;}
+.nsx-footer-v2__column{min-width:0;}
+.nsx-footer-v2__column h3{position:relative;margin:0 0 15px;padding-bottom:10px;color:#151a20;font-size:11.5px;font-weight:900;white-space:nowrap;}
+.nsx-footer-v2__column h3:after{content:"";position:absolute;left:0;bottom:0;width:28px;height:3px;border-radius:999px;background:#ff6e04;}
+.nsx-footer-v2__column a{display:block;width:max-content;max-width:100%;padding:4px 0;color:#687480;font-size:10px;font-weight:650;line-height:1.35;transition:color .16s ease,transform .16s ease;}
+.nsx-footer-v2__column a:hover{color:#ff6e04;transform:translateX(4px);}
+.nsx-footer-v2__support{align-self:start;min-width:0;padding:16px;border:1px solid #282e35;border-radius:17px;background:#12171d;box-shadow:0 13px 30px rgba(13,18,24,.13);}
+.nsx-footer-v2__support-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;}
+.nsx-footer-v2__support-head span{color:#aeb7c0;font-size:8px;font-weight:900;letter-spacing:.12em;}
+.nsx-footer-v2__support-head i{width:7px;height:7px;border-radius:50%;background:#ff6e04;box-shadow:0 0 0 4px rgba(255,110,4,.12);}
+.nsx-footer-v2__support>strong{display:block;margin-bottom:12px;color:#fff;font-size:13px;line-height:1.25;}
+.nsx-footer-v2__phone{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:10px;min-height:54px;padding:7px 9px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(255,255,255,.035);}
+.nsx-footer-v2__phone-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:#ff6e04;color:#fff;}
+.nsx-footer-v2__phone-icon svg{width:20px;height:20px;}
+.nsx-footer-v2__phone>span:last-child{display:flex;min-width:0;flex-direction:column;gap:2px;}
+.nsx-footer-v2__phone small{color:#99a4af;font-size:8px;font-weight:700;}
+.nsx-footer-v2__phone b{color:#fff;font-size:14px;line-height:1;letter-spacing:.02em;white-space:nowrap;}
+.nsx-footer-v2__support-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px;}
+.nsx-footer-v2__support-links a{display:flex;align-items:center;justify-content:center;min-height:30px;padding:0 6px;border:1px solid rgba(255,255,255,.08);border-radius:9px;color:#d4dae0;font-size:7.8px;font-weight:800;text-align:center;transition:border-color .16s ease,color .16s ease,background .16s ease;}
+.nsx-footer-v2__support-links a:hover{border-color:#ff6e04;background:rgba(255,110,4,.08);color:#fff;}
+.nsx-footer-v2__bar{display:grid;width:100%;grid-template-columns:minmax(320px,1fr) auto auto;align-items:center;gap:24px;margin-top:26px;padding:14px 16px;border:1px solid #e2e6e9;border-radius:15px;background:#fafbfc;}
+.nsx-footer-v2__payment{display:grid;grid-template-columns:38px minmax(210px,1fr) auto;align-items:center;gap:11px;min-width:0;}
+.nsx-footer-v2__payment-icon{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:10px;background:#151a20;color:#ff6e04;}
+.nsx-footer-v2__payment-icon svg{width:20px;height:20px;}
+.nsx-footer-v2__payment-copy{display:flex;min-width:0;flex-direction:column;gap:3px;}
+.nsx-footer-v2__payment strong{color:#171c22;font-size:10px;}
+.nsx-footer-v2__payment small{color:#7b8590;font-size:8.5px;}
+.nsx-footer-v2__card-brands{min-width:270px;padding-inline-start:16px;border-inline-start:1px solid #e3e8ed;}
+.nsx-footer-v2__card-brands .nsx-payment-brands{display:flex;align-items:center;justify-content:flex-end;gap:15px;min-height:34px;}
+.nsx-footer-v2__card-brands .nsx-payment-brand{display:inline-flex;align-items:center;justify-content:center;flex:none;white-space:nowrap;}
+.nsx-footer-v2__card-brands .nsx-payment-brand--visa{color:#1a2a76;font-size:22px;font-weight:1000;font-style:italic;letter-spacing:-.08em;}
+.nsx-footer-v2__card-brands .nsx-payment-brand--mastercard{display:grid;justify-items:center;gap:0;}
+.nsx-footer-v2__card-brands .nsx-payment-brand__mc-circles{position:relative;display:block;width:35px;height:21px;}
+.nsx-footer-v2__card-brands .nsx-payment-brand__mc-circles b{position:absolute;top:1px;width:20px;height:20px;border-radius:50%;}
+.nsx-footer-v2__card-brands .nsx-payment-brand__mc-circles b:first-child{left:1px;background:#e91d2d;}
+.nsx-footer-v2__card-brands .nsx-payment-brand__mc-circles b:last-child{right:1px;background:#f7a61b;opacity:.94;}
+.nsx-footer-v2__card-brands .nsx-payment-brand--mastercard small{margin-top:-1px;color:#171717;font-size:5.8px;font-weight:800;}
+.nsx-footer-v2__card-brands .nsx-payment-brand--amex{display:grid;place-items:center;width:47px;height:28px;padding:2px;border-radius:3px;background:#1478c9;color:#fff;font-size:6.4px;font-weight:1000;line-height:.9;letter-spacing:-.05em;}
+.nsx-footer-v2__card-brands .nsx-payment-brand--troy{color:#333b46;font-size:21px;font-weight:1000;font-style:italic;letter-spacing:-.08em;}
+.nsx-footer-v2__card-brands .nsx-payment-brand--troy span{margin-inline-start:1px;color:#26a8a4;font-size:9px;}
+.nsx-footer-v2__account-links{display:flex;align-items:center;gap:7px;}
+.nsx-footer-v2__account-links a{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border:1px solid #e1e5e8;border-radius:999px;background:#fff;color:#606b76;font-size:8px;font-weight:800;white-space:nowrap;transition:border-color .16s ease,color .16s ease;}
+.nsx-footer-v2__account-links a:hover{border-color:#ff6e04;color:#ff6e04;}
+.nsx-footer-v2__social{display:flex;align-items:center;justify-content:flex-end;gap:6px;}
+.nsx-footer-v2__social>span{margin-right:2px;color:#7b8590;font-size:8.5px;font-weight:800;white-space:nowrap;}
+.nsx-footer-v2__social a{display:grid;place-items:center;width:31px;height:31px;flex:none;border:1px solid #dde2e6;border-radius:9px;background:#fff;color:#252b32;transition:color .16s ease,border-color .16s ease,background .16s ease,transform .16s ease;}
+.nsx-footer-v2__social a:hover{color:#fff;border-color:#ff6e04;background:#ff6e04;transform:translateY(-2px);}
+.nsx-footer-v2__social svg{width:14px;height:14px;}
+.nsx-footer-v2__bottom{display:grid;width:100%;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;min-height:50px;color:#8a949e;font-size:8.5px;}
+.nsx-footer-v2__bottom>div{display:flex;align-items:center;justify-content:center;gap:15px;}
+.nsx-footer-v2__bottom>span:last-child{text-align:right;}
+.nsx-footer-v2__bottom a{color:#737d87;font-weight:700;transition:color .16s ease;}
+.nsx-footer-v2__bottom a:hover{color:#ff6e04;}
+
+@@media (max-width:1180px){
+    .nsx-footer-v2__shell{width:calc(100% - 32px)!important;}
+    .nsx-footer-v2__main{grid-template-columns:1.2fr repeat(2,1fr);gap:26px;}
+    .nsx-footer-v2__brand{grid-column:1 / 2;}
+    .nsx-footer-v2__column:nth-of-type(3){grid-column:1 / 2;}
+    .nsx-footer-v2__support{grid-column:2 / 4;}
+    .nsx-footer-v2__bar{grid-template-columns:1fr auto;}
+    .nsx-footer-v2__account-links{display:none;}
+}
+@@media (max-width:760px){
+    .nsx-footer-v2{margin-top:24px!important;}
+    .nsx-footer-v2__shell{width:calc(100% - 18px)!important;padding-top:24px!important;}
+    .nsx-footer-v2__main{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 20px;}
+    .nsx-footer-v2__brand{grid-column:1 / -1;padding-right:0;}
+    .nsx-footer-v2__brand p{max-width:520px;}
+    .nsx-footer-v2__column:nth-of-type(3){grid-column:auto;}
+    .nsx-footer-v2__support{grid-column:1 / -1;}
+    .nsx-footer-v2__bar{grid-template-columns:1fr;gap:13px;}
+    .nsx-footer-v2__payment{grid-template-columns:38px minmax(0,1fr);}
+    .nsx-footer-v2__card-brands{grid-column:1 / -1;min-width:0;padding:10px 0 0;border-inline-start:0;border-top:1px solid #e7ebef;}
+    .nsx-footer-v2__card-brands .nsx-payment-brands{justify-content:flex-start;flex-wrap:wrap;}
+    .nsx-footer-v2__social{justify-content:flex-start;flex-wrap:wrap;}
+    .nsx-footer-v2__social>span{width:100%;}
+    .nsx-footer-v2__bottom{grid-template-columns:1fr;gap:9px;padding:14px 0;}
+    .nsx-footer-v2__bottom>div{justify-content:flex-start;}
+    .nsx-footer-v2__bottom>span:last-child{text-align:left;}
+}
+@@media (max-width:480px){
+    .nsx-footer-v2__main{grid-template-columns:1fr;}
+    .nsx-footer-v2__brand,.nsx-footer-v2__support{grid-column:auto;}
+    .nsx-footer-v2__column h3{white-space:normal;}
+    .nsx-footer-v2__support-links{grid-template-columns:1fr;}
+    .nsx-footer-v2__trust{display:grid;grid-template-columns:1fr;}
+    .nsx-footer-v2__trust span{justify-content:flex-start;}
+}
+</style>
+}

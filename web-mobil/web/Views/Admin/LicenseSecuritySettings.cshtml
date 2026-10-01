@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Lisans Güvenlik Ayarları";
+    var apiKeyConfigured = (bool)(ViewBag.ApiKeyConfigured ?? false);
+    var allowQueryApiKey = (bool)(ViewBag.AllowQueryApiKey ?? false);
+    var privateKeyExists = (bool)(ViewBag.PrivateKeyExists ?? false);
+    var privateKeyPath = ViewBag.PrivateKeyPath as string ?? "App_Data/license_v2_private_key.pem";
+    var keyId = ViewBag.KeyId as string ?? "";
+    var publicKey = ViewBag.PublicKey as string ?? "";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Lisans Güvenlik Ayarları</h1>
+            <div class="text-muted">API anahtarı ve offline lisans imza anahtarı durumu.</div>
+        </div>
+        <a class="btn btn-outline-dark" href="/Admin/Licenses">Lisanslara Dön</a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body">
+                    <h4 class="fw-bold">API Anahtarı</h4>
+                    @if (apiKeyConfigured)
+                    {
+                        <div class="alert alert-success rounded-4">Canlı API anahtarı varsayılan değerden farklı görünüyor.</div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger rounded-4">Canlıda <b>LicenseApi:ApiKey</b> mutlaka güçlü ve gizli bir değer olmalı. Varsayılan anahtarla V2 API kabul edilmez.</div>
+                    }
+                    <p class="text-muted mb-1">V2 API anahtarı program tarafından <code>x-api-key</code> header ile gönderilmeli.</p>
+                    <p class="text-muted">Query string ile apiKey kullanımı: <b>@(allowQueryApiKey ? "Açık" : "Kapalı")</b></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body">
+                    <h4 class="fw-bold">Offline İmza Anahtarı</h4>
+                    @if (privateKeyExists)
+                    {
+                        <div class="alert alert-success rounded-4">Private key dosyası mevcut.</div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning rounded-4">Private key dosyası henüz oluşmamış. İlk offline lisans üretiminde oluşur.</div>
+                    }
+                    <div><b>KeyId:</b> @keyId</div>
+                    <div><b>Dosya:</b> <code>@privateKeyPath</code></div>
+                    <p class="text-muted mt-3 mb-0">Bu dosya mutlaka yedeklenmeli. Kaybolursa eski offline lisanslarla uyumluluk riske girer.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mt-3">
+        <div class="card-body">
+            <h4 class="fw-bold">Public Key</h4>
+            <textarea class="form-control" rows="9" readonly>@publicKey</textarea>
+            <div class="form-text">Program tarafındaki offline doğrulama bu public key ile yapılacak.</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+@model NSYazilim.Web.ViewModels.CampaignEditViewModel
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Yeni Kampanya" : "Kampanya Düzenle";
+    var isEdit = Model.Id > 0;
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="mb-1">@(isEdit ? "Kampanya Düzenle" : "Yeni Kampanya")</h2>
+        <p class="text-muted mb-0">Bu kampanya şart sağlanınca satın alma bildirimi sırasında değerlendirilir.</p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form asp-action="@(isEdit ? "Edit" : "Create")" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" placeholder="Örn: Bahar Kampanyası" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="MinimumCartTotal" class="form-label"></label>
+                        <input asp-for="MinimumCartTotal" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="MinimumCartTotal" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="DiscountType" class="form-label"></label>
+                        <select asp-for="DiscountType" class="form-select">
+                            <option value="Percent">Yüzde (%)</option>
+                            <option value="Amount">Sabit TL</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="DiscountValue" class="form-label"></label>
+                        <input asp-for="DiscountValue" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="DiscountValue" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check form-switch mb-2">
+                            <input asp-for="IsActive" class="form-check-input" />
+                            <label asp-for="IsActive" class="form-check-label"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="StartDate" class="form-label"></label>
+                        <input asp-for="StartDate" class="form-control" type="date" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="EndDate" class="form-label"></label>
+                        <input asp-for="EndDate" class="form-control" type="date" />
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Kısa açıklama"></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                    <a asp-action="Index" class="btn btn-light">Geri dön</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

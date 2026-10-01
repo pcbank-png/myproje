@@ -1,0 +1,357 @@
+/* NSX final color guard: Bootstrap/old-primary blues are forced into the VisualPrototype orange + anthracite palette. */
+:root{
+    --bs-blue:#f56800!important;
+    --bs-primary:#f56800!important;
+    --bs-primary-rgb:245,104,0!important;
+    --bs-link-color:#f56800!important;
+    --bs-link-hover-color:#3a3d46!important;
+    --nsx-blue:#f56800!important;
+    --nsx-blue-2:#d95500!important;
+    --nsx-purple:#3a3d46!important;
+    --admin-blue:#f56800!important;
+    --admin-purple:#3a3d46!important;
+    --nsx-gradient:linear-gradient(135deg,#f56800,#3a3d46)!important;
+}
+html,body{accent-color:#f56800;}
+a{color:inherit;}
+a:hover{color:#f56800;}
+.btn-primary,
+.btn-check:checked + .btn,
+.btn-check:active + .btn,
+.btn.show,
+.btn:first-child:active,
+:not(.btn-check)+.btn:active,
+.nsx-btn-primary,
+.nsx-main-btn,
+.offer-btn,
+.category-button,
+.search-area button,
+.auth-form button,
+.contact-form button,
+.checkout-submit-btn,
+.result-primary,
+.nsx-admin-btn.primary,
+.primary,
+button.primary,
+a.primary,
+input[type="submit"].primary{
+    background:linear-gradient(135deg,#f56800,#ff7a18)!important;
+    border-color:#f56800!important;
+    color:#fff!important;
+    box-shadow:0 12px 28px rgba(245,104,0,.22)!important;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.nsx-btn-primary:hover,
+.nsx-main-btn:hover,
+.offer-btn:hover,
+.search-area button:hover,
+.auth-form button:hover,
+.contact-form button:hover,
+.checkout-submit-btn:hover,
+.result-primary:hover,
+.nsx-admin-btn.primary:hover,
+.primary:hover,
+button.primary:hover,
+a.primary:hover{
+    background:#3a3d46!important;
+    border-color:#3a3d46!important;
+    color:#fff!important;
+}
+.btn-outline-primary,
+.btn-outline-primary:visited,
+.page-link,
+.text-primary,
+.link-primary,
+.dropdown-item.active,
+.dropdown-item:active,
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link{
+    color:#f56800!important;
+    border-color:#f56800!important;
+    background-color:transparent!important;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active,
+.page-link:hover,
+.page-link:focus{
+    background:#f56800!important;
+    border-color:#f56800!important;
+    color:#fff!important;
+    box-shadow:0 0 0 .2rem rgba(245,104,0,.18)!important;
+}
+.bg-primary{background:#f56800!important;color:#fff!important;}
+.border-primary{border-color:#f56800!important;}
+.badge.bg-primary,.alert-primary{background:#fff4ec!important;color:#9a3412!important;border-color:#fed7aa!important;}
+.form-control:focus,
+.form-select:focus,
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:#f56800!important;
+    box-shadow:0 0 0 .22rem rgba(245,104,0,.15)!important;
+    outline:none!important;
+}
+.topbar a:hover,
+.main-menu a:hover,
+.footer-inner a:hover,
+.account-order-link:hover,
+.nsx-product-link:hover{
+    color:#f56800!important;
+}
+
+/* NSX hover text guard: buton hover durumlarında metin kesin beyaz kalır. */
+.login-dropdown-menu a:hover,
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn-primary:hover,
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover,
+.nsx-btn:hover,
+.nsx-btn-primary:hover,
+.nsx-main-btn:hover,
+.nsx-legal-btn:hover,
+.nsx-page-search button:hover,
+.nsx-client-search button:hover,
+.search-area button:hover,
+.auth-form button:hover,
+.contact-form button:hover,
+.checkout-submit-btn:hover,
+.complete-order-btn:hover,
+.result-primary:hover,
+.offer-btn:hover,
+.category-button:hover,
+.product-card button:hover,
+.product-button-link:hover,
+.product-actions-home .detail-btn:hover,
+.product-actions-home .demo-btn:hover,
+.listing-hero-search button:hover,
+.listing-filter-form button:hover,
+.listing-actions button:hover,
+.review-form-card a:hover,
+#submitReviewBtn:hover,
+.nsx-discount-form button:hover,
+.cart-checkout-btn:hover,
+.cart-continue-btn:hover,
+.cart-discount-form button:hover,
+.cart-remove:hover,
+.nsx-footer-mail-form button:hover,
+.nsx-live-support-actions a:hover,
+.nsx-live-support-actions button:hover,
+.nsx-copy-box button:hover,
+.header-actions .header-pill:hover,
+.header-actions .offer-btn:hover,
+button.primary:hover,
+a.primary:hover,
+input[type="submit"].primary:hover{
+    color:#fff!important;
+}
+
+.login-dropdown-menu a:hover *,
+.btn:hover *,
+.btn:focus *,
+.btn:active *,
+.nsx-btn:hover *,
+.nsx-main-btn:hover *,
+.offer-btn:hover *,
+.category-button:hover *,
+.header-actions .header-pill:hover *,
+.product-button-link:hover *,
+.cart-checkout-btn:hover *,
+.cart-continue-btn:hover *,
+.result-primary:hover *,
+.complete-order-btn:hover *{
+    color:#fff!important;
+}
+
+.login-dropdown-menu a:hover{
+    background:#f56800!important;
+    border-color:#f56800!important;
+}
+
+.header-actions .header-pill:hover,
+.cart-continue-btn:hover,
+.result-secondary:hover,
+.btn-light:hover,
+.nsx-btn-light:hover{
+    background:#3a3d46!important;
+    border-color:#3a3d46!important;
+    color:#fff!important;
+}
+
+.header-actions .header-pill:hover *,
+.cart-continue-btn:hover *,
+.result-secondary:hover *,
+.btn-light:hover *,
+.nsx-btn-light:hover *{
+    color:#fff!important;
+}
+
+.nsx-realtime-message.admin>div,
+.nsx-product-art-blue,
+.nsx-product-art-purple,
+.nsx-pro-thumbs::-webkit-scrollbar-track{
+    background:#fff4ec!important;
+    border-color:#fed7aa!important;
+    color:#3a3d46!important;
+}
+.nsx-pro-thumbs::-webkit-scrollbar-thumb{
+    background:linear-gradient(135deg,#f56800,#3a3d46)!important;
+}
+
+/* NSX canlı destek final görünüm düzeltmesi: yeşil kaldırıldı, form alanları beyaz/siyah yapıldı. */
+.nsx-live-support-window{
+    background:#ffffff!important;
+    border:1px solid #edf0f5!important;
+    box-shadow:0 26px 70px rgba(31,31,35,.22)!important;
+}
+
+.nsx-live-support-head{
+    background:linear-gradient(135deg,#3a3d46,#24262d)!important;
+    color:#ffffff!important;
+}
+
+.nsx-live-support-avatar,
+.nsx-live-support-icon{
+    background:linear-gradient(135deg,#f56800,#ff7a18)!important;
+    color:#ffffff!important;
+    box-shadow:0 12px 28px rgba(245,104,0,.28)!important;
+}
+
+.nsx-live-support-close:hover{
+    background:#f56800!important;
+    color:#ffffff!important;
+}
+
+.nsx-live-support-body{
+    background:#f8fafc!important;
+}
+
+.nsx-live-support-bubble,
+.nsx-realtime-message.admin>div{
+    background:#ffffff!important;
+    border:1px solid #edf0f5!important;
+    color:#172033!important;
+    box-shadow:0 10px 24px rgba(31,31,35,.06)!important;
+}
+
+.nsx-realtime-message.customer,
+.nsx-realtime-message.customer>div{
+    background:linear-gradient(135deg,#f56800,#ff7a18)!important;
+    border-color:#f56800!important;
+    color:#ffffff!important;
+}
+
+.nsx-live-support-compose label{
+    color:#3a3d46!important;
+    font-weight:900!important;
+}
+
+.nsx-live-support-input,
+.nsx-live-support-message{
+    background:#ffffff!important;
+    color:#111827!important;
+    border:1px solid #d9dee8!important;
+    box-shadow:0 10px 22px rgba(31,31,35,.05)!important;
+    caret-color:#f56800!important;
+}
+
+.nsx-live-support-input::placeholder,
+.nsx-live-support-message::placeholder{
+    color:#7b8494!important;
+    opacity:1!important;
+}
+
+.nsx-live-support-input:focus,
+.nsx-live-support-message:focus{
+    background:#ffffff!important;
+    color:#111827!important;
+    border-color:#f56800!important;
+    box-shadow:0 0 0 4px rgba(245,104,0,.15),0 12px 26px rgba(31,31,35,.08)!important;
+}
+
+.nsx-live-direct-send,
+.nsx-live-support-actions button:not(.nsx-wp-secondary),
+.nsx-live-support-actions a:not(.nsx-wp-secondary){
+    background:linear-gradient(135deg,#f56800,#ff7a18)!important;
+    border:1px solid #f56800!important;
+    color:#ffffff!important;
+    box-shadow:0 14px 32px rgba(245,104,0,.25)!important;
+}
+
+.nsx-live-direct-send:hover,
+.nsx-live-support-actions button:not(.nsx-wp-secondary):hover,
+.nsx-live-support-actions a:not(.nsx-wp-secondary):hover{
+    background:#3a3d46!important;
+    border-color:#3a3d46!important;
+    color:#ffffff!important;
+    box-shadow:0 16px 36px rgba(58,61,70,.24)!important;
+}
+
+.nsx-live-support-actions .nsx-wp-secondary,
+.nsx-wp-app-link.nsx-wp-secondary{
+    background:#ffffff!important;
+    border:1px solid rgba(245,104,0,.32)!important;
+    color:#f56800!important;
+    box-shadow:0 10px 24px rgba(31,31,35,.05)!important;
+}
+
+.nsx-live-support-actions .nsx-wp-secondary:hover,
+.nsx-wp-app-link.nsx-wp-secondary:hover{
+    background:#3a3d46!important;
+    border-color:#3a3d46!important;
+    color:#ffffff!important;
+    box-shadow:0 14px 32px rgba(58,61,70,.22)!important;
+}
+
+.nsx-live-support-status,
+.nsx-live-support-status.is-success,
+.nsx-live-support-status.is-loading{
+    color:#f56800!important;
+}
+
+.nsx-live-support-status.is-error{
+    color:#dc2626!important;
+}
+
+.nsx-live-support-button,
+.nsx-live-whatsapp,
+.nsx-footer-whatsapp-card{
+    background:linear-gradient(135deg,#f56800,#3a3d46)!important;
+    color:#ffffff!important;
+    box-shadow:0 18px 42px rgba(245,104,0,.25)!important;
+}
+
+.nsx-live-support-button:hover,
+.nsx-live-whatsapp:hover,
+.nsx-footer-whatsapp-card:hover{
+    box-shadow:0 24px 56px rgba(58,61,70,.26)!important;
+}
+
+.nsx-live-support-pulse,
+.nsx-live-whatsapp-pulse{
+    border-color:rgba(245,104,0,.42)!important;
+}
+
+.product-detail-page .detail-buy-form a.buy-now,
+.product-detail-page .detail-buy-form button.buy-now{
+    border:1px solid #fed7aa!important;
+    background:linear-gradient(135deg,rgba(255,247,237,.98),rgba(255,255,255,.96))!important;
+    color:#c45600!important;
+    box-shadow:0 10px 24px rgba(255,106,0,.12)!important;
+    font-weight:900!important;
+    text-decoration:none!important;
+    transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease!important;
+}
+
+.product-detail-page .detail-buy-form a.buy-now:hover,
+.product-detail-page .detail-buy-form button.buy-now:hover{
+    border-color:#ff9f43!important;
+    background:linear-gradient(135deg,#fff1e2,#fffaf6)!important;
+    color:#9a3412!important;
+    box-shadow:0 14px 30px rgba(255,106,0,.18)!important;
+    transform:translateY(-1px);
+}

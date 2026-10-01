@@ -1,0 +1,38 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Sıkça Sorulan Sorular";
+    ViewData["MetaDescription"] = "NSX yazılımlarının kurulumu, lisansı, teslimatı, desteği ve iade süreci hakkında sık sorulan soruların yanıtları.";
+}
+
+<section class="nsx-info-page">
+    <header class="nsx-info-hero">
+        <div class="container nsx-info-hero-inner">
+            <div class="nsx-info-hero-copy">
+                <span class="nsx-info-kicker">DESTEK MERKEZİ</span>
+                <h1>Merak ettiklerinizi <em>hızlıca yanıtlayalım.</em></h1>
+                <p>Satın alma öncesinden kuruluma ve günlük kullanıma kadar en sık karşılaştığımız sorular.</p>
+                <div class="nsx-info-hero-points" aria-label="Sık sorulan soru konuları">
+                    <span><b>✓</b> Kurulum</span>
+                    <span><b>✓</b> Lisans</span>
+                    <span><b>✓</b> Satış sonrası destek</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="nsx-info-divider" aria-hidden="true"></div>
+
+    <div class="container nsx-info-layout">
+        <article class="nsx-faq-list">
+            <details open><summary>NSX yazılımları hangi işletim sisteminde çalışır?</summary><p>Ürünlerimiz Windows bilgisayarlar için geliştirilir. Ürüne özel sistem gereksinimlerini ilgili ürün sayfasında görebilirsiniz.</p></details>
+            <details><summary>Satın aldığım lisans nasıl teslim edilir?</summary><p>Ödeme onayından sonra lisansınız hesabınıza tanımlanır. Hesabınızdaki indirmeler ve lisanslar bölümünden ilgili bilgilere ulaşabilirsiniz.</p></details>
+            <details><summary>Kurulum konusunda destek alabilir miyim?</summary><p>Evet. Kurulum ve ilk kullanım sorularınız için telefon, WhatsApp veya e-posta üzerinden destek ekibimize ulaşabilirsiniz.</p></details>
+            <details><summary>Ücretsiz ürünleri nasıl indirebilirim?</summary><p>İlgili ücretsiz ürün sayfasındaki indirme adımlarını izleyebilirsiniz. Gerekli olduğunda hesap girişi veya kısa bir bilgilendirme formu istenebilir.</p></details>
+            <details><summary>Satın almadan önce ürünü inceleyebilir miyim?</summary><p>Ürün sayfalarındaki açıklamaları, ekran görüntülerini ve varsa tanıtım videolarını inceleyebilirsiniz. Karar veremediğinizde destek ekibimiz ihtiyacınıza uygun ürünü belirlemenize yardımcı olur.</p></details>
+            <details><summary>Lisansı başka bir bilgisayara taşıyabilir miyim?</summary><p>Lisans taşıma koşulları ürüne ve lisans türüne göre değişebilir. Mevcut lisans bilgilerinizle destek ekibimize ulaşarak kontrol ettirebilirsiniz.</p></details>
+            <details><summary>İade talebi nasıl oluşturulur?</summary><p>İade koşullarını iade politikası sayfasından inceleyebilir, talebinizi sipariş ve iletişim bilgilerinizle destek ekibimize iletebilirsiniz.</p></details>
+            <details><summary>Verilerim nerede saklanır?</summary><p>Veri saklama biçimi ürüne göre değişebilir. Masaüstü ürünlerindeki yerel veri ve varsa çevrim içi özelliklerle ilgili ayrıntılar ilgili ürün belgelerinde açıklanır.</p></details>
+            <div class="nsx-info-contact-strip"><div><span>Yanıtı bulamadınız mı?</span><strong>Destek ekibimize doğrudan ulaşın.</strong></div><a href="/iletisim">İletişime geçin</a></div>
+        </article>
+        @await Html.PartialAsync("_CorporateAside")
+    </div>
+</section>

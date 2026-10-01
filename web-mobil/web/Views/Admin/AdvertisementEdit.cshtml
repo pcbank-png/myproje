@@ -1,0 +1,289 @@
+@model NSYazilim.Web.ViewModels.AdvertisementFormViewModel
+@using NSYazilim.Web.Models
+@{
+    ViewData["Title"] = "Reklam Düzenle";
+    var products = ViewBag.AdvertisementProducts as List<Product> ?? new List<Product>();
+    var isAllProductsSelected = Model.ProductCode == "ALL";
+    var impressionCount = ViewBag.ImpressionCount is int ic ? ic : 0;
+    var clickCount = ViewBag.ClickCount is int cc ? cc : 0;
+    DateTime? lastShownAt = ViewBag.LastShownAt is DateTime lsa ? lsa : null;
+    DateTime? lastClickedAt = ViewBag.LastClickedAt is DateTime lca ? lca : null;
+    var slots = new[]
+    {
+        new { Code = "FREE_BOTTOM_728X90", Name = "Program Alt Banner", Detail = "728 x 90 px - ücretsiz sürüm alt reklam", Width = 728, Height = 90 },
+        new { Code = "APP_TOP_728X90", Name = "Program Üst Banner", Detail = "728 x 90 px - program içi üst reklam", Width = 728, Height = 90 },
+        new { Code = "SITE_HOME_728X90", Name = "Site Ana Sayfa Banner", Detail = "728 x 90 px - site içi kullanım", Width = 728, Height = 90 },
+        new { Code = "POPUP_600X400", Name = "Popup Reklam", Detail = "600 x 400 px - kampanya/popup alanı", Width = 600, Height = 400 }
+    };
+}
+
+<div class="nsx-admin-page nsx-ads-page">
+    <div class="nsx-admin-head nsx-ads-head">
+        <div>
+            <span class="nsx-ads-kicker">Reklam Düzenleme</span>
+            <h1>@Model.Title</h1>
+            <p>Banner görseli, URL, program kodu, yayın durumu ve geçiş süresini düzenleyin.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="nsx-admin-btn" href="/api/ads/active?productCode=@Model.ProductCode&slot=@Model.SlotCode" target="_blank">API Test</a>
+            <a class="nsx-admin-btn" href="/Admin/Advertisements">Reklamlara Dön</a>
+        </div>
+    </div>
+
+    <form class="nsx-ads-form-grid" method="post" enctype="multipart/form-data" action="/Admin/AdvertisementEdit/@Model.Id">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ExistingImagePath" />
+
+        <div class="nsx-admin-card nsx-ads-form-main">
+            <h3>Reklam Bilgileri</h3>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <label class="form-label">Sitede Yüklü Program</label>
+                    <select name="ProductId" id="ProductId" class="form-select rounded-4">
+                        <option value="">Program seçilmedi</option>
+                        <option value="" data-code="ALL" selected="@isAllProductsSelected">Tüm programlara yayınla</option>
+                        @foreach (var product in products)
+                        {
+                            var code = BuildAdCode(product);
+                            <option value="@product.Id" data-code="@code" data-title="@product.Name" selected="@(Model.ProductId == product.Id)">@product.Name (@code)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-6">
+                    <label asp-for="ProductCode" class="form-label"></label>
+                    <input asp-for="ProductCode" id="ProductCode" class="form-control rounded-4" />
+                    <span asp-validation-for="ProductCode" class="text-danger small"></span>
+                </div>
+
+                <div class="col-lg-6">
+                    <label asp-for="SlotCode" class="form-label"></label>
+                    <select name="SlotCode" id="SlotCode" class="form-select rounded-4">
+                        @foreach (var slot in slots)
+                        {
+                            <option value="@slot.Code" data-width="@slot.Width" data-height="@slot.Height" selected="@(Model.SlotCode == slot.Code)">@slot.Name - @slot.Detail</option>
+                        }
+                    </select>
+                    <span asp-validation-for="SlotCode" class="text-danger small"></span>
+                </div>
+                <div class="col-lg-6">
+                    <label asp-for="TargetUrl" class="form-label"></label>
+                    <input asp-for="TargetUrl" class="form-control rounded-4" placeholder="https://www.nsxyazilim.com" />
+                    <span asp-validation-for="TargetUrl" class="text-danger small"></span>
+                </div>
+
+                <div class="col-lg-6">
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" id="Title" class="form-control rounded-4" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+                <div class="col-lg-6">
+                    <label asp-for="AltText" class="form-label"></label>
+                    <input asp-for="AltText" class="form-control rounded-4" />
+                    <span asp-validation-for="AltText" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control rounded-4" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="ImageFile" class="form-label">Yeni Banner Görseli</label>
+                    <input asp-for="ImageFile" id="ImageFile" class="form-control rounded-4" type="file" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp" />
+                    <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                    <small class="text-muted">Boş bırakırsan mevcut banner korunur. Önerilen: 728 x 90 px. PNG, JPG veya WEBP kullanabilirsin.</small>
+                </div>
+            </div>
+        </div>
+
+        <aside class="nsx-admin-card nsx-ads-form-side">
+            <h3>Gelişmiş Ayarlar</h3>
+
+            <div class="nsx-ad-live-preview">
+                <span>Mevcut Banner</span>
+                <div id="AdPreviewBox">
+                    @if (!string.IsNullOrWhiteSpace(Model.ExistingImagePath))
+                    {
+                        <img src="@Model.ExistingImagePath" alt="@Model.Title" />
+                    }
+                    else
+                    {
+                        <text>Banner görseli yok</text>
+                    }
+                </div>
+            </div>
+
+            <div class="nsx-ads-mini-stats">
+                <div><span>Gösterim</span><strong>@impressionCount</strong></div>
+                <div><span>Tıklama</span><strong>@clickCount</strong></div>
+            </div>
+            <div class="small text-muted mb-3">
+                Son gösterim: @(lastShownAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")<br />
+                Son tıklama: @(lastClickedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")
+            </div>
+
+            <div class="row g-3">
+                <div class="col-6">
+                    <label asp-for="Width" class="form-label">Genişlik</label>
+                    <input asp-for="Width" id="Width" class="form-control rounded-4" />
+                </div>
+                <div class="col-6">
+                    <label asp-for="Height" class="form-label">Yükseklik</label>
+                    <input asp-for="Height" id="Height" class="form-control rounded-4" />
+                </div>
+                <div class="col-6">
+                    <label asp-for="DisplaySeconds" class="form-label">Geçiş Süresi / sn</label>
+                    <input asp-for="DisplaySeconds" class="form-control rounded-4" />
+                    <span asp-validation-for="DisplaySeconds" class="text-danger small"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="Priority" class="form-label">Öncelik</label>
+                    <input asp-for="Priority" class="form-control rounded-4" />
+                </div>
+                <div class="col-6">
+                    <label asp-for="SortOrder" class="form-label">Sıra</label>
+                    <input asp-for="SortOrder" class="form-control rounded-4" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Takip</label>
+                    <div class="nsx-ad-checkline nsx-ad-toggle-row">
+                        <input asp-for="TrackClicks" class="form-check-input" />
+                        <label asp-for="TrackClicks" class="form-check-label">Tıklama say</label>
+                        <span class="nsx-ad-toggle-state" data-on="Açık" data-off="Kapalı"></span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label asp-for="StartDate" class="form-label"></label>
+                    <input asp-for="StartDate" class="form-control rounded-4" type="datetime-local" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="EndDate" class="form-label"></label>
+                    <input asp-for="EndDate" class="form-control rounded-4" type="datetime-local" />
+                    <span asp-validation-for="EndDate" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <div class="nsx-ad-active-box nsx-ad-toggle-row">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <div>
+                            <label asp-for="IsActive" class="form-check-label">Bu reklam aktif olsun</label>
+                            <small>Pasif reklamlar API tarafından gösterilmez.</small>
+                        </div>
+                        <span class="nsx-ad-toggle-state" data-on="Aktif" data-off="Pasif"></span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="nsx-admin-btn primary w-100 mt-3" type="submit">Değişiklikleri Kaydet</button>
+        </aside>
+    </form>
+
+    <form method="post" action="/Admin/AdvertisementStatsReset" class="nsx-admin-card nsx-ads-danger-zone" onsubmit="return confirm('Bu reklamın gösterim ve tıklama istatistikleri sıfırlansın mı?');">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <div>
+            <strong>İstatistik Sıfırlama</strong>
+            <span>Bu işlem sadece bu reklama ait gösterim ve tıklama sayılarını sıfırlar.</span>
+        </div>
+        <button class="nsx-admin-btn danger" type="submit">İstatistikleri Sıfırla</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const productSelect = document.getElementById('ProductId');
+            const productCode = document.getElementById('ProductCode');
+            const title = document.getElementById('Title');
+            const slotSelect = document.getElementById('SlotCode');
+            const width = document.getElementById('Width');
+            const height = document.getElementById('Height');
+            const imageFile = document.getElementById('ImageFile');
+            const preview = document.getElementById('AdPreviewBox');
+
+            productSelect?.addEventListener('change', function () {
+                const option = productSelect.options[productSelect.selectedIndex];
+                if (option?.dataset?.code) productCode.value = option.dataset.code;
+                if (option?.dataset?.title && !title.value.trim()) title.value = option.dataset.title;
+            });
+
+            slotSelect?.addEventListener('change', function () {
+                const option = slotSelect.options[slotSelect.selectedIndex];
+                if (option?.dataset?.width) width.value = option.dataset.width;
+                if (option?.dataset?.height) height.value = option.dataset.height;
+            });
+
+            imageFile?.addEventListener('change', function () {
+                const file = imageFile.files && imageFile.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    preview.innerHTML = '<img src="' + event.target.result + '" alt="Ön izleme" />';
+                };
+                reader.readAsDataURL(file);
+            });
+
+            document.querySelectorAll('.nsx-ad-toggle-row').forEach(function (row) {
+                const input = row.querySelector('input[type="checkbox"]');
+                const state = row.querySelector('.nsx-ad-toggle-state');
+                if (!input || !state) return;
+
+                const refresh = function () {
+                    row.classList.toggle('is-checked', input.checked);
+                    state.textContent = input.checked
+                        ? (state.dataset.on || 'Açık')
+                        : (state.dataset.off || 'Kapalı');
+                };
+
+                input.addEventListener('change', refresh);
+                refresh();
+            });
+        })();
+    </script>
+}
+
+@functions {
+    private string BuildAdCode(Product product)
+    {
+        var normalizedSource = NormalizeAdCode($"{product.ProductCode} {product.Slug} {product.Name}");
+        if (normalizedSource.Contains("VERESIYE") && (normalizedSource.Contains("FREE") || normalizedSource.Contains("UCRETSIZ")))
+            return "NSXVERESIYETAKIPPROFREE";
+
+        var existingProductCode = NormalizeAdCode(product.ProductCode);
+        if (!string.IsNullOrWhiteSpace(existingProductCode))
+            return existingProductCode;
+
+        var source = $"{product.Slug} {product.Name}".ToLowerInvariant();
+        if (source.Contains("veresiye")) return "NSXVERESIYEDEFTERI";
+        if (source.Contains("turbo")) return "NSXTURBO";
+        if (source.Contains("klinik")) return "NSXKLINIK";
+        if (source.Contains("teknik")) return "NSXTEKNIKSERVIS";
+        source = source.Replace('ı', 'i').Replace('ğ', 'g').Replace('ü', 'u').Replace('ş', 's').Replace('ö', 'o').Replace('ç', 'c');
+        var code = new string(source.ToUpperInvariant().Where(char.IsLetterOrDigit).ToArray());
+        return string.IsNullOrWhiteSpace(code) ? $"NSXPRODUCT{product.Id}" : code;
+    }
+
+    private string NormalizeAdCode(string? value)
+    {
+        var text = (value ?? string.Empty)
+            .Replace('\u0130', 'I')
+            .Replace('\u0131', 'i')
+            .Replace('\u00C7', 'C')
+            .Replace('\u00E7', 'c')
+            .Replace('\u011E', 'G')
+            .Replace('\u011F', 'g')
+            .Replace('\u00D6', 'O')
+            .Replace('\u00F6', 'o')
+            .Replace('\u015E', 'S')
+            .Replace('\u015F', 's')
+            .Replace('\u00DC', 'U')
+            .Replace('\u00FC', 'u')
+            .ToUpperInvariant();
+
+        return new string(text.Where(char.IsLetterOrDigit).ToArray());
+    }
+}

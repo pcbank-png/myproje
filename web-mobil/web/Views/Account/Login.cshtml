@@ -1,0 +1,241 @@
+@model NSYazilim.Web.ViewModels.AccountLoginViewModel
+@{
+    var isFreeDownloadFlow = !string.IsNullOrWhiteSpace(Model.ReturnUrl)
+        && Model.ReturnUrl.StartsWith("/store/free-download-start", StringComparison.OrdinalIgnoreCase);
+    ViewData["Title"] = isFreeDownloadFlow ? "Ücretsiz İndirme İçin Giriş" : "Üye Girişi";
+    ViewData["MetaDescription"] = isFreeDownloadFlow
+        ? "NSX Veresiye Takip Pro Free indirmesini başlatmak için hesabınıza güvenle giriş yapın. Ödeme veya kart bilgisi gerekmez."
+        : "NSX Yazılım hesabınıza giriş yaparak siparişlerinize, lisanslarınıza ve indirme dosyalarınıza ulaşın.";
+    ViewData["Robots"] = "noindex, nofollow, noarchive";
+    ViewData["SkipActiveCampaign"] = true;
+    var loginPostUrl = Url.Action("Login", "Account", new { uiLang = Model.UiLang }) ?? "/Account/Login";
+    var registerUrl = Url.Action("Register", "Account", new { returnUrl = Model.ReturnUrl, uiLang = Model.UiLang }) ?? "/Account/Register";
+    var forgotPasswordUrl = Url.Action("ForgotPassword", "Account", new { uiLang = Model.UiLang }) ?? "/Account/ForgotPassword";
+}
+<style id="nsx-auth-pro-standard">
+    .public-content-page{background:#fff!important;}
+    .public-content-page > .container{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;}
+    .public-content-page .public-site-header .service-ribbon > .container,
+    .public-content-page .public-site-header .detail-nav.container,
+    .nsx-auth-pro-hero > .container,
+    .nsx-auth-pro-content > .container{
+        width:min(1505px,calc(100% - 48px))!important;
+        max-width:1505px!important;
+        margin-left:auto!important;
+        margin-right:auto!important;
+    }
+    @@media(min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{min-height:78px!important;gap:8px!important;}
+        .public-content-page .public-site-header .brand{margin-right:0!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(142px,14vw,184px)!important;max-width:184px!important;height:auto!important;}
+        .public-content-page .public-site-header .nav-links{margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+        .public-content-page .public-site-header .nav-cta{margin-left:0!important;}
+    }
+    .nsx-auth-pro-page{background:#fff;color:#111827;overflow:hidden;}
+    .nsx-auth-pro-hero{
+        position:relative;
+        height:286px!important;
+        min-height:286px!important;
+        max-height:286px!important;
+        overflow:hidden;
+        color:#fff;
+        background:radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%);
+        border-top:1px solid rgba(255,255,255,.04);
+        border-bottom:1px solid rgba(255,255,255,.06);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22);
+    }
+    .nsx-auth-pro-hero:before{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        opacity:.10;
+        background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+        background-size:72px 72px;
+        -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);
+        mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);
+    }
+    .nsx-auth-pro-hero > .container{position:relative;z-index:2;height:100%;display:flex;align-items:flex-start;padding-top:24px;padding-bottom:24px;box-sizing:border-box;}
+    .nsx-auth-pro-copy{max-width:980px;}
+    .nsx-auth-pro-kicker{display:flex;align-items:center;gap:10px;margin:0 0 13px;color:#39d98a;font-size:12px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-auth-pro-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 5px rgba(57,217,138,.12);}
+    .nsx-auth-pro-hero h1{max-width:900px;margin:0;color:#fff;font-size:42px;font-weight:900;line-height:1.06;letter-spacing:-.04em;}
+    .nsx-auth-pro-hero h1 em{color:#ff6e04;font-style:normal;}
+    .nsx-auth-pro-hero p{max-width:900px;margin:12px 0 0;color:#d3d8df;font-size:14px;line-height:1.7;font-weight:520;}
+    .nsx-auth-pro-points{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+    .nsx-auth-pro-points span{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 11px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.045);color:#d9dee4;font-size:10px;font-weight:800;}
+    .nsx-auth-pro-points b{color:#39d98a;font-size:11px;}
+    .nsx-auth-pro-content{padding:42px 0 72px;background:linear-gradient(180deg,#fff 0%,#fbfcfd 100%);}
+    .nsx-auth-pro-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(440px,560px);gap:34px;align-items:start;}
+    .nsx-register-pro .nsx-auth-pro-grid{grid-template-columns:minmax(0,1fr) minmax(520px,650px);}
+    .nsx-auth-pro-side{padding:30px;border:1px solid #e2e7eb;border-radius:20px;background:#fff;box-shadow:0 14px 34px rgba(15,23,42,.05);}
+    .nsx-auth-pro-side > span{display:block;color:#ff6e04;font-size:10px;font-weight:900;letter-spacing:.10em;text-transform:uppercase;}
+    .nsx-auth-pro-side h2{max-width:650px;margin:8px 0 9px;color:#171b20;font-size:28px;line-height:1.12;font-weight:900;letter-spacing:-.03em;}
+    .nsx-auth-pro-side > p{max-width:720px;margin:0;color:#687481;font-size:12px;line-height:1.72;}
+    .nsx-auth-pro-feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:24px;}
+    .nsx-auth-pro-feature{min-height:122px;padding:16px;border:1px solid #e5e9ed;border-radius:14px;background:#fafbfc;}
+    .nsx-auth-pro-feature b{display:grid;place-items:center;width:29px;height:29px;margin-bottom:13px;border-radius:9px;background:#fff1e7;color:#ff6e04;font-size:10px;font-weight:900;box-shadow:inset 0 0 0 1px #ffd8bc;}
+    .nsx-auth-pro-feature strong{display:block;color:#242b33;font-size:11px;font-weight:900;}
+    .nsx-auth-pro-feature span{display:block;margin-top:5px;color:#7b8793;font-size:10px;line-height:1.55;}
+    .nsx-auth-pro-trust{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;padding:16px 18px;border:1px solid #dce7e1;border-radius:14px;background:#f7fbf9;}
+    .nsx-auth-pro-trust div{min-width:0;}
+    .nsx-auth-pro-trust strong{display:block;color:#1f4935;font-size:11px;font-weight:900;}
+    .nsx-auth-pro-trust span{display:block;margin-top:3px;color:#6a7d73;font-size:10px;line-height:1.5;}
+    .nsx-auth-pro-trust b{flex:0 0 auto;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#e6f6ed;color:#168650;font-size:13px;}
+    .nsx-auth-pro-card{overflow:hidden;border:1px solid #dfe5ea;border-radius:20px;background:#fff;box-shadow:0 18px 46px rgba(15,23,42,.09);}
+    .nsx-auth-pro-card-head{padding:26px 28px 20px;border-bottom:1px solid #edf0f2;background:linear-gradient(135deg,#fff 0%,#fafbfc 100%);}
+    .nsx-auth-pro-card-head > span{display:block;color:#ff6e04;font-size:10px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-auth-pro-card-head h2{margin:7px 0 7px;color:#171b20;font-size:27px;line-height:1.14;font-weight:900;letter-spacing:-.03em;}
+    .nsx-auth-pro-card-head p{margin:0;color:#74808b;font-size:11px;line-height:1.6;}
+    .nsx-auth-pro-form{display:grid;padding:7px 28px 26px;}
+    .nsx-register-pro .nsx-auth-pro-form{grid-template-columns:1fr 1fr;gap:0 13px;}
+    .nsx-auth-pro-form > div{min-width:0;}
+    .nsx-auth-pro-form label:not(.nsx-auth-check){display:block;margin:14px 0 7px;color:#2c3743;font-size:11px;font-weight:850;}
+    .nsx-auth-pro-form > input,.nsx-auth-pro-form > div > input,.nsx-auth-pro-form .nsx-password-field input{width:100%;height:48px;min-height:48px;box-sizing:border-box;padding:0 14px;border:1px solid #dce2e7;border-radius:11px;outline:none;background:#fafbfc;color:#17202a;font:inherit;font-size:12px;transition:border-color .16s ease,box-shadow .16s ease,background .16s ease;}
+    .nsx-auth-pro-form > input:focus,.nsx-auth-pro-form > div > input:focus,.nsx-auth-pro-form .nsx-password-field:focus-within{border-color:#ff6e04;background:#fff;box-shadow:0 0 0 3px rgba(255,110,4,.09);}
+    .nsx-auth-pro-form .nsx-password-field{display:grid;grid-template-columns:1fr auto;overflow:hidden;border:1px solid #dce2e7;border-radius:11px;background:#fafbfc;}
+    .nsx-auth-pro-form .nsx-password-field input{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
+    .nsx-auth-pro-form .nsx-password-field button{padding:0 13px;border:0;background:transparent;color:#ff6e04;font-size:10px;font-weight:900;cursor:pointer;}
+    .nsx-auth-pro-form .nsx-field-error,.nsx-auth-pro-form .nsx-validation{color:#b53a32;font-size:9px;line-height:1.45;}
+    .nsx-auth-pro-form .nsx-field-error{display:block;min-height:2px;margin-top:4px;}
+    .nsx-auth-pro-form .nsx-validation ul{margin:8px 0 0;padding-left:17px;}
+    .nsx-auth-pro-form .nsx-forgot-link{justify-self:end;margin-top:8px;color:#e75f00;font-size:10px;font-weight:900;text-decoration:none;}
+    .nsx-auth-pro-form .nsx-forgot-link:hover{text-decoration:underline;}
+    .nsx-auth-pro-form .nsx-auth-check{display:flex;align-items:flex-start;gap:9px;margin:17px 0 0;color:#63707c;font-size:10px;line-height:1.55;}
+    .nsx-auth-pro-form .nsx-auth-check input{flex:0 0 auto;margin-top:2px;accent-color:#ff6e04;}
+    .nsx-auth-pro-form .nsx-auth-check a{color:#e75f00;font-weight:850;text-decoration:none;}
+    .nsx-auth-pro-submit{display:flex;align-items:center;justify-content:space-between;min-height:50px;margin-top:19px;padding:0 17px;border:1px solid #ff6e04;border-radius:11px;background:#ff6e04;color:#fff;font-size:11px;font-weight:900;cursor:pointer;box-shadow:0 10px 24px rgba(255,110,4,.20);transition:transform .16s ease,box-shadow .16s ease,background .16s ease;}
+    .nsx-auth-pro-submit:hover{transform:translateY(-1px);background:#f66100;box-shadow:0 14px 28px rgba(255,110,4,.26);}
+    .nsx-auth-pro-submit span{font-size:17px;}
+    .nsx-auth-pro-bottom{padding:16px 28px;border-top:1px solid #edf0f2;background:#fafbfc;color:#78838d;text-align:center;font-size:10px;}
+    .nsx-auth-pro-bottom a{color:#e75f00;font-weight:900;text-decoration:none;}
+    .nsx-auth-pro-bottom a:hover{text-decoration:underline;}
+    .nsx-auth-pro-message{margin:18px 28px 0;padding:11px 13px;border-radius:10px;font-size:10px;font-weight:750;line-height:1.5;}
+    .nsx-auth-pro-message.is-success{border:1px solid #cce7d8;background:#f1fbf5;color:#23754b;}
+    .nsx-auth-pro-message.is-error{border:1px solid #efd0cd;background:#fff6f5;color:#a33a32;}
+    .nsx-auth-pro-message.is-warning{border:1px solid #f1d7b6;background:#fff8ef;color:#8a4b14;}
+    .nsx-auth-pro-full{grid-column:1 / -1;}
+    @@media(max-width:1180px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container,.nsx-auth-pro-hero > .container,.nsx-auth-pro-content > .container{width:calc(100% - 32px)!important;}
+        .nsx-auth-pro-hero h1{font-size:38px;}
+        .nsx-auth-pro-grid,.nsx-register-pro .nsx-auth-pro-grid{grid-template-columns:minmax(0,1fr) minmax(420px,520px);gap:24px;}
+        .nsx-auth-pro-feature-grid{grid-template-columns:1fr;}
+        .nsx-auth-pro-feature{min-height:0;}
+    }
+    @@media(max-width:980px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+        .nsx-auth-pro-grid,.nsx-register-pro .nsx-auth-pro-grid{grid-template-columns:1fr;}
+        .nsx-auth-pro-feature-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+        .nsx-auth-pro-card{width:100%;}
+    }
+    @@media(max-width:680px){
+        .nsx-auth-pro-hero > .container,.nsx-auth-pro-content > .container{width:calc(100% - 18px)!important;}
+        .nsx-auth-pro-hero > .container{padding-top:20px;padding-bottom:20px;}
+        .nsx-auth-pro-hero h1{font-size:30px;}
+        .nsx-auth-pro-hero p{font-size:13px;}
+        .nsx-auth-pro-points{gap:7px;}
+        .nsx-auth-pro-points span{min-height:32px;padding:0 9px;font-size:9px;}
+        .nsx-auth-pro-content{padding:28px 0 52px;}
+        .nsx-auth-pro-side{padding:20px;border-radius:17px;}
+        .nsx-auth-pro-side h2{font-size:23px;}
+        .nsx-auth-pro-feature-grid{grid-template-columns:1fr;}
+        .nsx-auth-pro-card{border-radius:17px;}
+        .nsx-auth-pro-card-head{padding:22px 20px 17px;}
+        .nsx-auth-pro-form{padding:6px 20px 22px;}
+        .nsx-register-pro .nsx-auth-pro-form{grid-template-columns:1fr;}
+        .nsx-auth-pro-full{grid-column:auto;}
+        .nsx-auth-pro-bottom{padding:15px 20px;}
+        .nsx-auth-pro-message{margin-left:20px;margin-right:20px;}
+    }
+    @@media(max-width:520px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 18px)!important;}
+        .nsx-auth-pro-points span{width:100%;justify-content:center;box-sizing:border-box;}
+    }
+</style>
+<section class="nsx-auth-pro-page">
+    <header class="nsx-auth-pro-hero">
+        <div class="container">
+            <div class="nsx-auth-pro-copy">
+                @if (isFreeDownloadFlow)
+                {
+                    <span class="nsx-auth-pro-kicker">ÜCRETSİZ İNDİRME</span>
+                    <h1>İndirmenize <em>bir adım kaldı.</em></h1>
+                    <p>NSX hesabınıza giriş yapın; girişten sonra ücretsiz kurulum dosyanız otomatik hazırlanır. Ödeme, havale veya kart bilgisi gerekmez.</p>
+                    <div class="nsx-auth-pro-points" aria-label="Ücretsiz indirme avantajları">
+                        <span><b>✓</b> Ödeme yok</span>
+                        <span><b>✓</b> Kart bilgisi yok</span>
+                        <span><b>✓</b> Ücretsiz lisans</span>
+                    </div>
+                }
+                else
+                {
+                    <span class="nsx-auth-pro-kicker">NSX ÜYE MERKEZİ</span>
+                    <h1>Yazılımlarınız, <em>tek güvenli hesapta.</em></h1>
+                    <p>Siparişlerinizi takip edin, lisans anahtarlarınıza ulaşın ve program dosyalarınızı güvenle indirin.</p>
+                    <div class="nsx-auth-pro-points" aria-label="NSX hesap avantajları">
+                        <span><b>✓</b> Lisans yönetimi</span>
+                        <span><b>✓</b> Güvenli indirme</span>
+                        <span><b>✓</b> Sipariş takibi</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </header>
+
+    <section class="nsx-auth-pro-content">
+        <div class="container">
+            <div class="nsx-auth-pro-grid">
+                <div class="nsx-auth-pro-side">
+                    @if (isFreeDownloadFlow)
+                    {
+                        <span>NSX VERESİYE TAKİP PRO FREE</span>
+                        <h2>Ücretsiz lisansınız hesabınıza otomatik bağlanır.</h2>
+                        <p>Giriş yaptıktan sonra indirme ekranına geri dönersiniz. Ücretsiz lisans oluşturulur ve güvenli Windows kurulum dosyası otomatik indirilir.</p>
+                        <div class="nsx-auth-pro-feature-grid">
+                            <div class="nsx-auth-pro-feature"><b>01</b><strong>Giriş yapın</strong><span>Mevcut NSX hesabınızla güvenli şekilde oturum açın.</span></div>
+                            <div class="nsx-auth-pro-feature"><b>02</b><strong>Ücretsiz lisans</strong><span>Herhangi bir ödeme adımı olmadan hesabınıza tanımlansın.</span></div>
+                            <div class="nsx-auth-pro-feature"><b>03</b><strong>İndirin</strong><span>Kurulum dosyanız birkaç saniye içinde otomatik başlasın.</span></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <span>HESAP MERKEZİ</span>
+                        <h2>Tüm NSX işlemlerinizi tek noktadan yönetin.</h2>
+                        <p>Hesabınıza giriş yaptığınızda satın aldığınız yazılımlar, lisans bilgileri ve indirme haklarınız hazır olur.</p>
+                        <div class="nsx-auth-pro-feature-grid">
+                            <div class="nsx-auth-pro-feature"><b>01</b><strong>Lisanslar</strong><span>Aktif lisanslarınızı ve anahtarlarınızı görüntüleyin.</span></div>
+                            <div class="nsx-auth-pro-feature"><b>02</b><strong>İndirmeler</strong><span>Size tanımlanan program dosyalarına kolayca ulaşın.</span></div>
+                            <div class="nsx-auth-pro-feature"><b>03</b><strong>Siparişler</strong><span>Sipariş geçmişinizi ve işlem durumlarını takip edin.</span></div>
+                        </div>
+                    }
+                    <div class="nsx-auth-pro-trust"><div><strong>Güvenli oturum</strong><span>Hesap bilgileriniz şifreli bağlantı üzerinden işlenir.</span></div><b>✓</b></div>
+                </div>
+
+                <div class="nsx-auth-pro-card">
+                    <div class="nsx-auth-pro-card-head"><span>@(isFreeDownloadFlow ? "ÜCRETSİZ İNDİRME" : "HOŞ GELDİNİZ")</span><h2>Üye girişi</h2><p>@(isFreeDownloadFlow ? "Girişten sonra ücretsiz indirmeniz otomatik devam eder." : "Hesabınıza erişmek için bilgilerinizi girin.")</p></div>
+                    @if (TempData["Success"] is string success) { <div class="nsx-auth-pro-message is-success">@success</div> }
+                    @if (TempData["Warning"] is string warning) { <div class="nsx-auth-pro-message is-warning">@warning</div> }
+                    @if (TempData["Error"] is string error) { <div class="nsx-auth-pro-message is-error">@error</div> }
+                    <form class="nsx-auth-pro-form" method="post" action="@loginPostUrl" autocomplete="on">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="ReturnUrl" />
+                        <input type="hidden" asp-for="UiLang" />
+                        <div asp-validation-summary="ModelOnly" class="nsx-validation"></div>
+                        <label for="Email">E-posta adresi</label>
+                        <input asp-for="Email" type="email" placeholder="ornek@firma.com" autocomplete="email" />
+                        <span asp-validation-for="Email" class="nsx-field-error"></span>
+                        <label for="Password">Şifre</label>
+                        <div class="nsx-password-field"><input asp-for="Password" type="password" placeholder="Şifrenizi yazın" autocomplete="current-password" /><button type="button" data-password-toggle aria-label="Şifreyi göster">Göster</button></div>
+                        <span asp-validation-for="Password" class="nsx-field-error"></span>
+                        <a class="nsx-forgot-link" href="@forgotPasswordUrl">Şifremi unuttum</a>
+                        <label class="nsx-auth-check"><input asp-for="RememberMe" type="checkbox" /><span>Bu cihazda beni 14 gün hatırla</span></label>
+                        <button class="nsx-auth-pro-submit" type="submit">Hesabıma Giriş Yap <span>→</span></button>
+                    </form>
+                    <div class="nsx-auth-pro-bottom">Henüz hesabınız yok mu? <a href="@registerUrl">Ücretsiz hesap oluşturun</a></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+<partial name="_AuthUiLocalization" />
+@section Scripts { <script src="~/lib/jquery/dist/jquery.min.js"></script><partial name="_ValidationScriptsPartial" /><script src="/js/account-ui.js" asp-append-version="true"></script> }

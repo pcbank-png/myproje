@@ -1,0 +1,93 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>nsx-web-local-development</UserSecretsId>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Authors>Nevzat SÜRÜCÜ</Authors>
+    <Company>NSX Yazılım</Company>
+    <Product>NSYazilim.Web</Product>
+    <AssemblyTitle>NSX Yazılım Web Sitesi</AssemblyTitle>
+    <Copyright>Copyright © 2026 Nevzat SÜRÜCÜ - NSX Yazılım</Copyright>
+
+    <!-- NSX FIX: StaticWebAssets development manifest duplicate hatasını keser.
+         Bu projede wwwroot dosyaları fiziksel klasörden servis edildiği için RCL/static manifest gerekmiyor. -->
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    <GenerateStaticWebAssetsDevelopmentManifest>false</GenerateStaticWebAssetsDevelopmentManifest>
+
+    <!-- Plesk/IIS framework-dependent publish: dotnet NSYazilim.Web.dll -->
+    <SelfContained>false</SelfContained>
+    <UseAppHost>false</UseAppHost>
+    <PublishSingleFile>false</PublishSingleFile>
+    <!-- Visual Studio açılışında eksik EF Core/SQLite/ImageSharp paketlerini geri yükle. -->
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.28" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.28" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.25" />
+    <!-- Plesk/Windows publish çıktısında e_sqlite3.dll kesin bulunsun. -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.28">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.28">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- NSX SEO STATIC ASSET SAFETY -->
+  <ItemGroup>
+    <!-- robots.txt ve sitemap.xml dinamik controller ile servis ediliyor.
+         Fiziksel kopya kalırsa publish/build sırasında çakışmasın. -->
+    <Content Remove="robots.txt" />
+    <Content Remove="sitemap.xml" />
+    <Content Remove="wwwroot/robots.txt" />
+    <Content Remove="wwwroot/sitemap.xml" />
+    <None Remove="robots.txt" />
+    <None Remove="sitemap.xml" />
+    <None Remove="wwwroot/robots.txt" />
+    <None Remove="wwwroot/sitemap.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- StaticWebAssets kapalıyken wwwroot publish çıktısına yine alınsın. -->
+    <!-- Canlı Plesk sırlarını ve ortama özel ayarları publish paketiyle ezme. -->
+    <Content Update="appsettings.json" CopyToPublishDirectory="Never" />
+    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+    <Content Update="appsettings.Production.example.json" CopyToPublishDirectory="Never" />
+    <Content Remove="NuGet.Config" />
+    <None Remove="NuGet.Config" />
+    <Content Update="wwwroot\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <!-- Canli sunucudaki musteri yuklemeleri publish paketiyle ezilmesin. -->
+    <Content Update="wwwroot\uploads\**\*" CopyToPublishDirectory="Never" />
+    <Content Update="wwwroot\updates\**\*" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Plesk alt klasörleri çıkarmasa bile Cari Takip mobil paneli DLL içinden sunulur. -->
+    <EmbeddedResource Include="wwwroot\caritakip\**\*" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+
+
+  <!-- App_Data içindeki canlı DB, anahtar ve Data Protection dosyaları asla paketlenmez. -->
+  <ItemGroup>
+    <Content Remove="App_Data\**\*" />
+    <None Remove="App_Data\**\*" />
+    <Content Remove="logs\**\*" />
+    <None Remove="logs\**\*" />
+  </ItemGroup>
+
+</Project>

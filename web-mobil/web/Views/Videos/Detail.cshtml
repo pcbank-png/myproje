@@ -1,0 +1,286 @@
+@model NSYazilim.Web.ViewModels.ProductVideoDetailViewModel
+@{
+    ViewData["SkipActiveCampaign"] = true;
+    var primaryActionUrl = Model.IsFreeProduct
+        ? $"/store/downloadfree?productId={Model.Product.Id}"
+        : $"/Havale-Bildirimi?productId={Model.Product.Id}&licenseType=Yearly";
+    var primaryActionText = Model.IsFreeProduct ? "Ücretsiz İndir" : "Satın Al";
+    var secondaryActionText = Model.IsFreeProduct ? "Programı İncele" : "Ücretsiz İndir";
+    var secondaryActionUrl = Model.IsFreeProduct
+        ? Model.ProductUrl
+        : $"/store/downloaddemo?productId={Model.Product.Id}";
+    var videoHeroWords = (Model.DisplayTitle ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var videoHeroAccentCount = videoHeroWords.Length >= 4 ? 2 : 1;
+    var videoHeroMain = videoHeroWords.Length > videoHeroAccentCount
+        ? string.Join(" ", videoHeroWords.Take(videoHeroWords.Length - videoHeroAccentCount))
+        : string.Empty;
+    var videoHeroAccent = videoHeroWords.Length > 0
+        ? string.Join(" ", videoHeroWords.Skip(Math.Max(0, videoHeroWords.Length - videoHeroAccentCount)))
+        : Model.DisplayTitle;
+}
+
+<style id="nsx-video-detail-standard-pro">
+    .public-content-page{--nsx-subpage-hero-height:286px;background:#fff!important;}
+    .public-content-page .public-site-header .service-ribbon > .container,
+    .public-content-page .public-site-header .detail-nav.container,
+    .public-content-page .nsx-video-breadcrumb,
+    .public-content-page .nsx-video-detail-grid,
+    .public-content-page .nsx-video-description-panel,
+    .public-content-page .nsx-related-videos{
+        width:min(1505px,calc(100% - 48px))!important;
+        max-width:1505px!important;
+        margin-left:auto!important;
+        margin-right:auto!important;
+    }
+    .public-content-page > .container{
+        width:100%!important;
+        max-width:none!important;
+        margin:0!important;
+        padding:0!important;
+    }
+    @@media(min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{display:flex!important;align-items:center!important;min-height:78px!important;gap:8px!important;}
+        .public-content-page .public-site-header .brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;margin:0 auto 0 0!important;padding:0!important;}
+        .public-content-page .public-site-header .brand-logo{display:block!important;width:clamp(142px,10.8vw,184px)!important;max-width:184px!important;height:auto!important;object-fit:contain!important;}
+        .public-content-page .public-site-header .nav-links{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex:0 1 auto!important;width:auto!important;margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{white-space:nowrap!important;}
+        .public-content-page .public-site-header .nav-cta{flex:0 0 auto!important;margin-left:0!important;}
+        .public-content-page .public-site-header .menu-toggle{display:none!important;}
+    }
+    @@media(max-width:1180px) and (min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{width:calc(100% - 32px)!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(132px,12.5vw,154px)!important;}
+        .public-content-page .public-site-header .nav-links{gap:7px!important;margin-right:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{font-size:clamp(12px,1.05vw,14px)!important;}
+    }
+
+    .public-content-page .nsx-video-detail-page{padding:0!important;background:#fff!important;overflow:hidden!important;}
+    .public-content-page .nsx-video-detail-page > .container{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;}
+    .public-content-page .nsx-video-breadcrumb{min-height:48px!important;display:flex!important;align-items:center!important;gap:8px!important;margin-top:0!important;margin-bottom:0!important;padding-top:0!important;padding-bottom:0!important;color:#89939d!important;font-size:10px!important;font-weight:750!important;}
+    .public-content-page .nsx-video-breadcrumb a{color:#606b76!important;text-decoration:none!important;}
+    .public-content-page .nsx-video-breadcrumb a:hover{color:#ff6e04!important;}
+    .public-content-page .nsx-video-breadcrumb b{color:#20262d!important;font-weight:850!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+
+    .public-content-page .nsx-video-detail-head{
+        position:relative!important;
+        width:100%!important;
+        max-width:none!important;
+        height:var(--nsx-subpage-hero-height)!important;
+        min-height:var(--nsx-subpage-hero-height)!important;
+        max-height:var(--nsx-subpage-hero-height)!important;
+        box-sizing:border-box!important;
+        margin:0!important;
+        padding:24px max(24px,calc((100vw - 1505px)/2))!important;
+        display:grid!important;
+        grid-template-columns:minmax(0,1fr)!important;
+        gap:0!important;
+        align-items:flex-start!important;
+        overflow:hidden!important;
+        border:0!important;
+        border-top:1px solid rgba(255,255,255,.04)!important;
+        border-bottom:1px solid rgba(255,255,255,.06)!important;
+        border-radius:0!important;
+        color:#fff!important;
+        background:radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%)!important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22)!important;
+    }
+    .public-content-page .nsx-video-detail-head:before{content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;opacity:.10!important;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)!important;background-size:72px 72px!important;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%)!important;mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%)!important;}
+    .public-content-page .nsx-video-detail-head > div:first-child{position:relative!important;z-index:2!important;max-width:980px!important;}
+    html body.home-light-theme.public-light-theme .public-content-page .nsx-video-detail-head{color:#18212b!important;background:radial-gradient(ellipse at 82% 18%,rgba(255,110,4,.15),transparent 38%),radial-gradient(ellipse at 8% 110%,rgba(73,214,204,.09),transparent 36%),linear-gradient(118deg,#fff 0%,#f8fafb 50%,#f1f4f6 100%)!important;border-color:#e1e7eb!important;box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 #e2e7eb!important;}
+    .public-content-page .nsx-video-detail-head > div > span{display:inline-flex!important;align-items:center!important;gap:10px!important;width:fit-content!important;min-height:38px!important;margin:0 0 16px!important;padding:0 16px!important;border:1px solid rgba(57,217,138,.22)!important;border-radius:999px!important;background:rgba(57,217,138,.08)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 10px 24px rgba(15,23,42,.06)!important;color:#15995b!important;font-size:12px!important;font-weight:900!important;letter-spacing:.11em!important;text-transform:uppercase!important;}
+    .public-content-page .nsx-video-detail-head > div > span:before{content:"";width:8px;height:8px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 6px rgba(57,217,138,.12);}
+    .public-content-page .nsx-video-detail-head h1{max-width:980px!important;margin:0!important;color:#18212b!important;font-size:42px!important;font-weight:900!important;line-height:1.06!important;letter-spacing:-.04em!important;}
+    html body.home-light-theme.public-light-theme .public-content-page .nsx-video-detail-head h1 .nsx-short-hero-white{color:#18212b!important;text-shadow:none!important;}
+    .public-content-page .nsx-video-detail-head h1 .nsx-short-hero-orange{color:#ff6e04!important;margin-left:.24em!important;}
+    .public-content-page .nsx-video-detail-head p{max-width:920px!important;margin:12px 0 0!important;color:#5e6a76!important;font-size:14px!important;line-height:1.7!important;font-weight:520!important;}
+    .public-content-page .nsx-video-detail-points{display:flex!important;flex-wrap:wrap!important;gap:10px!important;margin-top:16px!important;}
+    .public-content-page .nsx-video-detail-points span{display:inline-flex!important;align-items:center!important;gap:7px!important;min-height:36px!important;padding:0 13px!important;border:1px solid #d3dce3!important;border-radius:999px!important;background:#fff!important;color:#475461!important;font-size:10px!important;font-weight:800!important;box-shadow:0 6px 16px rgba(15,23,42,.035)!important;}
+    .public-content-page .nsx-video-detail-points b{display:inline-grid!important;place-items:center!important;width:17px!important;height:17px!important;border-radius:50%!important;background:#ff6e04!important;color:#fff!important;font-size:10px!important;font-weight:900!important;line-height:1!important;}
+    .public-content-page .nsx-video-hero-preview{position:relative!important;z-index:2!important;display:grid!important;grid-template-columns:112px minmax(0,1fr)!important;align-items:center!important;gap:14px!important;min-height:132px!important;padding:11px!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:19px!important;background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.025))!important;color:#fff!important;text-decoration:none!important;box-shadow:0 22px 48px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.07)!important;backdrop-filter:blur(10px)!important;transition:transform .22s ease,border-color .22s ease,background .22s ease!important;}
+    .public-content-page .nsx-video-hero-preview:hover{transform:translateY(-3px)!important;border-color:rgba(255,110,4,.62)!important;background:linear-gradient(145deg,rgba(255,110,4,.13),rgba(255,255,255,.035))!important;}
+    .public-content-page .nsx-video-hero-thumb{position:relative!important;overflow:hidden!important;aspect-ratio:16/10!important;border:1px solid rgba(255,255,255,.12)!important;border-radius:13px!important;background:#080b0f!important;box-shadow:0 12px 24px rgba(0,0,0,.28)!important;}
+    .public-content-page .nsx-video-hero-thumb img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;opacity:.82!important;transition:transform .35s ease,opacity .35s ease!important;}
+    .public-content-page .nsx-video-hero-preview:hover .nsx-video-hero-thumb img{transform:scale(1.055)!important;opacity:1!important;}
+    .public-content-page .nsx-video-hero-play{position:absolute!important;left:50%!important;top:50%!important;display:grid!important;place-items:center!important;width:38px!important;height:38px!important;padding-left:2px!important;border:1px solid rgba(255,255,255,.48)!important;border-radius:50%!important;background:#ff6e04!important;color:#fff!important;font-size:12px!important;transform:translate(-50%,-50%)!important;box-shadow:0 9px 22px rgba(255,110,4,.42)!important;}
+    .public-content-page .nsx-video-hero-preview small{display:block!important;color:#39d98a!important;font-size:8px!important;font-weight:900!important;letter-spacing:.10em!important;text-transform:uppercase!important;}
+    .public-content-page .nsx-video-hero-preview strong{display:block!important;margin:7px 0 9px!important;color:#fff!important;font-size:15px!important;line-height:1.28!important;font-weight:900!important;}
+    .public-content-page .nsx-video-hero-preview-copy > span{color:#ff8a33!important;font-size:10px!important;font-weight:900!important;}
+
+    .public-content-page .nsx-video-detail-grid{display:grid!important;grid-template-columns:minmax(0,1.65fr) minmax(310px,.72fr)!important;gap:24px!important;align-items:start!important;margin-top:0!important;padding-top:36px!important;border:0!important;}
+    .public-content-page .nsx-video-player-shell{overflow:hidden!important;border:1px solid #e2e7eb!important;border-radius:20px!important;background:#fff!important;box-shadow:0 18px 44px rgba(15,23,42,.08)!important;}
+    .public-content-page .nsx-video-player{position:relative!important;overflow:hidden!important;aspect-ratio:16/9!important;width:100%!important;background:#090b0e!important;border-radius:0!important;}
+    .public-content-page .nsx-video-player iframe{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;border:0!important;}
+    .public-content-page .nsx-video-youtube-link{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;min-height:56px!important;padding:10px 16px!important;border-top:1px solid #edf0f2!important;background:#fafbfc!important;color:#75808a!important;font-size:10px!important;font-weight:700!important;}
+    .public-content-page .nsx-video-youtube-link a{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:36px!important;padding:0 12px!important;border:1px solid #dce2e7!important;border-radius:10px!important;background:#fff!important;color:#20262d!important;font-size:9px!important;font-weight:900!important;text-decoration:none!important;}
+    .public-content-page .nsx-video-youtube-link a:hover{border-color:#ff6e04!important;color:#ff6e04!important;}
+
+    .public-content-page .nsx-video-product-panel{position:sticky!important;top:20px!important;padding:22px!important;border:1px solid #dfe4e8!important;border-radius:20px!important;background:#fff!important;box-shadow:0 18px 44px rgba(15,23,42,.07)!important;}
+    .public-content-page .nsx-video-panel-kicker{display:block!important;margin:0 0 8px!important;color:#ff6e04!important;font-size:9px!important;font-weight:900!important;letter-spacing:.09em!important;text-transform:uppercase!important;}
+    .public-content-page .nsx-video-product-panel h2{margin:0!important;color:#171b20!important;font-size:23px!important;line-height:1.18!important;font-weight:900!important;letter-spacing:-.025em!important;}
+    .public-content-page .nsx-video-product-panel > p{margin:11px 0 18px!important;color:#6b7782!important;font-size:11px!important;line-height:1.65!important;}
+    .public-content-page .nsx-video-product-facts{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;margin:0 0 16px!important;}
+    .public-content-page .nsx-video-product-facts > div{min-width:0!important;padding:10px 8px!important;border:1px solid #e5e9ed!important;border-radius:12px!important;background:#fafbfc!important;}
+    .public-content-page .nsx-video-product-facts small{display:block!important;color:#8a949e!important;font-size:7px!important;font-weight:850!important;text-transform:uppercase!important;letter-spacing:.06em!important;}
+    .public-content-page .nsx-video-product-facts strong{display:block!important;margin-top:5px!important;color:#252b32!important;font-size:9px!important;line-height:1.25!important;font-weight:900!important;}
+    .public-content-page .nsx-video-product-actions{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;}
+    .public-content-page .nsx-video-product-actions a,.public-content-page .nsx-video-detail-only{display:flex!important;align-items:center!important;justify-content:center!important;min-height:44px!important;padding:0 13px!important;border:1px solid #dfe4e8!important;border-radius:12px!important;background:#fff!important;color:#333b43!important;font-size:10px!important;font-weight:900!important;text-decoration:none!important;transition:transform .16s ease,border-color .16s ease,background .16s ease,color .16s ease!important;}
+    .public-content-page .nsx-video-product-actions a.primary{border-color:#ff6e04!important;background:#ff6e04!important;color:#fff!important;box-shadow:0 9px 22px rgba(255,110,4,.20)!important;}
+    .public-content-page .nsx-video-product-actions a:hover,.public-content-page .nsx-video-detail-only:hover{transform:translateY(-1px)!important;border-color:#171b20!important;background:#171b20!important;color:#fff!important;}
+    .public-content-page .nsx-video-stock-warning{padding:12px!important;border:1px solid #f2d4bc!important;border-radius:12px!important;background:#fff8f2!important;color:#8b5b35!important;font-size:10px!important;line-height:1.55!important;}
+
+    .public-content-page .nsx-video-description-panel{margin-top:18px!important;padding:24px!important;border:1px solid #e2e7eb!important;border-radius:20px!important;background:#fff!important;box-shadow:0 14px 34px rgba(15,23,42,.05)!important;}
+    .public-content-page .nsx-video-description-panel > span{display:block!important;color:#ff6e04!important;font-size:9px!important;font-weight:900!important;letter-spacing:.09em!important;text-transform:uppercase!important;}
+    .public-content-page .nsx-video-description-panel h2{margin:7px 0 9px!important;color:#171b20!important;font-size:24px!important;font-weight:900!important;letter-spacing:-.025em!important;}
+    .public-content-page .nsx-video-description-panel p{max-width:1120px!important;margin:0 0 10px!important;color:#65717d!important;font-size:12px!important;line-height:1.75!important;}
+    .public-content-page .nsx-video-description-panel a{display:inline-flex!important;align-items:center!important;margin-top:4px!important;color:#ff6e04!important;font-size:10px!important;font-weight:900!important;text-decoration:none!important;}
+
+    .public-content-page .nsx-related-videos{margin-top:18px!important;margin-bottom:24px!important;padding:24px!important;border:1px solid #e2e7eb!important;border-radius:20px!important;background:#fafbfc!important;}
+    .public-content-page .nsx-related-head{display:flex!important;align-items:end!important;justify-content:space-between!important;gap:20px!important;margin-bottom:18px!important;}
+    .public-content-page .nsx-related-head span{display:block!important;color:#ff6e04!important;font-size:9px!important;font-weight:900!important;letter-spacing:.09em!important;text-transform:uppercase!important;}
+    .public-content-page .nsx-related-head h2{margin:6px 0 0!important;color:#171b20!important;font-size:25px!important;font-weight:900!important;letter-spacing:-.025em!important;}
+    .public-content-page .nsx-related-head > a{color:#505c67!important;font-size:10px!important;font-weight:900!important;text-decoration:none!important;}
+    .public-content-page .nsx-related-head > a:hover{color:#ff6e04!important;}
+    .public-content-page .nsx-related-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important;}
+    .public-content-page .nsx-related-grid article{overflow:hidden!important;border:1px solid #e2e7eb!important;border-radius:16px!important;background:#fff!important;box-shadow:0 10px 26px rgba(15,23,42,.05)!important;}
+    .public-content-page .nsx-related-grid .media{position:relative!important;display:block!important;overflow:hidden!important;aspect-ratio:16/9!important;background:#11151a!important;}
+    .public-content-page .nsx-related-grid .media img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;transition:transform .22s ease!important;}
+    .public-content-page .nsx-related-grid article:hover .media img{transform:scale(1.025)!important;}
+    .public-content-page .nsx-related-grid .media span{position:absolute!important;left:50%!important;top:50%!important;display:grid!important;place-items:center!important;width:48px!important;height:48px!important;border-radius:50%!important;background:#ff6e04!important;color:#fff!important;transform:translate(-50%,-50%)!important;box-shadow:0 10px 24px rgba(255,110,4,.30)!important;}
+    .public-content-page .nsx-related-grid article > div{padding:15px!important;}
+    .public-content-page .nsx-related-grid small{color:#ff6e04!important;font-size:8px!important;font-weight:900!important;text-transform:uppercase!important;letter-spacing:.07em!important;}
+    .public-content-page .nsx-related-grid h3{margin:6px 0 0!important;font-size:15px!important;line-height:1.35!important;font-weight:900!important;}
+    .public-content-page .nsx-related-grid h3 a{color:#1c2228!important;text-decoration:none!important;}
+
+    @@media(max-width:1180px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container,.public-content-page .nsx-video-breadcrumb,.public-content-page .nsx-video-detail-grid,.public-content-page .nsx-video-description-panel,.public-content-page .nsx-related-videos{width:calc(100% - 32px)!important;}
+        .public-content-page .nsx-video-detail-head{height:var(--nsx-subpage-hero-height)!important;min-height:var(--nsx-subpage-hero-height)!important;max-height:var(--nsx-subpage-hero-height)!important;padding:24px 16px!important;grid-template-columns:1fr!important;}
+        .public-content-page .nsx-video-detail-head > div:first-child{padding-left:0!important;}
+        .public-content-page .nsx-video-detail-head h1{font-size:38px!important;}
+    }
+    @@media(max-width:980px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+        .public-content-page .public-site-header .detail-nav.container{min-height:68px!important;}
+        .public-content-page .public-site-header .brand{margin-right:auto!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(124px,28vw,154px)!important;max-width:154px!important;height:auto!important;}
+        .public-content-page .public-site-header .menu-toggle{margin-left:auto!important;}
+        .public-content-page .nsx-video-detail-head{height:var(--nsx-subpage-hero-height)!important;min-height:var(--nsx-subpage-hero-height)!important;max-height:var(--nsx-subpage-hero-height)!important;grid-template-columns:1fr!important;gap:18px!important;padding:24px 12px!important;}
+        .public-content-page .nsx-video-hero-preview{display:none!important;}
+        .public-content-page .nsx-video-detail-grid{grid-template-columns:1fr!important;}
+        .public-content-page .nsx-video-product-panel{position:relative!important;top:auto!important;}
+        .public-content-page .nsx-related-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+    }
+    @@media(max-width:680px){
+        .public-content-page .nsx-video-breadcrumb,.public-content-page .nsx-video-detail-grid,.public-content-page .nsx-video-description-panel,.public-content-page .nsx-related-videos{width:calc(100% - 18px)!important;}
+        .public-content-page .nsx-video-detail-head{height:var(--nsx-subpage-hero-height)!important;min-height:var(--nsx-subpage-hero-height)!important;max-height:var(--nsx-subpage-hero-height)!important;padding:20px 9px!important;}
+        .public-content-page .nsx-video-detail-head h1{font-size:30px!important;}
+        .public-content-page .nsx-video-detail-head p{font-size:13px!important;}
+        .public-content-page .nsx-video-detail-head > div > span{font-size:12px!important;}
+        .public-content-page .nsx-video-detail-grid{padding-top:24px!important;}
+        .public-content-page .nsx-video-youtube-link{align-items:stretch!important;flex-direction:column!important;padding:12px!important;}
+        .public-content-page .nsx-video-product-facts{grid-template-columns:1fr!important;}
+        .public-content-page .nsx-related-head{align-items:flex-start!important;flex-direction:column!important;}
+        .public-content-page .nsx-related-grid{grid-template-columns:1fr!important;}
+        .public-content-page .nsx-video-description-panel,.public-content-page .nsx-related-videos{padding:18px!important;}
+    }
+    @@media(max-width:520px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 18px)!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(112px,34vw,136px)!important;}
+    }
+</style>
+
+<section class="nsx-video-detail-page">
+    <div class="container">
+        <header class="nsx-video-detail-head">
+            <div>
+                <span>@(string.IsNullOrWhiteSpace(Model.Video.VideoType) ? "Program Videosu" : Model.Video.VideoType)</span>
+                <h1><span class="nsx-short-hero-white">@videoHeroMain</span> <span class="nsx-short-hero-orange">@videoHeroAccent</span></h1>
+                <p>@Model.ProductDescription</p>
+                <div class="nsx-video-detail-points" aria-label="Video özellikleri">
+                    <span><b>✓</b> NSX program videosu</span>
+                    <span><b>✓</b> Kurulum ve kullanım rehberi</span>
+                    <span><b>✓</b> Hızlı video erişimi</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="nsx-video-detail-grid">
+            <div class="nsx-video-player-shell" id="video-player">
+                <div class="nsx-video-player">
+                    <iframe
+                        src="@Model.EmbedUrl"
+                        title="@Model.DisplayTitle"
+                        loading="eager"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen></iframe>
+                </div>
+                <div class="nsx-video-youtube-link">
+                    <span>Video YouTube üzerinden oynatılıyor.</span>
+                    <a href="@Model.Video.YouTubeUrl" target="_blank" rel="noopener noreferrer">YouTube'da Aç</a>
+                </div>
+            </div>
+
+            <aside class="nsx-video-product-panel">
+                <span class="nsx-video-panel-kicker">Video ile Bağlı Program</span>
+                <h2>@Model.Product.Name</h2>
+                <p>@Model.ProductDescription</p>
+
+                <div class="nsx-video-product-facts">
+                    <div><small>Durum</small><strong>@(Model.HasStock ? "Kullanıma Hazır" : "Stokta Yok")</strong></div>
+                    <div><small>Lisans</small><strong>@(Model.IsFreeProduct ? "Ücretsiz" : "Yıllık / Sınırsız")</strong></div>
+                    <div><small>Teslimat</small><strong>Dijital</strong></div>
+                </div>
+
+                @if (Model.HasStock)
+                {
+                    <div class="nsx-video-product-actions">
+                        <a class="primary" href="@primaryActionUrl">@primaryActionText</a>
+                        <a href="@secondaryActionUrl">@secondaryActionText</a>
+                        @if (!Model.IsFreeProduct)
+                        {
+                            <a href="@Model.ProductUrl">Program Detayı</a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="nsx-video-stock-warning">Bu program şu anda stokta olmadığı için indirme ve satın alma işlemleri kapalıdır.</div>
+                    <a class="nsx-video-detail-only" href="@Model.ProductUrl">Program Detayını Aç</a>
+                }
+            </aside>
+        </div>
+
+        <section class="nsx-video-description-panel">
+            <span>Program Hakkında</span>
+            <h2>@Model.Product.Name</h2>
+            <p>@Model.ProductDescription</p>
+            @if (string.Equals(Model.Product.Slug, "nsx-veresiye-takip-pro-free", StringComparison.OrdinalIgnoreCase))
+            {
+                <p><strong>Güncel v1.0.5 sürüm notu:</strong> Bu kurulum videosu temel masaüstü kullanımını gösterir. Güncel programda ayrıca Cloud Bağlantısı üzerinden QR ile mobil erişim, Toplam Borç / Toplam Tahsilat / Açık Bakiye özeti, müşteri arama, cari hareket görüntüleme, borç-tahsilat girişi ve canlı senkronizasyon bulunur.</p>
+            }
+            <a href="@Model.ProductUrl">Tüm ürün özelliklerini incele →</a>
+        </section>
+
+        @if (Model.RelatedVideos.Any())
+        {
+            <section class="nsx-related-videos">
+                <div class="nsx-related-head">
+                    <div><span>Diğer İçerikler</span><h2>İzleyebileceğiniz videolar</h2></div>
+                    <a href="/videolar">Tüm Videolar</a>
+                </div>
+                <div class="nsx-related-grid">
+                    @foreach (var item in Model.RelatedVideos)
+                    {
+                        <article>
+                            <a class="media" href="/videolar/@item.Slug">
+                                <img src="@item.ThumbnailUrl" alt="@item.DisplayTitle" width="480" height="360" loading="lazy" decoding="async" />
+                                <span>▶</span>
+                            </a>
+                            <div><small>@item.VideoType</small><h3><a href="/videolar/@item.Slug">@item.DisplayTitle</a></h3></div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+    </div>
+</section>

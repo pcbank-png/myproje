@@ -1,0 +1,98 @@
+@model NSYazilim.Web.ViewModels.AdminSliderFormViewModel
+
+@{
+    ViewData["Title"] = "Slider Düzenle";
+    var products = Model?.Products ?? new List<NSYazilim.Web.Models.Product>();
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Slider Düzenle</h1>
+            <div class="text-muted">Görsel, ürün bağlantısı, sıra ve yayın durumunu düzenle.</div>
+        </div>
+        <a class="btn btn-outline-dark rounded-4 fw-bold" href="/Admin/Sliders">Slider Yönetimi</a>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger rounded-4">@ViewBag.Error</div>
+    }
+
+    <style>
+        .nsx-slider-form{border:0;border-radius:24px;box-shadow:0 16px 45px rgba(15,23,42,.08)}
+        .nsx-slider-form label{font-weight:800;color:#1f2937;margin-bottom:7px}
+        .nsx-slider-form .form-control,.nsx-slider-form .form-select{border-radius:16px;padding:12px 14px;border-color:#e5e7eb}
+        .nsx-slider-note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:18px;padding:14px 16px;font-weight:700}
+        .nsx-current-slider{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #fed7aa;border-radius:18px;padding:12px}
+        .nsx-current-slider img{width:190px;height:96px;object-fit:cover;border-radius:16px}
+    </style>
+
+    <form method="post" enctype="multipart/form-data" class="card nsx-slider-form nsx-standard-form" autocomplete="off">
+        @Html.AntiForgeryToken()
+        <div class="card-body p-4">
+            <div class="nsx-slider-note mb-4">Yeni görsel seçmezsen mevcut slider görseli korunur.</div>
+
+            @if (!string.IsNullOrWhiteSpace(Model?.ExistingImagePath))
+            {
+                <div class="nsx-current-slider mb-4">
+                    <img src="@Model.ExistingImagePath" alt="Mevcut slider" />
+                    <div>
+                        <strong>Mevcut Slider Görseli</strong>
+                        <div class="text-muted small">@Model.ExistingImagePath</div>
+                    </div>
+                </div>
+            }
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label>Bağlı Ürün</label>
+                    <select class="form-select" name="ProductId">
+                        <option value="">Serbest slider</option>
+                        @foreach (var product in products)
+                        {
+                            <option value="@product.Id" selected="@(Model?.ProductId == product.Id)">@product.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Sıra No</label>
+                    <input class="form-control" type="number" name="SortOrder" value="@(Model?.SortOrder ?? 1)" min="0" />
+                </div>
+                <div class="col-md-3">
+                    <label>Durum</label>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive" value="true" @((Model?.IsActive ?? true) ? "checked" : "") />
+                        <input type="hidden" name="IsActive" value="false" />
+                        <label class="form-check-label" for="IsActive">Yayında olsun</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label>Başlık</label>
+                    <input class="form-control" type="text" name="Title" value="@Model?.Title" />
+                </div>
+                <div class="col-md-6">
+                    <label>Buton Yazısı</label>
+                    <input class="form-control" type="text" name="ButtonText" value="@(Model?.ButtonText ?? "Ürünü İncele")" />
+                </div>
+                <div class="col-12">
+                    <label>Açıklama</label>
+                    <textarea class="form-control" name="Subtitle" rows="3">@Model?.Subtitle</textarea>
+                </div>
+                <div class="col-md-6">
+                    <label>Link</label>
+                    <input class="form-control" type="text" name="LinkUrl" value="@Model?.LinkUrl" placeholder="/urun/urun-slug veya tam link" />
+                </div>
+                <div class="col-md-6">
+                    <label>Yeni Slider Görseli</label>
+                    <input class="form-control" type="file" name="Image" accept="image/*" />
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-primary rounded-4 fw-bold" type="submit">Slider Güncelle</button>
+                <a class="btn btn-light rounded-4 fw-bold" href="/Admin/Sliders">Vazgeç</a>
+            </div>
+        </div>
+    </form>
+</div>

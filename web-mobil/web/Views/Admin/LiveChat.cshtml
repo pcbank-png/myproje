@@ -1,0 +1,231 @@
+@{
+    ViewData["Title"] = "Anlık Canlı Destek";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="nsx-live-admin-page">
+    <div class="nsx-live-admin-head">
+        <div>
+            <span class="nsx-live-admin-kicker">SignalR canlı destek</span>
+            <h2>Anlık Canlı Destek</h2>
+            <p>Müşteriler site içindeki destek kutusundan yazdığında burada anında görünür. Yeni mesaj gelince uyarı sesi çalar.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <button type="button" id="nsxClearLiveChats" class="btn btn-danger btn-sm nsx-live-clear-btn">Tüm Konuşmaları Sil</button>
+            <div class="nsx-live-admin-status" id="nsxAdminLiveStatus">Bağlanıyor...</div>
+        </div>
+    </div>
+
+    <div class="nsx-live-admin-grid">
+        <aside class="nsx-live-session-panel">
+            <div class="nsx-live-session-title">Konuşmalar</div>
+            <div id="nsxLiveSessionList" class="nsx-live-session-list">
+                <div class="nsx-live-empty">Henüz aktif konuşma yok.</div>
+            </div>
+        </aside>
+
+        <section class="nsx-live-chat-panel">
+            <div class="nsx-live-chat-top">
+                <div>
+                    <strong id="nsxSelectedContact">Konuşma seçin</strong>
+                    <span id="nsxSelectedSession">Müşteri mesajı gelince solda listelenir.</span>
+                </div>
+                <span class="nsx-live-online-dot">● Online</span>
+            </div>
+
+            <div id="nsxAdminChatMessages" class="nsx-live-chat-messages">
+                <div class="nsx-live-empty big">Bir konuşma seçerek müşteriye cevap yazabilirsiniz.</div>
+            </div>
+
+            <form id="nsxAdminReplyForm" class="nsx-live-reply-form">
+                <input id="nsxAdminReplyInput" type="text" maxlength="700" placeholder="Müşteriye cevap yazın..." autocomplete="off" disabled />
+                <button type="submit" disabled>Cevapla</button>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl('/liveChatHub').withAutomaticReconnect().build();
+            var sessions = {};
+            var selectedSessionId = '';
+            var listEl = document.getElementById('nsxLiveSessionList');
+            var messagesEl = document.getElementById('nsxAdminChatMessages');
+            var statusEl = document.getElementById('nsxAdminLiveStatus');
+            var contactEl = document.getElementById('nsxSelectedContact');
+            var sessionEl = document.getElementById('nsxSelectedSession');
+            var form = document.getElementById('nsxAdminReplyForm');
+            var input = document.getElementById('nsxAdminReplyInput');
+            var button = form.querySelector('button');
+            var clearButton = document.getElementById('nsxClearLiveChats');
+
+            function beep() {
+                try {
+                    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    var osc = ctx.createOscillator();
+                    var gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = 880;
+                    gain.gain.value = 0.08;
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    setTimeout(function () { osc.stop(); ctx.close(); }, 150);
+                } catch (e) { }
+            }
+
+            function escapeHtml(text) {
+                return (text || '').replace(/[&<>'"]/g, function (c) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c];
+                });
+            }
+
+            function renderSessions() {
+                var values = Object.values(sessions).sort(function (a, b) {
+                    return (b.lastTicks || 0) - (a.lastTicks || 0);
+                });
+
+                if (!values.length) {
+                    listEl.innerHTML = '<div class="nsx-live-empty">Henüz aktif konuşma yok.</div>';
+                    return;
+                }
+
+                listEl.innerHTML = values.map(function (s) {
+                    var unread = s.unreadForAdmin ? '<span class="nsx-live-unread">' + s.unreadForAdmin + '</span>' : '';
+                    return '<div class="nsx-live-session-row">' +
+                        '<button type="button" class="nsx-live-session-item ' + (s.sessionId === selectedSessionId ? 'active' : '') + '" data-session="' + s.sessionId + '">' +
+                        '<strong>' + escapeHtml(s.contact || 'Ziyaretçi') + unread + '</strong>' +
+                        '<span>' + escapeHtml(s.lastMessageText || 'Yeni konuşma') + '</span>' +
+                        '<small>' + escapeHtml(s.lastMessageAt || '') + '</small>' +
+                        '</button>' +
+                        '<button type="button" class="btn btn-outline-danger btn-sm rounded-4 nsx-live-delete" data-delete-session="' + s.sessionId + '">Sil</button>' +
+                        '</div>';
+                }).join('');
+            }
+
+            function renderMessages(sessionId) {
+                var s = sessions[sessionId];
+                if (!s) return;
+
+                contactEl.textContent = s.contact || 'Ziyaretçi';
+                sessionEl.textContent = 'Oturum: ' + sessionId.substring(0, 10);
+                input.disabled = false;
+                button.disabled = false;
+
+                if (!s.messages || !s.messages.length) {
+                    messagesEl.innerHTML = '<div class="nsx-live-empty big">Henüz mesaj yok.</div>';
+                    return;
+                }
+
+                messagesEl.innerHTML = s.messages.map(function (m) {
+                    var isAdmin = m.sender === 'Admin';
+                    return '<div class="nsx-live-msg ' + (isAdmin ? 'admin' : 'customer') + '">' +
+                        '<div>' + escapeHtml(m.text) + '</div>' +
+                        '<small>' + escapeHtml(m.sender) + ' · ' + escapeHtml(m.createdAt) + '</small>' +
+                        '</div>';
+                }).join('');
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }
+
+            listEl.addEventListener('click', function (e) {
+                var deleteItem = e.target.closest('[data-delete-session]');
+                if (deleteItem) {
+                    var deleteId = deleteItem.getAttribute('data-delete-session');
+                    if (deleteId && confirm('Bu canlı destek konuşması silinsin mi?')) {
+                        connection.invoke('AdminDeleteSession', deleteId);
+                        if (selectedSessionId === deleteId) {
+                            selectedSessionId = '';
+                            contactEl.textContent = 'Konuşma seçin';
+                            sessionEl.textContent = 'Müşteri mesajı gelince solda listelenir.';
+                            messagesEl.innerHTML = '<div class="nsx-live-empty big">Bir konuşma seçerek müşteriye cevap yazabilirsiniz.</div>';
+                            input.disabled = true;
+                            button.disabled = true;
+                        }
+                    }
+                    return;
+                }
+
+                var item = e.target.closest('[data-session]');
+                if (!item) return;
+                selectedSessionId = item.getAttribute('data-session');
+                if (sessions[selectedSessionId]) sessions[selectedSessionId].unreadForAdmin = 0;
+                connection.invoke('AdminOpenSession', selectedSessionId);
+                renderSessions();
+                renderMessages(selectedSessionId);
+            });
+
+            clearButton.addEventListener('click', function () {
+                if (!confirm('Tüm aktif canlı destek konuşmaları silinsin mi?')) return;
+                connection.invoke('AdminClearSessions');
+                selectedSessionId = '';
+                contactEl.textContent = 'Konuşma seçin';
+                sessionEl.textContent = 'Müşteri mesajı gelince solda listelenir.';
+                messagesEl.innerHTML = '<div class="nsx-live-empty big">Bir konuşma seçerek müşteriye cevap yazabilirsiniz.</div>';
+                input.disabled = true;
+                button.disabled = true;
+            });
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var text = input.value.trim();
+                if (!selectedSessionId || !text) return;
+                connection.invoke('AdminSend', selectedSessionId, text);
+                input.value = '';
+            });
+
+            connection.on('AdminSessions', function (items) {
+                sessions = {};
+                (items || []).forEach(function (s) {
+                    s.lastTicks = Date.now();
+                    sessions[s.sessionId] = s;
+                });
+                renderSessions();
+            });
+
+            connection.on('AdminSessionOpened', function (s) {
+                sessions[s.sessionId] = Object.assign(sessions[s.sessionId] || {}, s, { unreadForAdmin: 0, lastTicks: Date.now() });
+                renderSessions();
+                renderMessages(s.sessionId);
+            });
+
+            connection.on('ReceiveAdminMessage', function (msg, sessionInfo) {
+                var s = sessions[msg.sessionId] || { sessionId: msg.sessionId, messages: [] };
+                s.contact = sessionInfo.contact || s.contact || 'Ziyaretçi';
+                s.lastMessageAt = sessionInfo.lastMessageAt || msg.createdAt;
+                s.lastMessageText = sessionInfo.lastMessageText || msg.text;
+                s.lastTicks = Date.now();
+                s.messages = s.messages || [];
+                if (!s.messages.some(function (x) { return x.id === msg.id; })) s.messages.push(msg);
+                if (selectedSessionId !== msg.sessionId) s.unreadForAdmin = (s.unreadForAdmin || 0) + 1;
+                sessions[msg.sessionId] = s;
+                renderSessions();
+                if (selectedSessionId === msg.sessionId) renderMessages(msg.sessionId);
+                beep();
+            });
+
+            connection.on('ReceiveAdminReplyForPanel', function (msg) {
+                var s = sessions[msg.sessionId];
+                if (!s) return;
+                s.messages = s.messages || [];
+                if (!s.messages.some(function (x) { return x.id === msg.id; })) s.messages.push(msg);
+                s.lastMessageAt = msg.createdAt;
+                s.lastMessageText = msg.text;
+                s.lastTicks = Date.now();
+                renderSessions();
+                if (selectedSessionId === msg.sessionId) renderMessages(msg.sessionId);
+            });
+
+            connection.start().then(function () {
+                statusEl.textContent = 'Bağlandı';
+                statusEl.classList.add('is-online');
+                return connection.invoke('AdminJoin');
+            }).catch(function () {
+                statusEl.textContent = 'Bağlantı kurulamadı';
+                statusEl.classList.add('is-offline');
+            });
+        })();
+    </script>
+}

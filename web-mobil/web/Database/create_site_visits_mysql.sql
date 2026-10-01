@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS `SiteVisits` (
+  `Id` bigint NOT NULL AUTO_INCREMENT,
+  `VisitorId` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
+  `Path` varchar(500) CHARACTER SET utf8mb4 NOT NULL DEFAULT '/',
+  `PageTitle` varchar(250) CHARACTER SET utf8mb4 NULL,
+  `Referrer` varchar(800) CHARACTER SET utf8mb4 NULL,
+  `IpAddress` varchar(80) CHARACTER SET utf8mb4 NULL,
+  `DeviceType` varchar(80) CHARACTER SET utf8mb4 NOT NULL DEFAULT 'Bilinmiyor',
+  `Browser` varchar(120) CHARACTER SET utf8mb4 NOT NULL DEFAULT 'Bilinmiyor',
+  `OperatingSystem` varchar(120) CHARACTER SET utf8mb4 NOT NULL DEFAULT 'Bilinmiyor',
+  `TrafficType` varchar(24) CHARACTER SET utf8mb4 NOT NULL DEFAULT 'Human',
+  `RobotName` varchar(120) CHARACTER SET utf8mb4 NULL,
+  `Country` varchar(120) CHARACTER SET utf8mb4 NULL,
+  `City` varchar(120) CHARACTER SET utf8mb4 NULL,
+  `IsAuthenticated` tinyint(1) NOT NULL DEFAULT 0,
+  `UserId` int NULL,
+  `VisitedAtUtc` datetime(6) NOT NULL,
+  PRIMARY KEY (`Id`),
+  INDEX `IX_SiteVisits_VisitedAtUtc` (`VisitedAtUtc`),
+  INDEX `IX_SiteVisits_VisitorId_VisitedAtUtc` (`VisitorId`, `VisitedAtUtc`),
+  INDEX `IX_SiteVisits_Path_VisitedAtUtc` (`Path`, `VisitedAtUtc`)
+) CHARACTER SET=utf8mb4;

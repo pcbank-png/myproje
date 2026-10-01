@@ -1,0 +1,24 @@
+/* Shared visual values. Feature-specific layouts keep their own component rules. */
+:root {
+  --nsx-panel:#ffffff;
+  --nsx-page:#f3f5f7;
+  --nsx-panel-soft:#f8f9fa;
+  --nsx-ink:#18212b;
+  --nsx-ink-secondary:#303a45;
+  --nsx-muted:#687582;
+  --nsx-line:#dce3e8;
+  --nsx-line-strong:#cdd6dd;
+  --nsx-accent:#ff6e04;
+  --nsx-accent-dark:#d95600;
+  --nsx-accent-soft:#fff3e9;
+  --nsx-anthracite:#252b31;
+  --nsx-success:#16835f;
+  --nsx-danger:#c83d3d;
+  --nsx-warning:#b86b08;
+  --nsx-radius:18px;
+  --nsx-radius-small:11px;
+  --nsx-shadow:0 12px 30px rgba(24,33,43,.065);
+  --nsx-shadow-soft:0 7px 20px rgba(24,33,43,.045);
+  --nsx-control-height:48px;
+  --nsx-control-padding:19px;
+}

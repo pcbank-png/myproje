@@ -1,0 +1,543 @@
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@inject NSYazilim.Web.Services.SeoLanguageUrlService SeoLanguageUrls
+@model NSYazilim.Web.ViewModels.HomePageViewModel
+@{
+    Layout = null;
+    ViewData["UseHomePerformanceBundle"] = true;
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    var homeSeoLinks = await SeoLanguageUrls.BuildAsync("/", currentLanguage, Context.RequestAborted);
+    var homeCanonical = homeSeoLinks.CurrentUrl;
+    var localizedStorePath = await SeoLanguageUrls.BuildLocalizedReturnUrlAsync("/store", currentLanguage, Context.RequestAborted);
+    var localizedSearchTarget = NSYazilim.Web.Services.SeoTextHelper.AbsoluteUrl(localizedStorePath) + "?q={search_term_string}";
+    var localizedBrandName = await SiteLocalization.TranslateAsync("NSX Yazılım", currentLanguage.Code, Context.RequestAborted);
+    var localizedDiscountWord = await SiteLocalization.TranslateAsync("İNDİRİM", currentLanguage.Code, Context.RequestAborted);
+    var homeProducts = Model.FeaturedProducts.OrderByDescending(x => x.CreatedAt).Take(4).ToList();
+    NSYazilim.Web.Models.ProductImage? HomeMainImage(NSYazilim.Web.Models.Product product)
+        => product.Images.OrderByDescending(x => x.IsMain).ThenBy(x => x.SortOrder).ThenBy(x => x.Id).FirstOrDefault();
+
+    string HomeImage(NSYazilim.Web.Models.Product product, int width = 720)
+    {
+        var image = HomeMainImage(product);
+        if (image == null || string.IsNullOrWhiteSpace(image.ImagePath)) return "/nsx-assets/logo-brand.webp";
+        if (image.ImagePath.StartsWith("/uploads/products/images/", StringComparison.OrdinalIgnoreCase))
+        {
+            var fileName = System.IO.Path.GetFileName(image.ImagePath);
+            if (!string.IsNullOrWhiteSpace(fileName))
+                return $"{NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, width)}?v={image.Id}";
+        }
+        return image.ImagePath + (image.ImagePath.Contains('?') ? "&" : "?") + "v=" + image.Id;
+    }
+
+    string? HomeImageSrcSet(NSYazilim.Web.Models.Product product)
+    {
+        var image = HomeMainImage(product);
+        if (image == null || string.IsNullOrWhiteSpace(image.ImagePath) || !image.ImagePath.StartsWith("/uploads/products/images/", StringComparison.OrdinalIgnoreCase))
+            return null;
+        var fileName = System.IO.Path.GetFileName(image.ImagePath);
+        if (string.IsNullOrWhiteSpace(fileName)) return null;
+        return $"{NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, 480)}?v={image.Id} 480w, {NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, 720)}?v={image.Id} 720w, {NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, 960)}?v={image.Id} 960w";
+    }
+
+
+    decimal HomeCampaignDiscount(decimal amount, NSYazilim.Web.Models.Campaign campaign)
+    {
+        if (amount <= 0 || campaign.DiscountValue <= 0 || (campaign.MinimumCartTotal > 0 && amount < campaign.MinimumCartTotal)) return 0;
+        var fixedDiscount = string.Equals(campaign.DiscountType, "Fixed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(campaign.DiscountType, "FixedAmount", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(campaign.DiscountType, "Amount", StringComparison.OrdinalIgnoreCase);
+        return Math.Round(Math.Clamp(fixedDiscount ? campaign.DiscountValue : amount * campaign.DiscountValue / 100m, 0, amount), 2, MidpointRounding.AwayFromZero);
+    }
+
+    string HomeCampaignLabel(NSYazilim.Web.Models.Campaign campaign)
+    {
+        var fixedDiscount = string.Equals(campaign.DiscountType, "Fixed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(campaign.DiscountType, "FixedAmount", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(campaign.DiscountType, "Amount", StringComparison.OrdinalIgnoreCase);
+        return fixedDiscount ? $"{campaign.DiscountValue:N0} TL {localizedDiscountWord}" : $"%{campaign.DiscountValue:N0} {localizedDiscountWord}";
+    }
+
+    string[] HomeProductFeatures(NSYazilim.Web.Models.Product product)
+    {
+        return NSYazilim.Web.Services.ProductCategoryHelper.GetKey(product) switch
+        {
+            "organizasyon" => new[] { "Rezervasyon", "Müşteri takibi", "Tahsilat yönetimi" },
+            "cari" => new[] { "Cari hesaplar", "Borç ve alacak", "Raporlama" },
+            "servis" => new[] { "Servis kabul", "Müşteri takibi", "İşlem geçmişi" },
+            "otomotiv" => new[] { "Araç takibi", "Müşteri yönetimi", "Kârlılık raporu" },
+            "klinik" => new[] { "Randevu takibi", "Hasta yönetimi", "Bildirimler" },
+            "performans" => new[] { "Sistem optimizasyonu", "Performans takibi", "Kolay kullanım" },
+            _ => new[] { "Kolay kullanım", "Gelişmiş takip", "Detaylı raporlar" }
+        };
+    }
+}
+<!DOCTYPE html>
+<html lang="@currentLanguage.UrlCode" dir="@(currentLanguage.IsRtl ? "rtl" : "ltr")">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KYN9MQQ51T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KYN9MQQ51T');
+    </script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preload" as="image" href="/nsx-assets/nsx-veresiye-pro-dashboard.webp" type="image/webp" fetchpriority="high" asp-append-version="true">
+<title>NSX Yazılım | İşletmeler İçin Profesyonel Windows Yazılımları</title>
+<meta name="description" content="NSX Yazılım ile cari takip, satış ve stok, teknik servis, sigorta, okul, otomotiv, klinik ve veri kurtarma çözümlerini keşfedin.">
+<meta name="keywords" content="@NSYazilim.Web.Services.SeoTextHelper.Keywords">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="author" content="Nevzat SÜRÜCÜ"><meta name="publisher" content="NSX Yazılım">
+<meta property="og:title" content="NSX Yazılım | İşletmeler İçin Profesyonel Windows Yazılımları">
+<meta property="og:description" content="İşletmenize uygun cari, satış, servis, sigorta, eğitim, otomotiv ve veri kurtarma yazılımlarını NSX güvencesiyle keşfedin.">
+<meta property="og:url" content="@homeCanonical">
+<meta property="og:site_name" content="NSX Yazılım">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="@currentLanguage.Code.Replace('-', '_')">
+<meta property="og:image" content="https://www.nsxyazilim.com/nsx-assets/logo-brand.webp">
+<meta property="og:image:alt" content="NSX Yazılım">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NSX Yazılım | İşletmeler İçin Profesyonel Windows Yazılımları">
+<meta name="twitter:description" content="İşletmenize uygun cari, satış, servis, sigorta, eğitim, otomotiv ve veri kurtarma yazılımlarını NSX güvencesiyle keşfedin.">
+<meta name="twitter:image" content="https://www.nsxyazilim.com/nsx-assets/logo-brand.webp">
+<link rel="icon" href="/favicon.ico" asp-append-version="true">
+<link rel="canonical" href="@homeCanonical">
+@await Html.PartialAsync("_SeoLanguageAlternates", homeSeoLinks)
+<link rel="sitemap" type="application/xml" title="Sitemap" href="https://www.nsxyazilim.com/sitemap.xml">
+<meta name="google-site-verification" content="GMNVfsTnhF_xwltGXV8xXNBCzg8-81IJ8OAAmP_0CjM">
+<meta name="yandex-verification" content="19aab6a68eeb0e6c">
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@graph": [
+    {
+      "@@type": ["Organization", "OnlineStore"],
+      "@@id": "https://www.nsxyazilim.com/#organization",
+      "name": "@localizedBrandName",
+      "url": "https://www.nsxyazilim.com/",
+      "logo": "https://www.nsxyazilim.com/nsx-assets/logo-brand.webp",
+      "email": "info@@nsxyazilim.com",
+      "telephone": "+90 543 462 42 26"
+    },
+    {
+      "@@type": "WebSite",
+      "@@id": "https://www.nsxyazilim.com/#website",
+      "url": "@homeCanonical",
+      "name": "@localizedBrandName",
+      "inLanguage": "@currentLanguage.Code",
+      "publisher": { "@@id": "https://www.nsxyazilim.com/#organization" },
+      "potentialAction": {
+        "@@type": "SearchAction",
+        "target": "@localizedSearchTarget",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+<link rel="stylesheet" href="/css/nsx-home-critical.css" asp-append-version="true">
+<link rel="stylesheet" href="/css/nsx-home-deferred.css" asp-append-version="true" media="print" fetchpriority="low" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="/css/nsx-home-deferred.css" asp-append-version="true"></noscript>
+<link rel="stylesheet" href="/css/nsx-home-light.css" asp-append-version="true">
+
+<link rel="stylesheet" href="/css/nsx-global-type.css" asp-append-version="true">
+</head>
+<body class="antialiased home-light-theme">
+<noscript>
+<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDG25HQG" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager">
+</iframe>
+</noscript>
+<main>
+<section class="hero-shell real-hero-shell nsx-vh-shell" id="anasayfa">
+@await Html.PartialAsync("_PublicHeader")
+<link rel="stylesheet" href="/css/nsx-home-products-pro.css" asp-append-version="true">
+<link rel="stylesheet" href="/css/nsx-home-cta-pro.css" asp-append-version="true">
+<link rel="stylesheet" href="/css/nsx-home-polish.css" asp-append-version="true">
+<div class="nsx-vh-stage">
+    <div class="nsx-vh-lines" aria-hidden="true"></div>
+    <div class="container nsx-vh-inner">
+        <div class="nsx-vh-copy">
+            <div class="nsx-vh-kicker">NSX YAZILIM · İŞLETME ÇÖZÜMLERİ</div>
+            <h1 class="nsx-vh-title">İşletmeniz için modern Windows <span>yazılımları</span></h1>
+            <p class="nsx-vh-desc"><span class="nsx-vh-desc-desktop">Cari takip, satış ve stok, teknik servis, sigorta, okul, otomotiv ve veri kurtarma gibi iş süreçleri için geliştirilen NSX çözümlerini tek merkezden keşfedin. Öne çıkan NSX Veresiye Takip Pro Free ile cari hesaplarınızı Windows, Bulut ve Mobil üzerinden ücretsiz yönetin.</span><span class="nsx-vh-desc-mobile">İşletmeniz için modern NSX yazılımlarını keşfedin. Öne çıkan NSX Veresiye Takip Pro Free tamamen ücretsiz.</span></p>
+            <div class="nsx-vh-actions">
+                <a class="nsx-vh-btn nsx-vh-btn-primary" href="/urun/nsx-veresiye-takip-pro-free">
+                    <svg class="nsx-vh-btn-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>
+                    <span class="nsx-vh-btn-copy">Ücretsiz İndir<small>Tamamen ücretsiz</small></span>
+                </a>
+                <a class="nsx-vh-btn nsx-vh-btn-secondary" href="/urun/nsx-veresiye-takip-pro-free">Ürünü İncele <span class="nsx-dir-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5.5 6.5 6.5L9 18.5"></path></svg></span></a>
+            </div>
+            <div class="nsx-vh-benefits" aria-label="NSX Veresiye avantajları">
+                <div class="nsx-vh-benefit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16v11H4z"></path><path d="M12 9v11M4 13h16M7 9c-2.4-1.6-1.1-5 1.2-4.3C10 5.2 12 9 12 9s2-3.8 3.8-4.3C18.1 4 19.4 7.4 17 9"></path></svg>
+                    <span><strong>%100 Ücretsiz</strong><small>Sınırsız kullanım</small></span>
+                </div>
+                <div class="nsx-vh-benefit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v5c0 5 3.4 8 8 9 4.6-1 8-4 8-9V7z"></path><path d="m8.5 12 2.2 2.2 4.8-5"></path></svg>
+                    <span><strong>Kolay Kullanım</strong><small>Hızlı kurulum</small></span>
+                </div>
+                <div class="nsx-vh-benefit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12 2.2 2.2 4.8-5"></path></svg>
+                    <span><strong>Günlük Takip</strong><small>Pratik kullanım</small></span>
+                </div>
+                <div class="nsx-vh-benefit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"></path><path d="m12 8 1.1 2.2 2.4.3-1.7 1.7.4 2.4-2.2-1.1-2.2 1.1.4-2.4-1.7-1.7 2.4-.3z"></path></svg>
+                    <span><strong>Yerli &amp; Güvenli</strong><small>Veri güvenliği</small></span>
+                </div>
+            </div>
+        </div>
+        <div class="nsx-vh-visual" aria-label="NSX Veresiye Takip Programı tanıtım ekranı">
+            <div class="nsx-vh-stat-rail nsx-vh-stat-rail-left" aria-hidden="true">
+                <div class="nsx-vh-stat-card">
+                    <span class="nsx-vh-stat-label">Vadesi Geçen</span>
+                    <strong class="nsx-vh-stat-value">3</strong>
+                    <span class="nsx-vh-stat-sub orange">Hesap</span>
+                    <svg class="nsx-vh-stat-icon" viewBox="0 0 48 34" aria-hidden="true">
+                        <rect class="nsx-vh-icon-bg" x="1" y="1" width="46" height="32" rx="9"></rect>
+                        <path class="nsx-vh-icon-soft" d="M8 10.5h17M11 7.5v6M22 7.5v6"></path>
+                        <path class="nsx-vh-icon-line" d="M8 11.5v12.5c0 1.7 1.3 3 3 3h11"></path>
+                        <circle class="nsx-vh-icon-line" cx="31.5" cy="21.5" r="7.5"></circle>
+                        <path class="nsx-vh-icon-line" d="M31.5 17.8v4.1l3 1.8"></path>
+                        <circle class="nsx-vh-icon-fill" cx="31.5" cy="21.5" r="1.2"></circle>
+                    </svg>
+                </div>
+                <div class="nsx-vh-stat-card">
+                    <span class="nsx-vh-stat-label">Tahsilat (Bugün)</span>
+                    <strong class="nsx-vh-stat-value">₺18.750</strong>
+                    <span class="nsx-vh-stat-sub">+28%</span>
+                    <svg class="nsx-vh-stat-icon" viewBox="0 0 48 34" aria-hidden="true">
+                        <rect class="nsx-vh-icon-bg" x="1" y="1" width="46" height="32" rx="9"></rect>
+                        <path class="nsx-vh-icon-soft" d="M7 25.5h34M8 19.5h32M8 13.5h32"></path>
+                        <path class="nsx-vh-icon-line" d="M8 24l7-5 6 2 7-9 5 3 8-7"></path>
+                        <circle class="nsx-vh-icon-dot" cx="41" cy="8" r="2"></circle>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="nsx-vh-laptop" aria-hidden="true">
+                <div class="nsx-vh-screen-frame">
+                    <div class="nsx-vh-screen">
+                        <img class="nsx-vh-screen-image" src="/nsx-assets/nsx-veresiye-pro-dashboard.webp" asp-append-version="true" alt="NSX Veresiye Pro program ekranı" width="941" height="706" fetchpriority="high" decoding="async" />
+                    </div>
+                </div>
+                <div class="nsx-vh-base"></div>
+            </div>
+
+            <div class="nsx-vh-stat-rail nsx-vh-stat-rail-right" aria-hidden="true">
+                <div class="nsx-vh-stat-card">
+                    <span class="nsx-vh-stat-label">Toplam Cari</span>
+                    <strong class="nsx-vh-stat-value">₺1.250.000</strong>
+                    <span class="nsx-vh-stat-sub">+12.5%</span>
+                    <svg class="nsx-vh-stat-icon" viewBox="0 0 48 34" aria-hidden="true">
+                        <rect class="nsx-vh-icon-bg" x="1" y="1" width="46" height="32" rx="9"></rect>
+                        <circle class="nsx-vh-icon-line" cx="17" cy="14" r="4.2"></circle>
+                        <path class="nsx-vh-icon-line" d="M9.5 25c.9-4.1 3.5-6.2 7.5-6.2s6.6 2.1 7.5 6.2"></path>
+                        <path class="nsx-vh-icon-soft" d="M29 24h11M29 19h8M29 14h5"></path>
+                        <path class="nsx-vh-icon-line" d="M31 10l3.2-3.2 3 3 4.8-4.8"></path>
+                    </svg>
+                </div>
+                <div class="nsx-vh-stat-card">
+                    <span class="nsx-vh-stat-label">Toplam İşlem</span>
+                    <strong class="nsx-vh-stat-value">1.248</strong>
+                    <span class="nsx-vh-stat-sub">+15%</span>
+                    <svg class="nsx-vh-stat-icon" viewBox="0 0 48 34" aria-hidden="true">
+                        <rect class="nsx-vh-icon-bg" x="1" y="1" width="46" height="32" rx="9"></rect>
+                        <path class="nsx-vh-icon-soft" d="M8 26h32"></path>
+                        <rect class="nsx-vh-icon-line" x="10" y="18" width="5" height="8" rx="1"></rect>
+                        <rect class="nsx-vh-icon-line" x="20" y="13" width="5" height="13" rx="1"></rect>
+                        <rect class="nsx-vh-icon-line" x="30" y="8" width="5" height="18" rx="1"></rect>
+                        <path class="nsx-vh-icon-line" d="M9 14l8-5 7 2 9-6 7 3"></path>
+                    </svg>
+                </div>
+                <div class="nsx-vh-stat-card">
+                    <span class="nsx-vh-stat-label">Alacak / Borç Dengesi</span>
+                    <strong class="nsx-vh-stat-value">₺0</strong>
+                    <span class="nsx-vh-stat-sub">Dengede</span>
+                    <svg class="nsx-vh-stat-icon" viewBox="0 0 48 34" aria-hidden="true">
+                        <rect class="nsx-vh-icon-bg" x="1" y="1" width="46" height="32" rx="9"></rect>
+                        <path class="nsx-vh-icon-line" d="M24 7v19M17 26h14M14 10h20"></path>
+                        <path class="nsx-vh-icon-line" d="M14 10 9.5 18h9L14 10Zm20 0-4.5 8h9L34 10Z"></path>
+                        <path class="nsx-vh-icon-soft" d="M9.5 18c.8 3 2.3 4.5 4.5 4.5s3.7-1.5 4.5-4.5M29.5 18c.8 3 2.3 4.5 4.5 4.5s3.7-1.5 4.5-4.5"></path>
+                        <circle class="nsx-vh-icon-fill" cx="24" cy="7" r="1.7"></circle>
+                    </svg>
+                </div>
+                <div class="nsx-vh-stat-card">
+                    <span class="nsx-vh-stat-label">Bulut Senkron</span>
+                    <strong class="nsx-vh-stat-value">7/24</strong>
+                    <span class="nsx-vh-stat-sub">Mobil Erişim</span>
+                    <svg class="nsx-vh-stat-icon" viewBox="0 0 48 34" aria-hidden="true">
+                        <rect class="nsx-vh-icon-bg" x="1" y="1" width="46" height="32" rx="9"></rect>
+                        <path class="nsx-vh-icon-line" d="M15 22.5h17.5c3 0 5.5-2.3 5.5-5.2 0-2.7-2.1-4.9-4.8-5.2C32.6 8.8 29.7 6.5 26 6.5c-4.8 0-8.7 3.8-8.9 8.5-3 .1-5.4 2.5-5.4 5.5 0 3 2.4 5.5 5.3 5.5Z"></path>
+                        <path class="nsx-vh-icon-soft" d="M24 12.5v10"></path>
+                        <path class="nsx-vh-icon-line" d="m20.8 15.5 3.2-3.2 3.2 3.2M27.2 19.5 24 22.7l-3.2-3.2"></path>
+                        <circle class="nsx-vh-icon-fill" cx="24" cy="17.5" r="1.2"></circle>
+                    </svg>
+                </div>
+            </div>
+            <div class="nsx-vh-mobile-note">NSX Veresiye · Ücretsiz, sade ve hızlı cari takip</div>
+        </div>
+    </div>
+</div>
+</section>
+<section class="solutions-section" id="cozumler">
+<div class="container">
+<div class="home-products-heading">
+<div><span>NSX YAZILIMLARI</span><h2>Son eklenen profesyonel çözümler.</h2></div>
+<a href="/store">Tüm yazılımları incele <b class="nsx-dir-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5.5 6.5 6.5L9 18.5"></path></svg></b></a>
+</div>
+<div class="products-grid home-products-grid" aria-live="polite">
+@for (var index = 0; index < homeProducts.Count; index++)
+{
+    var product = homeProducts[index];
+    var localizedProductName = await SiteLocalization.TranslateAsync(product.Name, currentLanguage.Code, Context.RequestAborted);
+    var categoryKey = NSYazilim.Web.Services.ProductCategoryHelper.GetKey(product);
+    var categoryLabel = NSYazilim.Web.Services.ProductCategoryHelper.GetLabel(product);
+    var image = HomeImage(product, 720);
+    var imageSrcSet = HomeImageSrcSet(product);
+    var seoProfile = NSYazilim.Web.Services.ProductSeoCatalog.Find(product);
+    var description = !currentLanguage.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase) && seoProfile != null
+        ? seoProfile.MetaDescription
+        : (string.IsNullOrWhiteSpace(product.MetaDescription)
+            ? NSYazilim.Web.Services.ProductContentSanitizer.ToPlainText(product.Description, 150)
+            : product.MetaDescription);
+    // Yabancı dilde çeviri henüz yoksa ürünün gerçek metnini koru.
+    // Sayfa sonundaki localization middleware'i native/otomatik çeviri katmanını uygular;
+    // genel ve kısa bir sabit cümleye düşme yoktur.
+    var localizedDescription = await SiteLocalization.TranslateAsync(description, currentLanguage.Code, Context.RequestAborted);
+    var detailsOpenLabel = await SiteLocalization.TranslateAsync("detay sayfasını aç", currentLanguage.Code, Context.RequestAborted);
+    var detailsViewLabel = await SiteLocalization.TranslateAsync("detaylarını gör", currentLanguage.Code, Context.RequestAborted);
+    var productImageLabel = await SiteLocalization.TranslateAsync("ürün görseli", currentLanguage.Code, Context.RequestAborted);
+    var productDetailsOpenAria = $"{localizedProductName} {detailsOpenLabel}";
+    var productDetailsViewAria = $"{localizedProductName} {detailsViewLabel}";
+    var localizedProductImageAlt = $"{localizedProductName} {productImageLabel}";
+    var price = product.YearlyPrice > 0 ? product.YearlyPrice : product.LifetimePrice;
+    var bestCampaign = Model.ActiveCampaigns
+        .Select(campaign => new { Campaign = campaign, Discount = HomeCampaignDiscount(price, campaign) })
+        .Where(x => x.Discount > 0)
+        .OrderByDescending(x => x.Discount)
+        .ThenByDescending(x => x.Campaign.CreatedAt)
+        .FirstOrDefault();
+    var discountAmount = bestCampaign?.Discount ?? 0;
+    var payablePrice = Math.Max(0, price - discountAmount);
+    var priceText = price <= 0
+        ? "Ücretsiz"
+        : payablePrice.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("tr-TR")) + " ₺";
+    var features = HomeProductFeatures(product);
+    var ratingAverage = 0d;
+    if (ViewBag.RatingAverage is System.Collections.Generic.Dictionary<int, double> ratingAverages
+        && ratingAverages.TryGetValue(product.Id, out var savedRatingAverage))
+    {
+        ratingAverage = savedRatingAverage;
+    }
+    var ratingText = ratingAverage > 0 ? ratingAverage.ToString("0.0") : "Yeni";
+    var cardAccent = "#ff6e04";
+<article class="product-card home-product-card" data-category-key="@categoryKey" data-product-index="@index" style="--accent:@cardAccent">
+<a class="product-visual" href="/urun/@product.Slug" aria-label="@productDetailsOpenAria">
+<img src="@image" srcset="@imageSrcSet" sizes="(max-width:680px) calc(100vw - 36px), (max-width:1180px) 46vw, 350px" alt="@localizedProductImageAlt" width="1581" height="995" loading="lazy" decoding="async" fetchpriority="low">
+<span class="product-tag">@(index == 0 ? "En yeni ürün" : categoryLabel)</span>
+@if (bestCampaign != null && discountAmount > 0) { <span class="home-product-campaign-badge">@HomeCampaignLabel(bestCampaign.Campaign)</span> }
+<span class="product-number">@((index + 1).ToString("00"))</span>
+</a>
+<div class="product-body">
+<div class="product-meta">
+<span>@categoryLabel</span>
+<span class="rating">★★★★★ <b>@ratingText</b></span>
+</div>
+<h3>@localizedProductName</h3>
+<p>@(string.IsNullOrWhiteSpace(localizedDescription) ? localizedProductName : localizedDescription)</p>
+<ul>
+@foreach (var feature in features)
+{
+<li><b class="nsx-public-check" aria-hidden="true">✓</b> @feature</li>
+}
+</ul>
+<div class="product-footer">
+<div class="@(discountAmount > 0 ? "home-campaign-price" : string.Empty)">
+<small>@(discountAmount > 0 ? "Kampanyalı fiyat" : "Başlangıç")</small>
+<strong>@priceText</strong>
+@if (discountAmount > 0) { <del>@(price.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("tr-TR")) + " ₺")</del> }
+</div>
+<a class="product-cta" href="/urun/@product.Slug" aria-label="@productDetailsViewAria">
+<span>Ürünü İncele</span>
+<b class="nsx-dir-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5.5 6.5 6.5L9 18.5"></path></svg></b>
+</a>
+</div>
+</div>
+</article>
+}
+</div>
+
+<div class="home-products-more-wrap">
+<button class="home-products-more" type="button" data-home-products-more aria-expanded="false">
+<span><small>Daha fazla NSX çözümü</small><strong>Diğer ürünleri göster</strong></span>
+<b class="nsx-dir-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></b>
+</button>
+</div>
+
+</div>
+</section>
+<section class="conversion-section" id="nasil-calisir">
+<div class="container">
+<div class="journey-heading">
+<div>
+<div class="eyebrow dark">
+<span>
+</span> Kolay başlangıç</div>
+<h2>Keşiften kuruluma, <em>dört net adım.</em></h2>
+</div>
+<p>İhtiyacınıza uygun yazılımı bulun, özelliklerini inceleyin, lisanslayın ve NSX desteğiyle güvenle kullanmaya devam edin.</p>
+</div>
+<div class="journey-grid">
+<article>
+<span class="step-number">01</span>
+<div class="step-icon step-icon-discover">
+<svg viewbox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="10.25" cy="10.25" r="6.25">
+</circle>
+<path d="m14.8 14.8 5.2 5.2M7.4 10.3l1.8 1.8 4-4.2">
+</path>
+<path d="M18.5 3.5v3M17 5h3">
+</path>
+</svg>
+</div>
+<h3>İhtiyacınızı seçin</h3>
+<p>Sektörünüze göre filtreleyin ve size uygun çözümü bulun.</p>
+<small>Ortalama 30 saniye</small>
+</article>
+<article>
+<span class="step-number">02</span>
+<div class="step-icon step-icon-try">
+<svg viewbox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+<rect x="2.5" y="3.5" width="19" height="14" rx="2.5">
+</rect>
+<path d="M2.5 7.2h19M8.2 21h7.6M12 17.5V21">
+</path>
+<path d="m10.2 9.3 4.5 2.4-4.5 2.4V9.3Z">
+</path>
+</svg>
+</div>
+<h3>İnceleyin ve deneyin</h3>
+<p>Özellikleri karşılaştırın, uygun ürünlerde ücretsiz sürümü indirip iş akışınızı test edin.</p>
+<small>Risksiz ürün deneyimi</small>
+</article>
+<article>
+<span class="step-number">03</span>
+<div class="step-icon step-icon-license">
+<svg viewbox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+<path d="M14.2 4.8a5.4 5.4 0 1 0-3.7 8.6L17.1 20l2.1-2.1-1.5-1.5 1.8-1.8-2-2-1.8 1.8-2.5-2.5">
+</path>
+<circle cx="8.8" cy="8.8" r="1.4">
+</circle>
+<path d="m5.8 15.8 1.5 1.5 3-3">
+</path>
+</svg>
+</div>
+<h3>Lisanslayın, başlayın</h3>
+<p>Dijital lisansınıza hızlıca erişin; ihtiyaç halinde uzaktan kurulum desteği alın.</p>
+<small>NSX ekibi yanınızda</small>
+</article>
+<article>
+<span class="step-number">04</span>
+<div class="step-icon step-icon-support">
+<svg viewbox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 13v-2a8 8 0 0 1 16 0v2"></path>
+<path d="M4 13a2 2 0 0 1 2-2h1v6H6a2 2 0 0 1-2-2v-2Z"></path>
+<path d="M20 13a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2v-2Z"></path>
+<path d="M17 17c0 2-1.8 3-4 3h-1"></path>
+<circle cx="10.5" cy="20" r="1"></circle>
+</svg>
+</div>
+<h3>Güncel kalın, destek alın</h3>
+<p>Güncellemeleri takip edin; ihtiyaç duyduğunuzda NSX destek ekibine hızlıca ulaşın.</p>
+<small>Satış sonrası destek</small>
+</article>
+</div>
+<div class="trust-strip">
+<div class="trust-stat">
+<span class="trust-icon" aria-hidden="true">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect>
+</svg>
+</span>
+<div class="trust-stat-copy">
+<strong>@Model.ActiveProductCount</strong>
+<span>işletme yazılımı</span>
+</div>
+</div>
+<div class="trust-stat">
+<span class="trust-icon" aria-hidden="true">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3.8 2.5 5.1 5.6.8-4.1 4 1 5.6-5-2.6-5 2.6 1-5.6-4.1-4 5.6-.8L12 3.8Z"></path>
+</svg>
+</span>
+<div class="trust-stat-copy">
+<strong>5.0</strong>
+<span>ürün değerlendirmesi</span>
+</div>
+</div>
+<div class="trust-stat">
+<span class="trust-icon" aria-hidden="true">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path><path d="M6.2 5.8 4.8 4.4M17.8 5.8l1.4-1.4"></path>
+</svg>
+</span>
+<div class="trust-stat-copy">
+<strong>7/24</strong>
+<span>dijital erişim</span>
+</div>
+</div>
+<div class="trust-stat">
+<span class="trust-icon" aria-hidden="true">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4.5 13v-2a7.5 7.5 0 0 1 15 0v2"></path><path d="M4.5 13a2 2 0 0 1 2-2h1v6h-1a2 2 0 0 1-2-2v-2ZM19.5 13a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2v-2Z"></path><path d="M16.5 17c0 2-1.6 3-4 3H11"></path>
+</svg>
+</span>
+<div class="trust-stat-copy">
+<strong>01</strong>
+<span>tek noktadan destek</span>
+</div>
+</div>
+</div>
+<div class="final-cta nsx-final-cta">
+<div class="cta-glow" aria-hidden="true"></div>
+<div class="cta-copy">
+<div class="cta-kicker"><span aria-hidden="true"></span> NSX Yazılım · Hızlı çözüm</div>
+<h2>İşletmenize uygun çözüm <em>bir tık uzağınızda.</em></h2>
+<p>İhtiyacınıza uygun NSX yazılımını inceleyin, lisans seçiminizi netleştirin ve gerektiğinde doğrudan destek alın.</p>
+<div class="cta-benefits" aria-label="NSX hizmet avantajları">
+<span><b>✓</b> Güvenli dijital teslimat</span>
+<span><b>✓</b> Hızlı lisans erişimi</span>
+<span><b>✓</b> Kurulum desteği</span>
+</div>
+</div>
+<div class="cta-actions">
+<a class="primary-button cta-store-button" href="/store">
+<span class="cta-action-copy"><small>NSX çözümlerini keşfedin</small><strong>Çözümleri Hemen İncele</strong></span>
+<span class="cta-action-arrow" aria-hidden="true"><span class="cta-action-arrow-glyph nsx-dir-icon is-up"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 16.5 16.5 7.5M9 7.5h7.5V15"></path></svg></span></span>
+</a>
+<a href="https://wa.me/905434624226" class="cta-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp üzerinden NSX Yazılım desteğine ulaşın">
+<span class="whatsapp-mark" aria-hidden="true">
+<svg class="whatsapp-icon" viewBox="0 0 32 32">
+<path fill="currentColor" d="M16.04 3.2A12.75 12.75 0 0 0 5.2 22.67L3.5 28.8l6.28-1.65A12.8 12.8 0 1 0 16.04 3.2Zm0 23.43c-2.1 0-4.15-.56-5.93-1.62l-.43-.25-3.73.98 1-3.63-.28-.45a10.62 10.62 0 1 1 9.37 4.97Zm5.83-7.96c-.32-.16-1.89-.93-2.18-1.04-.3-.1-.51-.16-.72.16-.21.32-.83 1.04-1.02 1.25-.18.21-.37.24-.69.08-.32-.16-1.34-.5-2.55-1.57a9.55 9.55 0 0 1-1.77-2.2c-.18-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.18.21-.32.32-.53.1-.21.05-.4-.03-.56-.08-.16-.72-1.73-.99-2.37-.26-.62-.53-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.3.32-1.12 1.09-1.12 2.66s1.15 3.09 1.3 3.3c.16.21 2.26 3.45 5.48 4.84.77.33 1.36.53 1.83.68.77.24 1.47.21 2.02.13.62-.09 1.89-.77 2.16-1.52.27-.75.27-1.39.19-1.52-.08-.13-.29-.21-.61-.37Z"></path>
+</svg>
+</span>
+<span class="cta-whatsapp-copy"><small>Doğrudan destek hattı</small><strong>0543 462 42 26</strong><em>WhatsApp ile mesaj gönderin</em></span>
+<span class="cta-whatsapp-arrow nsx-dir-icon is-up" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 16.5 16.5 7.5M9 7.5h7.5V15"></path></svg></span>
+</a>
+</div>
+</div>
+</div>
+</section>
+@await Html.PartialAsync("_PublicFooter")
+<button class="nsx-home-scroll-top" type="button" data-home-scroll-top aria-label="Sayfanın başına dön" title="Yukarı çık">
+<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+<path d="m6.5 14.5 5.5-5.5 5.5 5.5"></path><path d="M12 9v10"></path>
+</svg>
+<span>Yukarı</span>
+</button>
+</main>
+<script src="/js/nsx-home-runtime.js" asp-append-version="true" defer></script>
+</body>
+</html>

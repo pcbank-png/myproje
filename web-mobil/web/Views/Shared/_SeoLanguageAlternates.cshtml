@@ -1,0 +1,13 @@
+@model NSYazilim.Web.Services.SeoLanguageLinks
+@if (Model.Alternates.Count > 0)
+{
+    foreach (var alternate in Model.Alternates)
+    {
+        <link rel="alternate" hreflang="@alternate.HrefLang" href="@alternate.Url" />
+    }
+    <link rel="alternate" hreflang="x-default" href="@Model.DefaultUrl" />
+    foreach (var alternate in Model.Alternates.Where(x => !string.Equals(x.HrefLang, Model.CurrentLanguage.Code, StringComparison.OrdinalIgnoreCase)))
+    {
+        <meta property="og:locale:alternate" content="@alternate.HrefLang.Replace('-', '_')" />
+    }
+}

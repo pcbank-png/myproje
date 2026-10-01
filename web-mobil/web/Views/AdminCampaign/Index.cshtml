@@ -1,0 +1,96 @@
+@model IEnumerable<NSYazilim.Web.Models.Campaign>
+
+@{
+    ViewData["Title"] = "Kampanyalar";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Kampanyalar</h2>
+            <p class="text-muted mb-0">Satın alma sırasında değerlendirilecek kampanyaları yönetin.</p>
+        </div>
+        <a class="btn btn-primary" href="/AdminCampaign/Create">Yeni Kampanya</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Kod</th>
+                        <th>Ad</th>
+                        <th>Min. Tutar</th>
+                        <th>İndirim</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@(string.IsNullOrWhiteSpace(item.Code) ? "-" : item.Code)</td>
+                            <td>
+                                <strong>@item.Name</strong><br />
+                                <small class="text-muted">@item.Description</small>
+                            </td>
+                            <td>@item.MinimumCartTotal.ToString("N2") TL</td>
+                            <td>
+                                @if (item.DiscountType == "Fixed")
+                                {
+                                    <span>@item.DiscountValue.ToString("N2") TL</span>
+                                }
+                                else
+                                {
+                                    <span>%@item.DiscountValue.ToString("N2")</span>
+                                }
+                            </td>
+                            <td>
+                                <small>
+                                    @(item.StartDate?.ToString("dd.MM.yyyy") ?? "-") / @(item.EndDate?.ToString("dd.MM.yyyy") ?? "-")
+                                </small>
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Pasif</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" href="/AdminCampaign/Edit/@item.Id">Düzenle</a>
+                                <form method="post" action="/AdminCampaign/ToggleActive/@item.Id" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-outline-warning" type="submit">Aktif/Pasif</button>
+                                </form>
+                                <form method="post" action="/AdminCampaign/Delete/@item.Id" class="d-inline" onsubmit="return confirm('Kampanya silinsin mi?');">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">Henüz kampanya yok.</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,186 @@
+@model NSYazilim.Web.ViewModels.AdminPaymentsViewModel
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Satışlar / Ödemeler";
+    var tr = CultureInfo.GetCultureInfo("tr-TR");
+}
+
+<style>
+.nsx-payments-page{display:flex;flex-direction:column;gap:18px}.nsx-payment-integration{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid #dfe5eb;border-radius:14px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.04)}.nsx-payment-integration-dot{width:10px;height:10px;flex:0 0 10px;border-radius:50%;background:#94a3b8;box-shadow:0 0 0 5px rgba(148,163,184,.12)}.nsx-payment-integration.is-ready .nsx-payment-integration-dot{background:#20a66a;box-shadow:0 0 0 5px rgba(32,166,106,.12)}.nsx-payment-integration.is-warning .nsx-payment-integration-dot{background:#e49b19;box-shadow:0 0 0 5px rgba(228,155,25,.13)}.nsx-payment-integration strong{display:block;color:#182230;font-size:13px;font-weight:850}.nsx-payment-integration small{display:block;margin-top:2px;color:#687586;font-size:12px}.nsx-payment-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.nsx-payment-stats article{min-height:118px;padding:18px;border:1px solid #e1e6eb;border-radius:16px;background:#fff;box-shadow:0 10px 28px rgba(15,23,42,.045)}.nsx-payment-stats article span,.nsx-payment-stats article small{display:block;color:#718096;font-size:11px;font-weight:750}.nsx-payment-stats article strong{display:block;margin:8px 0 6px;color:#172033;font-size:24px;line-height:1;font-weight:900;letter-spacing:-.035em}.nsx-payment-stats article.needs-attention{border-color:#f0d8aa;background:#fffaf1}.nsx-payment-card-head{gap:16px;align-items:center}.nsx-payment-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto}.nsx-payment-filter input{width:min(340px,42vw)}.nsx-payment-filter select{width:190px}.nsx-payment-table td small{display:block;margin-top:3px;color:#778392;font-size:11px}.nsx-payment-date strong{white-space:nowrap}.nsx-payment-type{display:inline-flex;align-items:center;min-height:27px;padding:0 10px;border-radius:999px;font-size:11px;font-weight:850;white-space:nowrap}.nsx-payment-type.card{color:#305d98;background:#eaf2ff;border:1px solid #d4e4fb}.nsx-payment-type.transfer{color:#776020;background:#fff6d9;border:1px solid #f1e3b3}.nsx-payment-type.manual{color:#6d4b92;background:#f4ecff;border:1px solid #e4d4f8}.nsx-payment-actions{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap}@@media(max-width:1280px){.nsx-payment-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}@@media(max-width:900px){.nsx-payment-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.nsx-payment-card-head{align-items:flex-start;flex-direction:column}.nsx-payment-filter{width:100%;margin-left:0}.nsx-payment-filter input{flex:1 1 280px;width:auto}}@@media(max-width:720px){.nsx-payment-stats{grid-template-columns:1fr}.nsx-payment-filter{display:grid;grid-template-columns:1fr 1fr}.nsx-payment-filter input,.nsx-payment-filter select{grid-column:1/-1;width:100%}.nsx-payment-filter .nsx-admin-btn{width:100%}}
+</style>
+
+<section class="nsx-admin-page nsx-payments-page">
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX Admin</span>
+            <h1>Satışlar / Ödemeler</h1>
+            <p>Havale/EFT, Shopier kart ve manuel satış kayıtlarını tek ekranda izleyin.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            @if (Model.ShopierConfigured)
+            {
+                <form method="post" action="/Admin/PaymentsSyncShopier" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="nsx-admin-btn">Shopier'den Yenile</button>
+                </form>
+                @if (!Model.ShopierWebhookConfigured)
+                {
+                    <form method="post" action="/Admin/ShopierWebhookRegister" class="d-inline" onsubmit="return confirm('Shopier order.created webhook etkinleştirilsin mi?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="nsx-admin-btn light">Webhook'u Etkinleştir</button>
+                    </form>
+                }
+            }
+            <a class="nsx-admin-btn light" href="/Admin/BankTransfers">Havale Onayları</a>
+        </div>
+    </div>
+
+    <div class="nsx-payment-integration @(Model.ShopierConfigured ? (Model.ShopierWebhookConfigured ? "is-ready" : "is-warning") : "is-off")">
+        <span class="nsx-payment-integration-dot" aria-hidden="true"></span>
+        <div>
+            <strong>Shopier Entegrasyonu</strong>
+            <small>@Model.ShopierStatusMessage</small>
+        </div>
+    </div>
+
+    <div class="nsx-payment-stats">
+        <article>
+            <span>Ödenen Toplam</span>
+            <strong>@Model.PaidTotal.ToString("N2", tr) ₺</strong>
+            <small>@Model.TotalCount ödeme kaydı</small>
+        </article>
+        <article>
+            <span>Banka / Kredi Kartı</span>
+            <strong>@Model.CardPaidTotal.ToString("N2", tr) ₺</strong>
+            <small>@Model.CardCount Shopier kaydı</small>
+        </article>
+        <article>
+            <span>Havale / EFT</span>
+            <strong>@Model.BankTransferPaidTotal.ToString("N2", tr) ₺</strong>
+            <small>@Model.BankTransferCount havale kaydı</small>
+        </article>
+        <article>
+            <span>Manuel Satış</span>
+            <strong>@Model.ManualSalePaidTotal.ToString("N2", tr) ₺</strong>
+            <small>@Model.ManualSaleCount manuel kayıt</small>
+        </article>
+        <article class="@(Model.PendingBankTransferCount > 0 ? "needs-attention" : null)">
+            <span>Onay Bekleyen</span>
+            <strong>@Model.PendingBankTransferCount</strong>
+            <small>Havale / EFT bildirimi</small>
+        </article>
+    </div>
+
+    <div class="nsx-admin-card">
+        <div class="nsx-admin-card-head nsx-payment-card-head">
+            <div>
+                <strong>Ödeme Hareketleri</strong>
+                <small>@Model.Rows.Count gösteriliyor</small>
+            </div>
+            <form method="get" action="/Admin/Payments" class="nsx-payment-filter">
+                <input type="search" name="q" value="@Model.Query" class="form-control form-control-sm" placeholder="Sipariş, müşteri, e-posta veya ürün ara" />
+                <select name="paymentMethod" class="form-select form-select-sm">
+                    <option value="" selected="@(string.IsNullOrWhiteSpace(Model.PaymentMethod) ? "selected" : null)">Tüm ödeme türleri</option>
+                    <option value="card" selected="@(Model.PaymentMethod == "card" ? "selected" : null)">Banka / Kredi Kartı</option>
+                    <option value="transfer" selected="@(Model.PaymentMethod == "transfer" ? "selected" : null)">Havale / EFT</option>
+                    <option value="manual" selected="@(Model.PaymentMethod == "manual" ? "selected" : null)">Manuel Satış</option>
+                </select>
+                <button type="submit" class="nsx-admin-btn sm">Filtrele</button>
+                @if (!string.IsNullOrWhiteSpace(Model.Query) || !string.IsNullOrWhiteSpace(Model.PaymentMethod))
+                {
+                    <a class="nsx-admin-btn light sm" href="/Admin/Payments">Temizle</a>
+                }
+            </form>
+        </div>
+
+        @if (!Model.Rows.Any())
+        {
+            <div class="nsx-admin-empty">Bu filtreye uygun ödeme kaydı bulunamadı.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table nsx-admin-table nsx-payment-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Referans</th>
+                            <th>Müşteri</th>
+                            <th>Ürün / Lisans</th>
+                            <th>Ödeme Türü</th>
+                            <th>Tutar</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.Rows)
+                    {
+                        var currency = string.Equals(item.Currency, "TRY", StringComparison.OrdinalIgnoreCase) ? "₺" : item.Currency;
+                        var paymentTypeCss = item.PaymentType.StartsWith("Banka /", StringComparison.Ordinal)
+                            ? "card"
+                            : string.Equals(item.PaymentType, "Manuel Satış", StringComparison.Ordinal) ? "manual" : "transfer";
+                        var deleteConfirm = item.SourceType == "shopier"
+                            ? "Bu Shopier satış kaydı ödeme listesinden kaldırılsın mı? Sipariş ve lisans kayıtları korunacaktır."
+                            : item.SourceType == "manual"
+                                ? "Bu manuel satış kaydı silinsin mi? Oluşturulmuş lisans silinmez, yalnızca sipariş bağlantısı kaldırılır."
+                                : "Bu Havale / EFT ödeme kaydı silinsin mi? Bağlı sipariş ve lisans kayıtları korunacaktır.";
+                        <tr>
+                            <td class="nsx-payment-date">
+                                <strong>@item.CreatedAt.ToString("dd.MM.yyyy")</strong>
+                                <small>@item.CreatedAt.ToString("HH:mm")</small>
+                            </td>
+                            <td>
+                                <strong>@item.Reference</strong>
+                                <small>@item.Provider</small>
+                            </td>
+                            <td>
+                                <strong>@item.CustomerName</strong>
+                                <small>@(string.IsNullOrWhiteSpace(item.CustomerEmail) ? "E-posta yok" : item.CustomerEmail)</small>
+                                @if (!string.IsNullOrWhiteSpace(item.CustomerPhone))
+                                {
+                                    <small>@item.CustomerPhone</small>
+                                }
+                            </td>
+                            <td>
+                                <strong>@item.ProductName</strong>
+                                <span class="nsx-admin-pill neutral">@item.LicenseLabel</span>
+                            </td>
+                            <td>
+                                <span class="nsx-payment-type @paymentTypeCss">@item.PaymentType</span>
+                                <small>@item.ProviderDetail</small>
+                            </td>
+                            <td><strong>@item.Amount.ToString("N2", tr) @currency</strong></td>
+                            <td><span class="nsx-admin-pill @item.StatusCss" title="@item.StatusDetail">@item.Status</span></td>
+                            <td class="text-end">
+                                <div class="nsx-payment-actions">
+                                    @if (item.BankTransferId.HasValue)
+                                    {
+                                        <a class="nsx-admin-btn light sm" href="/Admin/BankTransfers">Havale Aç</a>
+                                    }
+                                    else if (item.LocalOrderId.HasValue)
+                                    {
+                                        <a class="nsx-admin-btn light sm" href="/Admin/Orders">Sipariş Aç</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small align-self-center">Shopier</span>
+                                    }
+
+                                    <form method="post" action="/Admin/PaymentsDelete" class="d-inline" onsubmit="return confirm('@deleteConfirm');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="sourceType" value="@item.SourceType" />
+                                        <input type="hidden" name="id" value="@item.SourceId" />
+                                        <button type="submit" class="nsx-admin-btn danger sm">Sil</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

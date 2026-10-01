@@ -1,0 +1,72 @@
+@model List<NSYazilim.Web.Models.Dealer>
+@{
+    ViewData["Title"] = "Bayilik Y\u00f6netimi";
+    var totalSales = Model.SelectMany(x => x.Sales).Count();
+}
+<section class="nsx-admin-page">
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX BAYI KANALI</span>
+            <h1>Bayilik Y&#246;netimi</h1>
+            <p>81 il bayi yap&#305;s&#305;, bayi hesaplar&#305; ve sat&#305;&#351; k&#226;r oranlar&#305;n&#305; mevcut sipari&#351; sisteminden ayr&#305; bir kanalda y&#246;netin.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="nsx-admin-btn" href="/Admin/Bayiler/Yeni">Yeni Bayi</a>
+            <a class="nsx-admin-btn light" href="/Admin/Bayiler/Satislar">Bayi Sat&#305;&#351;lar&#305;</a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="nsx-admin-card p-3"><small>Toplam Bayi</small><h2 class="mb-0">@Model.Count</h2></div></div>
+        <div class="col-md-3"><div class="nsx-admin-card p-3"><small>Aktif Bayi</small><h2 class="mb-0">@ViewBag.ActiveDealerCount</h2></div></div>
+        <div class="col-md-3"><div class="nsx-admin-card p-3"><small>Bayi Sat&#305;&#351;&#305;</small><h2 class="mb-0">@totalSales</h2></div></div>
+        <div class="col-md-3"><div class="nsx-admin-card p-3"><small>Onayl&#305; Bayi Alaca&#287;&#305;</small><h2 class="mb-0">@(((decimal)ViewBag.ApprovedCommission).ToString("N2")) &#8378;</h2></div></div>
+    </div>
+
+    <div class="nsx-admin-card">
+        <div class="nsx-admin-card-head">
+            <div><strong>Bayi Listesi</strong><small>@Model.Count kay&#305;t</small></div>
+        </div>
+        @if (!Model.Any())
+        {
+            <div class="nsx-admin-empty">Hen&#252;z bayi hesab&#305; olu&#351;turulmad&#305;.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table nsx-admin-table align-middle">
+                    <thead><tr><th>Bayi</th><th>&#304;l</th><th>Yetkili</th><th>K&#226;r Modeli</th><th>Sat&#305;&#351;</th><th>Durum</th><th class="text-end">&#304;&#351;lem</th></tr></thead>
+                    <tbody>
+                    @foreach (var dealer in Model)
+                    {
+                        var approvedCommission = dealer.Sales.Where(x => x.BankTransferNotification != null && x.BankTransferNotification.Status == "Approved").Sum(x => x.CommissionAmount);
+                        <tr>
+                            <td><strong>@dealer.BusinessName</strong><small>@dealer.DealerCode<br />@dealer.Email</small></td>
+                            <td>@dealer.Province@if (!string.IsNullOrWhiteSpace(dealer.District)) { <small>@dealer.District</small> }</td>
+                            <td><strong>@dealer.ContactName</strong><small>@(dealer.Phone ?? "-")</small></td>
+                            <td>
+                                @if (dealer.CommissionMode == "Fixed")
+                                { <span class="nsx-admin-pill neutral">Sabit @dealer.CommissionFixedAmount.ToString("N2") &#8378;</span> }
+                                else
+                                { <span class="nsx-admin-pill neutral">%@dealer.CommissionPercent.ToString("N2")</span> }
+                                <small>Onayl&#305; alacak: @approvedCommission.ToString("N2") &#8378;</small>
+                            </td>
+                            <td><strong>@dealer.Sales.Count</strong><small>toplam kay&#305;t</small></td>
+                            <td><span class="nsx-admin-pill @(dealer.IsActive ? "ok" : "bad")">@(dealer.IsActive ? "Aktif" : "Pasif")</span></td>
+                            <td class="text-end">
+                                <div class="nsx-admin-row-actions justify-content-end">
+                                    <a class="nsx-admin-btn sm light" href="/Admin/Bayiler/Duzenle/@dealer.Id">D&#252;zenle</a>
+                                    <form method="post" action="/Admin/Bayiler/Durum/@dealer.Id" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button class="nsx-admin-btn sm @(dealer.IsActive ? "danger-soft" : "success")" type="submit">@(dealer.IsActive ? "Pasif Yap" : "Aktif Yap")</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

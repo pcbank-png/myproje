@@ -1,0 +1,291 @@
+/* NSX Store compact listing polish - scoped only to Store listing/category page */
+.listing-page.store-page-full {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 1505px !important;
+    margin: 0 auto 48px !important;
+    padding: 0 !important;
+}
+
+.listing-page.store-page-full .store-campaign-demo {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+
+.listing-page.store-page-full .listing-layout-pro {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    display: block !important;
+}
+
+.listing-page.store-page-full .listing-content-pro {
+    width: 100% !important;
+    max-width: none !important;
+    flex: none !important;
+}
+
+.listing-page.store-page-full .listing-grid {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.listing-page.store-page-full .listing-toolbar-pro {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px !important;
+    padding: 12px 13px !important;
+    border: 1px solid rgba(15, 23, 42, .08);
+    border-radius: 19px !important;
+    background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
+    box-shadow: 0 14px 36px rgba(15, 23, 42, .055) !important;
+}
+
+.listing-page.store-page-full .listing-toolbar-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 180px;
+}
+
+.listing-page.store-page-full .listing-toolbar-summary strong {
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.listing-page.store-page-full .listing-toolbar-summary span {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.listing-page.store-page-full .store-pro-filterbar {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.listing-page.store-page-full .store-pro-select {
+    min-width: 172px;
+    height: 46px;
+    padding: 5px 10px;
+    display: grid;
+    align-content: center;
+    gap: 1px;
+    border: 1px solid rgba(15, 23, 42, .10);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .85);
+}
+
+.listing-page.store-page-full .store-pro-select span {
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.listing-page.store-page-full .store-pro-select select {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 850;
+    cursor: pointer;
+}
+
+.listing-page.store-page-full .store-pro-apply,
+.listing-page.store-page-full .store-pro-clear {
+    height: 46px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 900;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.listing-page.store-page-full .store-pro-apply {
+    color: #fff;
+    background: linear-gradient(135deg, #fb923c, #f97316);
+    box-shadow: 0 10px 22px rgba(249, 115, 22, .22);
+}
+
+.listing-page.store-page-full .store-pro-clear {
+    color: #475569;
+    background: #f1f5f9;
+}
+
+@media (max-width: 991.98px) {
+    .listing-page.store-page-full {
+        max-width: 100% !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+
+    .listing-page.store-page-full .listing-toolbar-pro {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .listing-page.store-page-full .store-pro-filterbar {
+        width: 100%;
+        margin-left: 0;
+        justify-content: stretch;
+    }
+
+    .listing-page.store-page-full .store-pro-select {
+        flex: 1 1 190px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .listing-page.store-page-full {
+        padding-left: 9px !important;
+        padding-right: 9px !important;
+    }
+
+
+    .listing-page.store-page-full .store-pro-select,
+    .listing-page.store-page-full .store-pro-apply,
+    .listing-page.store-page-full .store-pro-clear {
+        width: 100%;
+        flex: 1 1 100%;
+    }
+}
+
+/* Store page button/select polish only - matches NSX home action style */
+.listing-page.store-page-full .store-pro-select {
+    position: relative;
+    border-color: rgba(15, 23, 42, .09) !important;
+    background: linear-gradient(180deg, #ffffff 0%, #fffaf5 100%) !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .045), inset 0 1px 0 rgba(255, 255, 255, .95) !important;
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
+}
+
+.listing-page.store-page-full .store-pro-select::after {
+    content: "⌄";
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
+    color: #f97316;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.listing-page.store-page-full .store-pro-select:hover,
+.listing-page.store-page-full .store-pro-select:focus-within {
+    border-color: rgba(249, 115, 22, .42) !important;
+    background: #ffffff !important;
+    box-shadow: 0 12px 28px rgba(249, 115, 22, .12), 0 8px 20px rgba(15, 23, 42, .05) !important;
+    transform: translateY(-1px);
+}
+
+.listing-page.store-page-full .store-pro-select span {
+    color: #f97316 !important;
+}
+
+.listing-page.store-page-full .store-pro-select select {
+    padding-right: 23px !important;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.listing-page.store-page-full .store-pro-apply,
+.listing-page.store-page-full .store-pro-clear,
+.listing-page.store-page-full .listing-detail,
+.listing-page.store-page-full .listing-demo {
+    cursor: pointer;
+    border-radius: 14px !important;
+    font-weight: 900 !important;
+    text-decoration: none !important;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.listing-page.store-page-full .store-pro-apply,
+.listing-page.store-page-full .listing-detail {
+    color: #ffffff !important;
+    border: 1px solid rgba(249, 115, 22, .28) !important;
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 48%, #ea580c 100%) !important;
+    box-shadow: 0 12px 24px rgba(249, 115, 22, .24) !important;
+}
+
+.listing-page.store-page-full .store-pro-apply:hover,
+.listing-page.store-page-full .store-pro-apply:focus,
+.listing-page.store-page-full .listing-detail:hover,
+.listing-page.store-page-full .listing-detail:focus {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #ff9f45 0%, #f97316 45%, #c2410c 100%) !important;
+    border-color: rgba(249, 115, 22, .46) !important;
+    box-shadow: 0 16px 32px rgba(249, 115, 22, .30) !important;
+    transform: translateY(-2px);
+}
+
+.listing-page.store-page-full .store-pro-clear,
+.listing-page.store-page-full .listing-demo {
+    color: #ea580c !important;
+    border: 1px solid rgba(249, 115, 22, .18) !important;
+    background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%) !important;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, .055) !important;
+}
+
+.listing-page.store-page-full .store-pro-clear:hover,
+.listing-page.store-page-full .store-pro-clear:focus,
+.listing-page.store-page-full .listing-demo:hover,
+.listing-page.store-page-full .listing-demo:focus {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #111827 0%, #0f172a 100%) !important;
+    border-color: rgba(15, 23, 42, .95) !important;
+    box-shadow: 0 16px 32px rgba(15, 23, 42, .18) !important;
+    transform: translateY(-2px);
+}
+
+.listing-page.store-page-full .listing-actions {
+    gap: 10px !important;
+}
+
+.listing-page.store-page-full .listing-detail,
+.listing-page.store-page-full .listing-demo {
+    min-height: 44px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px !important;
+    line-height: 1.1;
+}
+
+.listing-page.store-page-full button.listing-demo {
+    font-family: inherit;
+}
+
+.listing-page.store-page-full .store-pro-apply:focus-visible,
+.listing-page.store-page-full .store-pro-clear:focus-visible,
+.listing-page.store-page-full .listing-detail:focus-visible,
+.listing-page.store-page-full .listing-demo:focus-visible,
+.listing-page.store-page-full .store-pro-select select:focus-visible {
+    outline: 3px solid rgba(249, 115, 22, .24) !important;
+    outline-offset: 3px;
+}

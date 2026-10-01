@@ -1,0 +1,78 @@
+@model NSYazilim.Web.ViewModels.CampaignFormViewModel
+
+@{
+    var isEdit = Model != null && Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Kampanya Düzenle" : "Yeni Kampanya";
+}
+
+<div class="container py-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <form method="post" class="card border-0 shadow-sm p-4 mt-3">
+        @Html.AntiForgeryToken()
+        @if (isEdit)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+
+        <div class="mb-3">
+            <label class="form-label">Kampanya Kodu</label>
+            <input asp-for="Code" class="form-control" placeholder="Örn: OTO500" />
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Kampanya Adı</label>
+            <input asp-for="Name" class="form-control" placeholder="Örn: 500 TL üzeri %10 indirim" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Açıklama</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Minimum Tutar</label>
+                <input asp-for="MinimumCartTotal" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="MinimumCartTotal" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">İndirim</label>
+                <input asp-for="DiscountValue" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="DiscountValue" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">İndirim Tipi</label>
+                <select asp-for="DiscountType" class="form-select">
+                    <option value="Percent">Yüzde (%)</option>
+                    <option value="Fixed">Sabit TL</option>
+                </select>
+                <span asp-validation-for="DiscountType" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Başlangıç</label>
+                <input asp-for="StartDate" type="date" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Bitiş</label>
+                <input asp-for="EndDate" type="date" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label class="form-check-label">Aktif</label>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="/AdminCampaign" class="btn btn-outline-secondary">Geri</a>
+        </div>
+    </form>
+</div>

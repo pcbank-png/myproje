@@ -1,0 +1,126 @@
+﻿@model NSYazilim.Web.ViewModels.AdminActiveInstallationsViewModel
+@{
+    ViewData["Title"] = "Aktif Kurulum İstatistikleri";
+}
+
+<style>
+.nsx-ai-page{display:grid;gap:18px}.nsx-ai-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:28px 30px;border-radius:24px;background:linear-gradient(135deg,#0b2530,#103d46);color:#fff;box-shadow:0 18px 45px rgba(15,45,55,.14)}.nsx-ai-kicker{font-size:11px;font-weight:800;letter-spacing:.18em;color:#5eead4;margin-bottom:8px}.nsx-ai-hero h1{font-size:30px;font-weight:800;margin:0 0 6px;color:#fff}.nsx-ai-hero p{margin:0;color:#cbdde1}.nsx-ai-updated{text-align:right;white-space:nowrap}.nsx-ai-updated span,.nsx-ai-updated strong{display:block}.nsx-ai-updated span{font-size:12px;color:#9fc1c8}.nsx-ai-cards{display:grid;grid-template-columns:repeat(7,minmax(135px,1fr));gap:12px}.nsx-ai-card{padding:18px;border:1px solid #e4eaed;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(27,46,54,.055)}.nsx-ai-card span,.nsx-ai-card small{display:block}.nsx-ai-card span{font-size:12px;font-weight:700;color:#73838a}.nsx-ai-card strong{display:block;font-size:29px;line-height:1.1;margin:7px 0;color:#18323b}.nsx-ai-card small{font-size:11px;color:#91a0a6}.nsx-ai-card.accent{border-color:#9eece3;background:#f3fffd}.nsx-ai-card.success strong{color:#0f9f84}.nsx-ai-card.warning strong{color:#c77a12}.nsx-ai-product-strip{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:12px}.nsx-ai-product-strip article{padding:16px 18px;background:#fff;border:1px solid #e6ecee;border-radius:17px}.nsx-ai-product-head{display:flex;justify-content:space-between;gap:10px}.nsx-ai-product-head strong{font-size:14px;color:#243a42}.nsx-ai-product-head span{font-size:11px;font-weight:800;color:#0b9e84}.nsx-ai-product-code{font-size:10px;color:#8b999e;margin-top:3px}.nsx-ai-progress{height:7px;background:#edf2f3;border-radius:99px;overflow:hidden;margin:11px 0 8px}.nsx-ai-progress i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#18b79e,#47dac2)}.nsx-ai-product-strip small{font-size:11px;color:#7e8e94}.nsx-ai-filter{display:grid;grid-template-columns:minmax(280px,1.8fr) minmax(180px,1fr) minmax(180px,1fr) auto auto;gap:10px;align-items:end;padding:16px;background:#fff;border:1px solid #e4eaed;border-radius:18px}.nsx-ai-filter label{display:block;font-size:11px;font-weight:800;color:#6c7f86;margin:0 0 6px}.nsx-ai-filter input,.nsx-ai-filter select{width:100%;height:42px;border:1px solid #d9e2e5;border-radius:11px;padding:0 12px;background:#fbfdfd;color:#243b43;outline:none}.nsx-ai-filter input:focus,.nsx-ai-filter select:focus{border-color:#3fcdb7;box-shadow:0 0 0 3px rgba(63,205,183,.12)}.nsx-ai-filter button,.nsx-ai-filter>a{height:42px;border-radius:11px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;text-decoration:none}.nsx-ai-filter button{border:0;background:#143c46;color:#fff}.nsx-ai-filter>a{border:1px solid #d5e0e3;color:#52666d;background:#fff}.nsx-ai-table-card{background:#fff;border:1px solid #e4eaed;border-radius:20px;overflow:hidden;box-shadow:0 10px 28px rgba(27,46,54,.05)}.nsx-ai-table-head{padding:17px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #edf1f2}.nsx-ai-table-head strong,.nsx-ai-table-head span{display:block}.nsx-ai-table-head strong{font-size:16px;color:#203942}.nsx-ai-table-head span{font-size:11px;color:#89979c}.nsx-ai-legend{display:flex;align-items:center;gap:7px!important;font-size:11px;color:#77888e}.dot{width:7px;height:7px;border-radius:50%;display:inline-block!important}.dot.live{background:#17b99b}.dot.idle{background:#d29336}.nsx-ai-table{width:100%;border-collapse:collapse;min-width:1120px}.nsx-ai-table th{padding:12px 14px;background:#f7fafb;border-bottom:1px solid #e8edef;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#7d8c92}.nsx-ai-table td{padding:13px 14px;border-bottom:1px solid #eef2f3;vertical-align:middle;font-size:12px;color:#324951}.nsx-ai-table tbody tr:hover{background:#fbfefd}.nsx-ai-table td>strong,.nsx-ai-table td>span,.nsx-ai-table td>small,.nsx-ai-table td>code{display:block}.nsx-ai-table td small{font-size:10px;color:#8a999e;margin-top:3px}.nsx-ai-customer{display:flex;align-items:center;gap:10px}.nsx-ai-customer span,.nsx-ai-customer strong,.nsx-ai-customer small{display:block}.nsx-ai-avatar{width:34px;height:34px;border-radius:11px;background:#e8fbf8;color:#0a947c;display:flex!important;align-items:center;justify-content:center;font-weight:900}.nsx-ai-customer strong{font-size:12px;color:#223941}.nsx-ai-customer div>span{font-size:10px;color:#6f838a}.nsx-ai-code{max-width:210px;word-break:break-all}.nsx-ai-status{display:inline-flex!important;width:max-content;padding:5px 8px;border-radius:99px;font-size:10px;font-weight:800}.nsx-ai-status.live{background:#e7fbf5;color:#07826d}.nsx-ai-status.idle{background:#fff4df;color:#a15e08}.nsx-ai-status.never{background:#edf1f2;color:#687980}.nsx-ai-version{display:inline-flex!important;width:max-content;background:#eef9fb;color:#277184;padding:5px 8px;border-radius:8px;font-weight:800}.nsx-ai-license-on,.nsx-ai-license-off{display:inline-flex!important;width:max-content;margin-top:5px;padding:3px 7px;border-radius:99px;font-size:9px;font-weight:800}.nsx-ai-license-on{background:#e9faf5;color:#07836e}.nsx-ai-license-off{background:#fff0ec;color:#b24b36}.nsx-ai-open{display:inline-flex;padding:7px 11px;border-radius:9px;background:#eef7f8;color:#1b6572;text-decoration:none;font-weight:800}.nsx-ai-empty{text-align:center;padding:36px;color:#819096}.nsx-ai-note{font-size:11px;color:#76888e;background:#f6f9fa;border:1px solid #e7edef;border-radius:14px;padding:12px 15px}@@media(max-width:1450px){.nsx-ai-cards{grid-template-columns:repeat(4,1fr)}.nsx-ai-product-strip{grid-template-columns:repeat(2,1fr)}}@@media(max-width:900px){.nsx-ai-hero{align-items:flex-start;flex-direction:column}.nsx-ai-updated{text-align:left}.nsx-ai-cards{grid-template-columns:repeat(2,1fr)}.nsx-ai-product-strip{grid-template-columns:1fr}.nsx-ai-filter{grid-template-columns:1fr}.nsx-ai-filter button,.nsx-ai-filter>a{width:100%}}@@media(max-width:520px){.nsx-ai-cards{grid-template-columns:1fr}.nsx-ai-hero{padding:22px}.nsx-ai-hero h1{font-size:24px}}
+</style>
+
+<div class="nsx-ai-page">
+    <section class="nsx-ai-hero">
+        <div>
+            <div class="nsx-ai-kicker">NSX PRO ANALYTICS</div>
+            <h1>Aktif Kurulum İstatistikleri</h1>
+            <p>DB ile eşleşen müşterilerin lisans doğrulama hareketleri ve program sürüm sinyallerinden oluşturulan kullanım görünümü.</p>
+        </div>
+        <div class="nsx-ai-updated">
+            <span>Son hesaplama</span>
+            <strong>@Model.GeneratedAt.ToString("dd.MM.yyyy HH:mm")</strong>
+        </div>
+    </section>
+
+    <section class="nsx-ai-cards">
+        <article class="nsx-ai-card accent"><span>Eşleşen Müşteri</span><strong>@Model.TotalMatchedCustomers</strong><small>DB üye + lisans eşleşmesi</small></article>
+        <article class="nsx-ai-card"><span>Eşleşen Lisans</span><strong>@Model.TotalMatchedLicenses</strong><small>Toplam kurulum/lisans kaydı</small></article>
+        <article class="nsx-ai-card success"><span>Bugün Aktif</span><strong>@Model.ActiveToday</strong><small>Bugün başarılı doğrulama</small></article>
+        <article class="nsx-ai-card success"><span>Son 7 Gün</span><strong>@Model.ActiveLast7Days</strong><small>Aktif müşteri</small></article>
+        <article class="nsx-ai-card success"><span>Son 30 Gün</span><strong>@Model.ActiveLast30Days</strong><small>Aktif müşteri</small></article>
+        <article class="nsx-ai-card warning"><span>Pasif / Doğrulanmamış</span><strong>@Model.InactiveOrNever</strong><small>30+ gün veya hiç kontrol yok</small></article>
+        <article class="nsx-ai-card"><span>Aktif Cihaz</span><strong>@Model.ActiveDevices</strong><small>Son 30 günde görülen cihaz</small></article>
+    </section>
+
+    @if (Model.ProductStats.Any())
+    {
+        <section class="nsx-ai-product-strip">
+            @foreach (var item in Model.ProductStats)
+            {
+                var rate = item.MatchedCustomers <= 0 ? 0 : (int)Math.Round(item.ActiveLast30Days * 100d / item.MatchedCustomers);
+                <article>
+                    <div class="nsx-ai-product-head"><strong>@item.ProductName</strong><span>%@rate aktif</span></div>
+                    <div class="nsx-ai-product-code">@item.ProductCode</div>
+                    <div class="nsx-ai-progress"><i style="width:@Math.Min(rate, 100)%"></i></div>
+                    <small>@item.ActiveLast30Days / @item.MatchedCustomers müşteri · son 30 gün</small>
+                </article>
+            }
+        </section>
+    }
+
+    <form method="get" class="nsx-ai-filter">
+        <div class="nsx-ai-search">
+            <label>Akıllı Arama</label>
+            <input type="text" name="q" value="@Model.Search" placeholder="Müşteri, e-posta, telefon, ürün veya sürüm..." />
+        </div>
+        <div>
+            <label>Ürün</label>
+            <select name="productCode">
+                <option value="">Tüm ürünler</option>
+                @foreach (var product in Model.Products)
+                {
+                    <option value="@product.ProductCode" selected="@(Model.ProductCode == product.ProductCode)">@product.ProductName</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label>Aktivite</label>
+            <select name="activity">
+                <option value="" selected="@(string.IsNullOrWhiteSpace(Model.Activity))">Tümü</option>
+                <option value="today" selected="@(Model.Activity == "today")">Bugün aktif</option>
+                <option value="7d" selected="@(Model.Activity == "7d")">Son 7 gün</option>
+                <option value="30d" selected="@(Model.Activity == "30d")">Son 30 gün</option>
+                <option value="inactive" selected="@(Model.Activity == "inactive")">30+ gün pasif</option>
+                <option value="verified" selected="@(Model.Activity == "verified")">En az bir kez doğrulanan</option>
+                <option value="never" selected="@(Model.Activity == "never")">Hiç doğrulanmayan</option>
+            </select>
+        </div>
+        <button type="submit">Filtrele</button>
+        <a href="/Admin/ActiveInstallations">Sıfırla</a>
+    </form>
+
+    <section class="nsx-ai-table-card">
+        <div class="nsx-ai-table-head">
+            <div><strong>Kurulumlar</strong><span>Gösterilen @Model.Rows.Count kayıt · en fazla 1000</span></div>
+            <div class="nsx-ai-legend"><span class="dot live"></span>Aktif <span class="dot idle"></span>Pasif</div>
+        </div>
+        <div class="table-responsive">
+            <table class="nsx-ai-table">
+                <thead>
+                    <tr>
+                        <th>Müşteri</th>
+                        <th>Ürün</th>
+                        <th>Son Kullanım</th>
+                        <th>Sürüm</th>
+                        <th>Cihaz</th>
+                        <th>Konum / IP</th>
+                        <th>Lisans</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Rows)
+                {
+                    var activityClass = item.ActivityLevel >= 2 ? "live" : item.ActivityLevel == 1 ? "idle" : "never";
+                    <tr>
+                        <td>
+                            <div class="nsx-ai-customer"><span class="nsx-ai-avatar">@((item.CustomerName.FirstOrDefault() == default ? 'N' : char.ToUpperInvariant(item.CustomerName.First())))</span><div><strong>@(string.IsNullOrWhiteSpace(item.CustomerName) ? "Müşteri" : item.CustomerName)</strong><span>@item.Email</span>@if (!string.IsNullOrWhiteSpace(item.Phone)){<small>@item.Phone</small>}</div></div>
+                        </td>
+                        <td><strong>@item.ProductName</strong><small class="nsx-ai-code">@item.ProductCode</small></td>
+                        <td><span class="nsx-ai-status @activityClass">@item.ActivityStatus</span><small>@(item.LastSeenAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</small></td>
+                        <td><span class="nsx-ai-version">@(string.IsNullOrWhiteSpace(item.AppVersion) ? "-" : item.AppVersion)</span></td>
+                        <td><strong>@item.ActiveDeviceCount / @item.DeviceCount</strong><small>aktif / kayıtlı</small></td>
+                        <td><span>@(string.IsNullOrWhiteSpace(item.Location) ? "-" : item.Location)</span><small>@(string.IsNullOrWhiteSpace(item.IpAddress) ? "-" : item.IpAddress)</small></td>
+                        <td><code>@item.LicenseKeyMasked</code>@if (!item.LicenseIsActive){<span class="nsx-ai-license-off">Pasif</span>}else{<span class="nsx-ai-license-on">Aktif</span>}</td>
+                        <td><a class="nsx-ai-open" href="/Admin/LicenseEdit/@item.LicenseId">Aç</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        @if (!Model.Rows.Any())
+        {
+            <div class="nsx-ai-empty">Seçili filtreye uygun kurulum bulunamadı.</div>
+        }
+    </section>
+
+    <div class="nsx-ai-note">Bu ekran müşterinin cari, borç, işlem veya özel program verilerini toplamaz. Kullanım durumu yalnızca başarılı lisans doğrulamasının son görülme bilgisinden; sürüm alanı ise lisans ve güncelleme kontrollerindeki teknik sürüm bilgisinden hesaplanır.</div>
+</div>

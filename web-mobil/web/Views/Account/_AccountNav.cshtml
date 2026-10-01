@@ -1,0 +1,15 @@
+@{
+    var path = (Context.Request.Path.Value ?? string.Empty).ToLowerInvariant();
+}
+<aside class="nsx-account-nav">
+    <div class="nsx-account-nav-title"><span>ÜYE PANELİ</span><strong>Hesabım</strong></div>
+    <nav aria-label="Hesap menüsü">
+        <a class="@(path.EndsWith("/myaccount") ? "active" : "")" href="/Account/MyAccount"><span>01</span>Genel Bakış</a>
+        <a class="@(path.Contains("/orders") || path.Contains("/orderdetail") ? "active" : "")" href="/Account/Orders"><span>02</span>Siparişlerim</a>
+        <a class="@(path.Contains("/licenses") ? "active" : "")" href="/Account/Licenses"><span>03</span>Lisanslarım</a>
+        <a class="@(path.Contains("/downloads") ? "active" : "")" href="/Account/Downloads"><span>04</span>İndirmelerim</a>
+        <a class="@(path.Contains("/changepassword") ? "active" : "")" href="/Account/ChangePassword"><span>05</span>Şifre ve Güvenlik</a>
+    </nav>
+    <div class="nsx-account-nav-help"><span>Yardıma mı ihtiyacınız var?</span><a href="/iletisim">Destek ekibine ulaşın →</a></div>
+    <a class="nsx-account-logout" href="/Account/Logout">Çıkış Yap</a>
+</aside>

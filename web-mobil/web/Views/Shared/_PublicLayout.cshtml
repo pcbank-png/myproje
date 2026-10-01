@@ -1,0 +1,212 @@
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@inject NSYazilim.Web.Services.SeoLanguageUrlService SeoLanguageUrls
+@using NSYazilim.Web.Services
+@{
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    var rawTitle = SeoTextHelper.BuildTitle(ViewData["MetaTitle"]?.ToString() ?? ViewData["Title"]?.ToString());
+    var rawDescription = SeoTextHelper.BuildDescription(ViewData["MetaDescription"]?.ToString());
+    var title = await SiteLocalization.TranslateAsync(rawTitle, currentLanguage.Code, Context.RequestAborted);
+    var description = await SiteLocalization.TranslateAsync(rawDescription, currentLanguage.Code, Context.RequestAborted);
+    var path = string.IsNullOrWhiteSpace(Context.Request.Path.Value) ? "/" : Context.Request.Path.Value;
+    var lowerPath = path.ToLowerInvariant();
+    var isUtilityNoIndexPath = lowerPath.StartsWith("/account")
+        || lowerPath.StartsWith("/store/free-download-start")
+        || lowerPath.StartsWith("/odeme")
+        || lowerPath.StartsWith("/banktransfer")
+        || lowerPath.StartsWith("/havale-bildirimi")
+        || lowerPath.StartsWith("/customer")
+        || lowerPath.StartsWith("/language")
+        || lowerPath.StartsWith("/hata")
+        || lowerPath.StartsWith("/sayfa-bulunamadi");
+    var robots = ViewData["Robots"]?.ToString()
+        ?? (isUtilityNoIndexPath
+            ? "noindex, nofollow, noarchive"
+            : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
+    var canonicalSource = ViewData["Canonical"]?.ToString() ?? SeoTextHelper.CanonicalUrl(path);
+    var seoLanguageLinks = await SeoLanguageUrls.BuildAsync(canonicalSource, currentLanguage, Context.RequestAborted);
+    var canonical = seoLanguageLinks.CurrentUrl;
+    var image = ViewData["OgImage"]?.ToString() ?? SeoTextHelper.AbsoluteUrl("/nsx-assets/logo-brand.webp");
+    var rawImageAlt = ViewData["OgImageAlt"]?.ToString() ?? title;
+    var imageAlt = await SiteLocalization.TranslateAsync(rawImageAlt, currentLanguage.Code, Context.RequestAborted);
+    var imageWidth = ViewData["OgImageWidth"]?.ToString();
+    var imageHeight = ViewData["OgImageHeight"]?.ToString();
+    var keywords = ViewData["MetaKeywords"]?.ToString();
+    var localizedBrandName = await SiteLocalization.TranslateAsync("NSX Yazılım", currentLanguage.Code, Context.RequestAborted);
+    var localizedBrandJson = System.Text.Json.JsonSerializer.Serialize(localizedBrandName);
+    var localizedStorePath = await SeoLanguageUrls.BuildLocalizedReturnUrlAsync("/store", currentLanguage, Context.RequestAborted);
+    var localizedSearchTarget = SeoTextHelper.AbsoluteUrl(localizedStorePath) + "?q={search_term_string}";
+}
+<!DOCTYPE html>
+<html lang="@currentLanguage.UrlCode" dir="@(currentLanguage.IsRtl ? "rtl" : "ltr")">
+<head>
+    <link rel="stylesheet" href="~/css/nsx-design-tokens.css" asp-append-version="true" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KYN9MQQ51T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KYN9MQQ51T');
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@title</title>
+    <meta name="description" content="@description" />
+    @if (!string.IsNullOrWhiteSpace(keywords)) { <meta name="keywords" content="@keywords" /> }
+    <meta name="robots" content="@robots" />
+    <meta name="author" content="Nevzat SÜRÜCÜ" />
+    <meta name="publisher" content="@localizedBrandName" />
+    <link rel="canonical" href="@canonical" />
+    @await Html.PartialAsync("_SeoLanguageAlternates", seoLanguageLinks)
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="@SeoTextHelper.AbsoluteUrl("/sitemap.xml")" />
+    <meta property="og:locale" content="@currentLanguage.Code.Replace('-', '_')" />
+    <meta property="og:type" content="@(ViewData["OgType"]?.ToString() ?? "website")" />
+    <meta property="og:site_name" content="@localizedBrandName" />
+    <meta property="og:title" content="@title" />
+    <meta property="og:description" content="@description" />
+    <meta property="og:url" content="@canonical" />
+    <meta property="og:image" content="@image" />
+    <meta property="og:image:secure_url" content="@image" />
+    <meta property="og:image:alt" content="@imageAlt" />
+    @if (!string.IsNullOrWhiteSpace(imageWidth) && !string.IsNullOrWhiteSpace(imageHeight)) { <meta property="og:image:width" content="@imageWidth" /><meta property="og:image:height" content="@imageHeight" /> }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@title" />
+    <meta name="twitter:description" content="@description" />
+    <meta name="twitter:image" content="@image" />
+    <meta name="twitter:image:alt" content="@imageAlt" />
+    <script type="application/ld+json">
+    {
+      "@@context":"https://schema.org",
+      "@@graph":[
+        {"@@type":["Organization","OnlineStore"],"@@id":"https://www.nsxyazilim.com/#organization","name":@Html.Raw(localizedBrandJson),"url":"https://www.nsxyazilim.com/","logo":"https://www.nsxyazilim.com/nsx-assets/logo-brand.webp","founder":{"@@type":"Person","name":"Nevzat SÜRÜCÜ"},"contactPoint":{"@@type":"ContactPoint","telephone":"+90 543 462 42 26","contactType":"customer support","areaServed":"TR","availableLanguage":"@currentLanguage.UrlCode"}},
+        {"@@type":"WebSite","@@id":"https://www.nsxyazilim.com/#website","url":"@canonical","name":@Html.Raw(localizedBrandJson),"inLanguage":"@currentLanguage.Code","publisher":{"@@id":"https://www.nsxyazilim.com/#organization"},"potentialAction":{"@@type":"SearchAction","target":"@localizedSearchTarget","query-input":"required name=search_term_string"}}
+      ]
+    }
+    </script>
+    <link rel="icon" href="/favicon.ico" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/public-hero-fixes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-new-content-pages.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-hero-effects.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-pro-v2.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-home-light.css" asp-append-version="true" />
+    @if (ViewData["JsonLd"] is string jsonLd && !string.IsNullOrWhiteSpace(jsonLd)) { @Html.Raw(jsonLd) }
+    <link rel="stylesheet" href="/css/nsx-global-type.css" asp-append-version="true" />
+</head>
+<body class="home-light-theme public-light-theme">
+    <main class="public-content-page">
+        @await Html.PartialAsync("_PublicHeader")
+        @RenderBody()
+        @await Html.PartialAsync("_PublicFooter")
+    </main>
+    <link rel="stylesheet" href="/css/nsx-public-light-parity.css" asp-append-version="true" />
+    <style id="nsx-global-white-green-checks">
+        /* Son katman: yeşil kutuların kendisine dokunmadan yalnız tikleri beyaz kilitler. */
+        :is(.nsx-auth-pro-trust b,.nsx-support-checklist b,.free-license-panel > div:last-child > b,.nsx-purchase-success-icon,.nsx-auth-pro-confirm-icon,.nsx-confirm-icon,.nsx-success-icon,.nsx-guide__assurance > span){
+            position:relative!important;
+            display:grid!important;
+            place-items:center!important;
+            color:transparent!important;
+            font-family:Arial,sans-serif!important;
+            font-size:0!important;
+            line-height:1!important;
+        }
+        :is(.nsx-auth-pro-trust b,.nsx-support-checklist b,.free-license-panel > div:last-child > b,.nsx-purchase-success-icon,.nsx-auth-pro-confirm-icon,.nsx-confirm-icon,.nsx-success-icon,.nsx-guide__assurance > span)::before{
+            content:"✓"!important;
+            position:absolute!important;
+            inset:0!important;
+            display:grid!important;
+            place-items:center!important;
+            margin:0!important;
+            padding:0!important;
+            color:#fff!important;
+            font-family:Arial,sans-serif!important;
+            font-size:13px!important;
+            font-weight:900!important;
+            line-height:1!important;
+            transform:none!important;
+        }
+        .nsx-purchase-success-icon::before,.nsx-auth-pro-confirm-icon::before,.nsx-confirm-icon::before,.nsx-success-icon::before{font-size:22px!important;}
+    </style>
+    <style id="nsx-global-subpage-hero-badges">
+        /* Ana sayfa hariç public alt sayfalardaki hero rozetlerini tek standartta tut. */
+        :is(
+            .public-content-page .nsx-info-hero .nsx-info-kicker,
+            .public-content-page .nsx-support-hero .nsx-support-kicker,
+            .public-content-page .nsx-status-hero .nsx-status-kicker,
+            .public-content-page .nsx-video-hero .nsx-video-kicker,
+            .software-list-page .software-list-hero .nsx-store-kicker,
+            .detail-page .nsx-product-short-hero .nsx-product-short-kicker,
+            .public-content-page .nsx-blog-redesign-hero .nsx-blog-redesign-kicker,
+            .public-content-page .nsx-blog-detail-hero .nsx-blog-kicker,
+            .public-content-page .nsx-video-detail-head > div > span,
+            .nsx-purchase-page .nsx-purchase-hero > .container > div:first-child > span,
+            .nsx-purchase-success-hero .nsx-purchase-success-kicker
+        ){
+            display:inline-flex!important;
+            align-items:center!important;
+            gap:10px!important;
+            width:fit-content!important;
+            max-width:100%!important;
+            min-height:38px!important;
+            margin:0 0 16px!important;
+            padding:0 16px!important;
+            border:1px solid rgba(255,110,4,.22)!important;
+            border-radius:999px!important;
+            background:rgba(255,110,4,.08)!important;
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 10px 24px rgba(255,110,4,.12)!important;
+            color:#ff8a33!important;
+            font-size:12px!important;
+            font-weight:900!important;
+            line-height:1.45!important;
+            letter-spacing:.11em!important;
+            text-transform:uppercase!important;
+        }
+        :is(
+            .public-content-page .nsx-info-hero .nsx-info-kicker,
+            .public-content-page .nsx-support-hero .nsx-support-kicker,
+            .public-content-page .nsx-status-hero .nsx-status-kicker,
+            .public-content-page .nsx-video-hero .nsx-video-kicker,
+            .software-list-page .software-list-hero .nsx-store-kicker,
+            .detail-page .nsx-product-short-hero .nsx-product-short-kicker,
+            .public-content-page .nsx-blog-detail-hero .nsx-blog-kicker,
+            .public-content-page .nsx-video-detail-head > div > span,
+            .nsx-purchase-page .nsx-purchase-hero > .container > div:first-child > span,
+            .nsx-purchase-success-hero .nsx-purchase-success-kicker
+        )::before{
+            content:""!important;
+            display:block!important;
+            flex:0 0 8px!important;
+            width:8px!important;
+            height:8px!important;
+            border-radius:50%!important;
+            background:#ff6e04!important;
+            box-shadow:0 0 0 6px rgba(255,110,4,.12)!important;
+        }
+        .public-content-page .nsx-blog-redesign-hero .nsx-blog-redesign-kicker i{
+            display:block!important;
+            flex:0 0 8px!important;
+            width:8px!important;
+            height:8px!important;
+            border-radius:50%!important;
+            background:#ff6e04!important;
+            box-shadow:0 0 0 6px rgba(255,110,4,.12)!important;
+        }
+        /* Satın alma adımlarında yeşil done rozeti yerine aynı turuncu dil kullanılır. */
+        .nsx-purchase-page .nsx-purchase-steps .done{
+            border-color:rgba(255,110,4,.28)!important;
+            background:rgba(255,110,4,.10)!important;
+            box-shadow:0 12px 24px rgba(255,110,4,.10)!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps .done b{
+            background:#ff9a52!important;
+            color:#fff!important;
+            box-shadow:0 8px 18px rgba(255,110,4,.18)!important;
+        }
+    </style>
+    <script src="/js/online-presence.js" asp-append-version="true" defer></script>
+    <script src="/js/nsx-pro-v2.js" asp-append-version="true" defer></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

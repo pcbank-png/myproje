@@ -1,0 +1,48 @@
+@model NSYazilim.Web.ViewModels.DealerDashboardViewModel
+@{
+    ViewData["Title"] = "Bayi Paneli";
+    ViewBag.Dealer = Model.Dealer;
+}
+<div class="dealer-head">
+    <div><div class="dealer-kicker">@Model.Dealer.Province.ToUpperInvariant() BAYI KANALI</div><h1>Ho&#351; geldiniz, @Model.Dealer.BusinessName</h1><p>M&#252;&#351;teri e-postas&#305;na ba&#287;l&#305; sat&#305;&#351;, lisans ve bayi alacaklar&#305; tek ekranda.</p></div>
+    <a class="dealer-btn primary" href="/Bayi/Satis/Yeni">+ Yeni Sat&#305;&#351;</a>
+</div>
+<div class="dealer-grid">
+    <div class="dealer-card dealer-stat"><small>Toplam Sat&#305;&#351; Kayd&#305;</small><strong>@Model.TotalSales</strong></div>
+    <div class="dealer-card dealer-stat"><small>Admin Onay&#305; Bekleyen</small><strong>@Model.PendingSales</strong></div>
+    <div class="dealer-card dealer-stat"><small>Onaylanan Sat&#305;&#351;</small><strong>@Model.ApprovedSales</strong></div>
+    <div class="dealer-card dealer-stat"><small>Onayl&#305; Bayi Alaca&#287;&#305;</small><strong>@Model.ApprovedCommission.ToString("N2") &#8378;</strong></div>
+</div>
+<div class="dealer-card" style="margin-bottom:20px">
+    <h2>Hesab&#305;m</h2>
+    <div class="dealer-form-grid">
+        <div><small>Bayi Kodu</small><strong style="display:block;margin-top:5px">@Model.Dealer.DealerCode</strong></div>
+        <div><small>&#304;l / Yetkili</small><strong style="display:block;margin-top:5px">@Model.Dealer.Province / @Model.Dealer.ContactName</strong></div>
+        <div><small>K&#226;r Modeli</small><strong style="display:block;margin-top:5px">@(Model.Dealer.CommissionMode == "Fixed" ? $"Sabit {Model.Dealer.CommissionFixedAmount:N2} TL" : $"%{Model.Dealer.CommissionPercent:N2}")</strong></div>
+        <div><small>Bayi E-posta</small><strong style="display:block;margin-top:5px">@Model.Dealer.Email</strong></div>
+    </div>
+</div>
+<div class="dealer-card">
+    <div class="dealer-head" style="margin-bottom:10px"><div><h2 style="margin:0">Son Sat&#305;&#351;lar</h2><p>Son 50 bayi sat&#305;&#351; kayd&#305;.</p></div><a class="dealer-btn light sm" href="/Bayi/Satislarim">T&#252;m&#252;n&#252; G&#246;r</a></div>
+    @if (!Model.Sales.Any()) { <div class="dealer-empty">Hen&#252;z bayi sat&#305;&#351;&#305; yok.</div> }
+    else
+    {
+        <div class="dealer-table-wrap"><table class="dealer-table"><thead><tr><th>Sipari&#351;</th><th>M&#252;&#351;teri</th><th>&#220;r&#252;n</th><th>Tutar</th><th>Bayi K&#226;r&#305;</th><th>Durum</th><th></th></tr></thead><tbody>
+        @foreach (var sale in Model.Sales)
+        {
+            var transfer = sale.BankTransferNotification?.Status ?? "NotSubmitted";
+            var approved = transfer == "Approved" || sale.Order?.PaymentStatus == "Paid";
+            var rejected = transfer == "Rejected" || sale.Order?.PaymentStatus == "Rejected";
+            <tr>
+                <td><strong>@(sale.Order?.OrderNumber ?? $"BAYI-{sale.Id}")</strong><small>@sale.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small></td>
+                <td><strong>@(sale.CustomerUser?.FullName ?? "Musteri")</strong><small>@(sale.CustomerUser?.Email ?? "-")</small></td>
+                <td>@(sale.Product?.Name ?? "Urun")<small>@(sale.LicenseType == "Lifetime" ? "Sinirsiz" : "Yillik") x @sale.Quantity</small></td>
+                <td><strong>@sale.SaleAmount.ToString("N2") &#8378;</strong></td>
+                <td><strong>@sale.CommissionAmount.ToString("N2") &#8378;</strong><small>@(approved ? "Hak edildi" : rejected ? "Iptal" : "Onay bekliyor")</small></td>
+                <td><span class="dealer-pill @(approved ? "ok" : rejected ? "bad" : "warn")">@(approved ? "Onaylandi" : rejected ? "Reddedildi" : transfer == "Pending" ? "Admin Onayi" : "Havale Bekliyor")</span></td>
+                <td><a class="dealer-btn light sm" href="/Bayi/Satis/@sale.Id">Detay</a></td>
+            </tr>
+        }
+        </tbody></table></div>
+    }
+</div>

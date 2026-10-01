@@ -1,0 +1,236 @@
+/* NSX Campaign Coupon System */
+.nsx-campaign-page {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.nsx-campaign-hero {
+    border-radius: 34px;
+    padding: 36px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(34,197,94,.30), transparent 30%),
+        linear-gradient(135deg,#0f172a,#166534 62%,#14532d);
+    box-shadow: 0 28px 76px rgba(22,101,52,.22);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.nsx-campaign-kicker {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 8px 13px;
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.18);
+    font-weight: 950;
+    font-size: .78rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.nsx-campaign-hero h1 {
+    font-size: clamp(2.1rem, 5vw, 3.8rem);
+    font-weight: 950;
+    letter-spacing: -1.4px;
+    margin: 18px 0 10px;
+}
+
+.nsx-campaign-hero p {
+    color: rgba(255,255,255,.78);
+    margin: 0;
+    max-width: 760px;
+    line-height: 1.7;
+}
+
+.nsx-campaign-card {
+    border-radius: 30px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 38px rgba(15,23,42,.07);
+}
+
+.nsx-campaign-card h2 {
+    font-weight: 950;
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+}
+
+.nsx-campaign-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 18px;
+    padding: 13px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+    font-weight: 850;
+}
+
+.nsx-campaign-empty {
+    border-radius: 20px;
+    padding: 22px;
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 850;
+    text-align: center;
+}
+
+.nsx-campaign-list {
+    display: grid;
+    gap: 12px;
+}
+
+.nsx-campaign-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    border-radius: 24px;
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+}
+
+.nsx-campaign-code {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 7px 11px;
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 950;
+    font-size: .8rem;
+}
+
+.nsx-campaign-item h3 {
+    font-weight: 950;
+    margin: 10px 0 4px;
+}
+
+.nsx-campaign-item p,
+.nsx-campaign-item small {
+    display: block;
+    color: #64748b;
+    font-weight: 800;
+    margin: 0;
+}
+
+.nsx-campaign-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 220px;
+}
+
+.nsx-campaign-actions > span {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 7px 11px;
+    font-size: .78rem;
+    font-weight: 950;
+}
+
+.nsx-campaign-actions > span.ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.nsx-campaign-actions > span.bad {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.nsx-coupon-box {
+    border-radius: 22px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+    margin-bottom: 14px;
+}
+
+.nsx-coupon-box label {
+    display: block;
+    color: #64748b;
+    font-weight: 950;
+    margin-bottom: 8px;
+}
+
+.nsx-coupon-input {
+    display: flex;
+    gap: 8px;
+}
+
+.nsx-coupon-input input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #dbe4f0;
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.nsx-coupon-input button,
+.nsx-applied-coupon button {
+    border: 0;
+    border-radius: 14px;
+    padding: 10px 12px;
+    color: #fff;
+    background: linear-gradient(135deg,#16a34a,#15803d);
+    font-weight: 950;
+}
+
+.nsx-applied-coupon {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+}
+
+.nsx-applied-coupon strong {
+    display: block;
+    font-weight: 950;
+    color: #166534;
+}
+
+.nsx-applied-coupon small {
+    display: block;
+    color: #64748b;
+    font-weight: 800;
+}
+
+.nsx-applied-coupon button {
+    background: #dc2626;
+}
+
+@media (max-width: 767px) {
+    .nsx-campaign-hero {
+        padding: 24px;
+        border-radius: 26px;
+    }
+
+    .nsx-campaign-item {
+        display: block;
+    }
+
+    .nsx-campaign-actions {
+        justify-content: flex-start;
+        margin-top: 14px;
+        min-width: 0;
+    }
+
+    .nsx-coupon-input,
+    .nsx-applied-coupon {
+        display: block;
+    }
+
+    .nsx-coupon-input button,
+    .nsx-applied-coupon button {
+        width: 100%;
+        margin-top: 8px;
+    }
+}

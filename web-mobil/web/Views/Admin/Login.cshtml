@@ -1,0 +1,74 @@
+@{
+    Layout = null;
+    var rememberedEmail = ViewBag.Email?.ToString() ?? string.Empty;
+    var rememberMe = ViewBag.RememberMe is bool remember && remember;
+}
+
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="utf-8" />
+    <title>NSX Admin Giriş</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <style>
+        body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0f172a;min-height:100vh;display:flex;align-items:center;justify-content:center;color:#111827}
+        .card{width:390px;background:#fff;border-radius:24px;padding:32px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+        .brand{font-size:26px;font-weight:800;color:#111827;margin-bottom:6px}
+        .sub{color:#6b7280;margin-bottom:24px}
+        label{display:block;font-weight:700;margin:14px 0 7px}
+        input{width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:14px;padding:13px 14px;font-size:15px;outline:none;transition:.2s}
+        input:focus{border-color:#f56800;box-shadow:0 0 0 4px rgba(245,104,0,.12)}
+        button{width:100%;border:0;border-radius:14px;margin-top:22px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#f56800,#3a3d46);color:#fff}
+        .error{background:#fee2e2;color:#991b1b;border-radius:12px;padding:12px;margin-bottom:14px;font-weight:700}
+        .hint{font-size:13px;color:#6b7280;margin-top:16px;line-height:1.5}
+        .remember-row{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:12px 13px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;cursor:pointer}
+        .remember-row input{width:18px;height:18px;flex:0 0 18px;margin:1px 0 0;padding:0;accent-color:#f56800}
+        .remember-row span{display:grid;gap:2px;font-size:14px;font-weight:800;color:#374151}
+        .remember-row small{font-size:12px;font-weight:500;color:#6b7280}
+    </style>
+    <link rel="stylesheet" href="/css/nsx-global-type.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-admin-unified.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-admin-localization.css" asp-append-version="true" />
+</head>
+<body>
+    <form class="card" method="post" autocomplete="on">
+        @Html.AntiForgeryToken()
+        <div class="brand">NSX Yazılım</div>
+        <div class="sub">Admin panel giriş ekranı</div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="error">@ViewBag.Error</div>
+        }
+
+        <label>E-posta</label>
+        <input id="adminEmail" type="email" name="email" value="@rememberedEmail" required autocomplete="username" autocapitalize="none" spellcheck="false" />
+
+        <label>Şifre</label>
+        <input id="adminPassword" type="password" name="password" required autocomplete="current-password" />
+
+        <label class="remember-row" for="rememberMe">
+            <input id="rememberMe" type="checkbox" name="rememberMe" value="true" checked="@rememberMe" />
+            <span>
+                Beni hatırla
+                <small>Yalnızca e-posta adresin bu cihazda güvenli biçimde saklanır.</small>
+            </span>
+        </label>
+
+        <button type="submit">Giriş Yap</button>
+
+        <div class="hint">
+            Şifren hiçbir zaman kaydedilmez. Hatırlanan e-postayı değiştirerek farklı bir admin hesabıyla da giriş yapabilirsin.
+        </div>
+    </form>
+    <script>
+        (function () {
+            var email = document.getElementById('adminEmail');
+            var password = document.getElementById('adminPassword');
+            if (email && email.value && password) password.focus();
+            else if (email) email.focus();
+        })();
+    </script>
+</body>
+</html>

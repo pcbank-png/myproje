@@ -1,0 +1,361 @@
+@model NSYazilim.Web.Models.License
+
+@{
+    var products = ViewBag.Products as List<NSYazilim.Web.Models.Product> ?? new List<NSYazilim.Web.Models.Product>();
+    var users = ViewBag.Users as List<NSYazilim.Web.Models.User> ?? new List<NSYazilim.Web.Models.User>();
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Lisans Düzenle" : "Yeni Lisans";
+    var action = isEdit ? "/Admin/LicenseEdit/" + Model.Id : "/Admin/LicenseAdd";
+}
+
+<div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger rounded-4">@TempData["Error"]</div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger rounded-4">@ViewBag.Error</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">@(isEdit ? "Lisans Düzenle" : "Yeni Lisans")</h1>
+            <div class="text-muted">Ürün, üye, süre ve makine eşleşmesini yönetin.</div>
+        </div>
+        <a class="btn btn-outline-dark rounded-3" href="/Admin/Licenses">Lisanslara Dön</a>
+    </div>
+
+    <form id="license-edit-form" method="post" action="@action" class="card border-0 shadow-sm rounded-4 mb-4 nsx-standard-form">
+        @Html.AntiForgeryToken()
+
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Lisans Anahtarı</label>
+                    <input class="form-control" name="LicenseKey" value="@Model.LicenseKey" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Lisans Tipi</label>
+                    <select class="form-select" name="LicenseType">
+                        @if (Model.LicenseType == "Yearly")
+                        {
+                            <option value="Yearly" selected>Yıllık</option>
+                            <option value="Lifetime">Sınırsız</option>
+                        }
+                        else
+                        {
+                            <option value="Yearly">Yıllık</option>
+                            <option value="Lifetime" selected>Sınırsız</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Durum</label>
+                    <select class="form-select" name="IsActive">
+                        @if (Model.IsActive)
+                        {
+                            <option value="true" selected>Aktif</option>
+                            <option value="false">Pasif</option>
+                        }
+                        else
+                        {
+                            <option value="true">Aktif</option>
+                            <option value="false" selected>Pasif</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Ürün</label>
+                    <select class="form-select" name="ProductId" required>
+                        <option value="">Ürün seç</option>
+                        @foreach (var product in products)
+                        {
+                            if (Model.ProductId == product.Id)
+                            {
+                                <option value="@product.Id" selected>@product.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@product.Id">@product.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Üye</label>
+                    <select class="form-select" name="UserId" required>
+                        <option value="">Üye seç</option>
+                        @foreach (var user in users)
+                        {
+                            if (Model.UserId == user.Id)
+                            {
+                                <option value="@user.Id" selected>@user.FullName - @user.Email</option>
+                            }
+                            else
+                            {
+                                <option value="@user.Id">@user.FullName - @user.Email</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Sipariş Id</label>
+                    <input class="form-control" type="number" name="OrderId" value="@Model.OrderId" placeholder="Opsiyonel" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Başlangıç</label>
+                    <input class="form-control" type="date" name="StartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Bitiş</label>
+                    <input class="form-control" type="date" name="EndDate" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
+                    <div class="form-text">Sınırsız lisans için boş bırak.</div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Makine Id</label>
+                    <input class="form-control" name="MachineId" value="@Model.MachineId" placeholder="Boş bırakılabilir" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Ürün Kodu</label>
+                    <input class="form-control" name="ProductCode" value="@Model.ProductCode" placeholder="Örn: NSXKOMISYONLUCARITAKIPPRO" />
+                    <div class="form-text">V2 lisans kontrolünde program kodu.</div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">V2 Durum</label>
+                    <select class="form-select" name="LicenseStatus">
+                        <option value="Active" selected="@(Model.LicenseStatus == "Active" || string.IsNullOrWhiteSpace(Model.LicenseStatus))">Aktif</option>
+                        <option value="Suspended" selected="@(Model.LicenseStatus == "Suspended")">Askıda</option>
+                        <option value="Revoked" selected="@(Model.LicenseStatus == "Revoked")">İptal</option>
+                        <option value="Blocked" selected="@(Model.LicenseStatus == "Blocked")">Engelli</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Cihaz Limiti</label>
+                    <input class="form-control" type="number" min="1" name="MaxDeviceCount" value="@(Model.MaxDeviceCount <= 0 ? 1 : Model.MaxDeviceCount)" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Offline Lisans</label>
+                    <select class="form-select" name="OfflineAllowed">
+                        @if (Model.OfflineAllowed)
+                        {
+                            <option value="true" selected>Açık</option>
+                            <option value="false">Kapalı</option>
+                        }
+                        else
+                        {
+                            <option value="true">Açık</option>
+                            <option value="false" selected>Kapalı</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">İptal / Askı Açıklaması</label>
+                    <input class="form-control" name="RevokedReason" value="@Model.RevokedReason" placeholder="Opsiyonel" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Son Kontrol</label>
+                    <input class="form-control" value="@(Model.LastCheckedAt?.ToString("dd.MM.yyyy HH:mm") ?? "Henüz yok")" disabled />
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white border-0 d-flex flex-wrap justify-content-between align-items-center gap-2 p-3">
+            <div>
+                @if (isEdit && !string.IsNullOrWhiteSpace(Model.MachineId))
+                {
+                    <button type="submit" form="license-reset-form" class="btn btn-outline-warning" onclick="return confirm('Bu lisansın cihaz eşleşmesi sıfırlansın mı? Eski cihazlar pasife alınacak.');">Cihazı Sıfırla</button>
+                }
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/Admin/Licenses" class="btn btn-outline-secondary">Vazgeç</a>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </div>
+    </form>
+
+    @if (isEdit && !string.IsNullOrWhiteSpace(Model.MachineId))
+    {
+        <form id="license-reset-form" method="post" action="/Admin/LicenseResetDevice/@Model.Id" class="d-none">
+            @Html.AntiForgeryToken()
+        </form>
+    }
+
+    @if (isEdit)
+    {
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div>
+                        <strong>V2 Lisans / Cihaz Bilgisi</strong>
+                        <div class="text-muted small">Aktif cihaz: @Model.Devices.Count(x => !x.IsBlocked && !x.IsRejected) · Reddedilen cihaz: @Model.Devices.Count(x => x.IsRejected)</div>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a class="btn btn-sm btn-outline-secondary" href="/Admin/LicenseCheckLogs?productCode=@Model.ProductCode">Kontrol Logları</a>
+                        <form method="post" action="/Admin/LicenseClearLogs/@Model.Id" class="d-inline" onsubmit="return confirm('Bu lisansa ait tüm kontrol logları temizlenecek. Emin misiniz?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Logları Temizle</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="alert alert-info rounded-3 mt-3 mb-0 small">
+                    <strong>Lisans kuralı:</strong> Online doğrulamada e-posta + lisans anahtarı + ProductCode birlikte kontrol edilir. Format veya cihaz değişikliğinde kullanıcı programın lisans ekranından kayıtlı e-posta ve anahtarıyla yeniden aktivasyon yapabilir; ayrıca cihaz sıfırlaması gerekmez. Siteye ulaşılamadığında program kendi yerel Offline Lisans Modu ile çalışmaya devam eder.
+                </div>
+
+                @if (Model.Devices.Any())
+                {
+                    <div class="table-responsive mt-3">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Cihaz</th>
+                                    <th>Ürün</th>
+                                    <th>E-posta</th>
+                                    <th>Sürüm</th>
+                                    <th>Son IP</th>
+                                    <th>Son Görülme</th>
+                                    <th>Durum</th>
+                                    <th class="text-end">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var device in Model.Devices.OrderByDescending(x => x.LastSeenAt))
+                            {
+                                var isPrimaryDevice = string.Equals(Model.MachineId, device.MachineId, StringComparison.Ordinal);
+                                <tr>
+                                    <td><small>@device.MachineId</small><div class="text-muted small">@device.DeviceName</div></td>
+                                    <td>@device.ProductCode</td>
+                                    <td><small>@device.AttemptEmail</small></td>
+                                    <td>@device.AppVersion</td>
+                                    <td>@device.LastIpAddress</td>
+                                    <td>@device.LastSeenAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>
+                                        @if (device.IsRejected)
+                                        {
+                                            <span class="badge bg-warning text-dark">Reddedildi</span>
+                                            <div class="text-muted small">@device.BlockReason</div>
+                                        }
+                                        else if (device.IsBlocked)
+                                        {
+                                            <span class="badge bg-danger">Engelli</span>
+                                            <div class="text-muted small">@device.BlockReason</div>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">Aktif</span>
+                                        }
+                                        @if (isPrimaryDevice)
+                                        {
+                                            <div><span class="badge bg-primary">Ana cihaz</span></div>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="nsx-admin-table-actions">
+                                            @if (!isPrimaryDevice)
+                                            {
+                                                <form method="post" action="/Admin/LicenseMakePrimaryDevice/@device.Id" class="d-inline" onsubmit="return confirm('Bu cihaz ana cihaz yapılsın mı?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">Ana Cihaz Yap</button>
+                                                </form>
+                                            }
+                                            @if (device.IsBlocked)
+                                            {
+                                                <form method="post" action="/Admin/LicenseDeviceUnblock/@device.Id" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-success">Engeli Kaldır</button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form method="post" action="/Admin/LicenseDeviceBlock/@device.Id" class="d-inline" onsubmit="return confirm('Bu cihaz engellensin mi?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="reason" value="Admin panelden engellendi" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Engelle</button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted small mt-3">Bu lisansa bağlı cihaz kaydı yok.</div>
+                }
+
+                @if (Model.CheckLogs.Any())
+                {
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                            <strong>Son Lisans Kontrolleri</strong>
+                            <form method="post" action="/Admin/LicenseClearLogs/@Model.Id" class="d-inline" onsubmit="return confirm('Bu lisansa ait tüm kontrol logları temizlenecek. Emin misiniz?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Logları Temizle</button>
+                            </form>
+                        </div>
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>E-posta</th>
+                                        <th>Cihaz</th>
+                                        <th>Sonuç</th>
+                                        <th>Mesaj</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var log in Model.CheckLogs.OrderByDescending(x => x.CreatedAt).Take(10))
+                                {
+                                    <tr>
+                                        <td><small>@log.CreatedAt.ToString("dd.MM.yyyy HH:mm:ss")</small></td>
+                                        <td><small>@log.RequestEmail</small></td>
+                                        <td><small>@log.MachineId</small></td>
+                                        <td>
+                                            @if (log.Success)
+                                            {
+                                                <span class="badge bg-success">@log.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">@log.Status</span>
+                                            }
+                                        </td>
+                                        <td>@log.Message</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted small mt-4">Bu lisansa ait kontrol logu yok.</div>
+                }
+            </div>
+        </div>
+    }
+</div>

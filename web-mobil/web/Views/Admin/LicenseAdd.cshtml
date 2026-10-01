@@ -1,0 +1,131 @@
+@model NSYazilim.Web.Models.License
+
+@{
+    var products = ViewBag.Products as List<NSYazilim.Web.Models.Product> ?? new List<NSYazilim.Web.Models.Product>();
+    var users = ViewBag.Users as List<NSYazilim.Web.Models.User> ?? new List<NSYazilim.Web.Models.User>();
+    var isEdit = Model.Id > 0;
+    ViewData["Title"] = isEdit ? "Lisans Düzenle" : "Yeni Lisans";
+    var action = isEdit ? "/Admin/LicenseEdit/" + Model.Id : "/Admin/LicenseAdd";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">@(isEdit ? "Lisans Düzenle" : "Yeni Lisans")</h1>
+            <div class="text-muted">Ürün, üye, süre ve makine eşleşmesini yönetin.</div>
+        </div>
+        <a class="btn btn-outline-dark rounded-3" href="/Admin/Licenses">Lisanslara Dön</a>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger rounded-3">@ViewBag.Error</div>
+    }
+
+    <form method="post" action="@action" class="card border-0 shadow-sm rounded-4 nsx-standard-form">
+        @Html.AntiForgeryToken()
+
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Lisans Anahtarı</label>
+                    <input class="form-control" name="LicenseKey" value="@Model.LicenseKey" required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Lisans Tipi</label>
+                    <select class="form-select" name="LicenseType">
+                        @if (Model.LicenseType == "Yearly")
+                        {
+                            <option value="Yearly" selected>Yıllık</option>
+                            <option value="Lifetime">Sınırsız</option>
+                        }
+                        else
+                        {
+                            <option value="Yearly">Yıllık</option>
+                            <option value="Lifetime" selected>Sınırsız</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Durum</label>
+                    <select class="form-select" name="IsActive">
+                        @if (Model.IsActive)
+                        {
+                            <option value="true" selected>Aktif</option>
+                            <option value="false">Pasif</option>
+                        }
+                        else
+                        {
+                            <option value="true">Aktif</option>
+                            <option value="false" selected>Pasif</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Ürün</label>
+                    <select class="form-select" name="ProductId" required>
+                        <option value="">Ürün seç</option>
+                        @foreach (var product in products)
+                        {
+                            if (Model.ProductId == product.Id)
+                            {
+                                <option value="@product.Id" selected>@product.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@product.Id">@product.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Üye</label>
+                    <select class="form-select" name="UserId" required>
+                        <option value="">Üye seç</option>
+                        @foreach (var user in users)
+                        {
+                            if (Model.UserId == user.Id)
+                            {
+                                <option value="@user.Id" selected>@user.FullName - @user.Email</option>
+                            }
+                            else
+                            {
+                                <option value="@user.Id">@user.FullName - @user.Email</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Sipariş Id</label>
+                    <input class="form-control" type="number" name="OrderId" value="@Model.OrderId" placeholder="Opsiyonel" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Başlangıç</label>
+                    <input class="form-control" type="date" name="StartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Bitiş</label>
+                    <input class="form-control" type="date" name="EndDate" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
+                    <div class="form-text">Sınırsız lisans için boş bırak.</div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Makine Id</label>
+                    <input class="form-control" name="MachineId" value="@Model.MachineId" placeholder="Boş bırakılabilir" />
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-3">
+            <a href="/Admin/Licenses" class="btn btn-outline-secondary">Vazgeç</a>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </div>
+    </form>
+</div>

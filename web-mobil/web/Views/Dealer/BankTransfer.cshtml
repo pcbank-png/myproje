@@ -1,0 +1,30 @@
+@model NSYazilim.Web.ViewModels.DealerBankTransferViewModel
+@{
+    ViewData["Title"] = "Havale Bildirimi";
+    var dealer = ViewBag.Dealer as NSYazilim.Web.Models.Dealer;
+}
+<div class="dealer-head"><div><div class="dealer-kicker">ADMIN ONAYINA GONDER</div><h1>Havale Bildirimi</h1><p>Bu bildirim sat&#305;&#351;&#305; otomatik onaylamaz. Son onay NSX admin taraf&#305;ndan verilir.</p></div><a class="dealer-btn light" href="/Bayi/Satis/@Model.SaleId">Sat&#305;&#351;a D&#246;n</a></div>
+@if (Model.Sale != null)
+{
+    <div class="dealer-card" style="margin-bottom:18px"><h2>Sat&#305;&#351; &#214;zeti</h2><div class="dealer-form-grid"><div><small>M&#252;&#351;teri</small><strong style="display:block;margin-top:5px">@Model.Sale.CustomerUser?.FullName</strong><small>@Model.Sale.CustomerUser?.Email</small></div><div><small>&#220;r&#252;n</small><strong style="display:block;margin-top:5px">@Model.Sale.Product?.Name</strong><small>@(Model.Sale.LicenseType == "Lifetime" ? "Sinirsiz" : "Yillik") x @Model.Sale.Quantity</small></div><div><small>&#214;denecek Tutar</small><strong style="display:block;margin-top:5px;font-size:22px">@Model.Sale.SaleAmount.ToString("N2") &#8378;</strong></div><div><small>Bayi Alaca&#287;&#305;</small><strong style="display:block;margin-top:5px;font-size:22px">@Model.Sale.CommissionAmount.ToString("N2") &#8378;</strong><small>Admin onay&#305;ndan sonra hak edilir.</small></div></div></div>
+}
+@if (!string.IsNullOrWhiteSpace(Model.BankName) || !string.IsNullOrWhiteSpace(Model.Iban))
+{
+    <div class="dealer-card" style="margin-bottom:18px"><h2>NSX Havale Bilgileri</h2><div class="dealer-form-grid"><div><small>Banka</small><strong style="display:block;margin-top:5px">@Model.BankName</strong></div><div><small>Hesap Sahibi</small><strong style="display:block;margin-top:5px">@Model.AccountHolder</strong></div><div class="dealer-field full"><small>IBAN</small><strong class="dealer-code" style="display:block;margin-top:5px">@Model.Iban</strong></div>@if (!string.IsNullOrWhiteSpace(Model.BankBranch)) { <div><small>&#350;ube</small><strong style="display:block;margin-top:5px">@Model.BankBranch</strong></div> }</div></div>
+}
+<div class="dealer-card">
+    <form method="post" action="/Bayi/Satis/@Model.SaleId/Havale">
+        @Html.AntiForgeryToken()
+        <input asp-for="SaleId" type="hidden" />
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="dealer-form-grid">
+            <div class="dealer-field"><label>G&#246;nderen Ad&#305; / Firma</label><input asp-for="SenderName" /><span asp-validation-for="SenderName"></span></div>
+            <div class="dealer-field"><label>G&#246;nderen Banka</label><input asp-for="SenderBank" /></div>
+            <div class="dealer-field"><label>Dekont / Referans No</label><input asp-for="ReceiptNumber" /></div>
+            <div class="dealer-field"><label>Transfer Tarihi</label><input asp-for="TransferDate" type="date" /></div>
+            <div class="dealer-field full"><label>Not</label><textarea asp-for="Note" placeholder="Gerekirse admin icin not ekleyin..."></textarea></div>
+        </div>
+        <div class="dealer-note" style="margin-top:18px"><strong>Onay ak&#305;&#351;&#305;:</strong> Bildirim g&#246;nderildikten sonra bayi taraf&#305;nda onay yetkisi yoktur. Admin onaylad&#305;&#287;&#305;nda m&#252;&#351;teri lisans&#305; olu&#351;ur, bayi panelinde lisans ve onayl&#305; alacak g&#246;r&#252;n&#252;r.</div>
+        <div class="dealer-actions" style="margin-top:20px"><button class="dealer-btn primary" type="submit">Bildirimi Admin Onay&#305;na G&#246;nder</button><a class="dealer-btn light" href="/Bayi/Satis/@Model.SaleId">Vazge&#231;</a></div>
+    </form>
+</div>

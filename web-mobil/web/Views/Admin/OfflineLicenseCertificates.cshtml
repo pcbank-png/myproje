@@ -1,0 +1,98 @@
+@model List<NSYazilim.Web.Models.OfflineLicenseCertificate>
+
+@{
+    ViewData["Title"] = "Offline Lisans Sertifikaları";
+    bool? revoked = ViewBag.Revoked is bool revokedValue ? revokedValue : null;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Offline Lisans Sertifikaları</h1>
+            <div class="text-muted">Müşteri programlarının internet yokken kullanacağı imzalı lisans dosyaları.</div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-info" href="/Admin/LicenseDevices">Cihazlar</a>
+            <a class="btn btn-outline-dark" href="/Admin/Licenses">Lisanslara Dön</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+    }
+
+    <form method="get" class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Durum</label>
+                <select class="form-select" name="revoked">
+                    <option value="">Tümü</option>
+                    <option value="false" selected="@(revoked == false)">Aktif</option>
+                    <option value="true" selected="@(revoked == true)">İptal</option>
+                </select>
+            </div>
+            <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filtrele</button></div>
+            <div class="col-md-2"><a class="btn btn-outline-secondary w-100" href="/Admin/OfflineLicenseCertificates">Temizle</a></div>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Sertifika</th>
+                            <th>Lisans</th>
+                            <th>Ürün</th>
+                            <th>Cihaz</th>
+                            <th>Verilme</th>
+                            <th>Bitiş</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><code>@item.CertificateId</code></td>
+                            <td>
+                                <a href="/Admin/LicenseEdit/@item.LicenseId"><code>@item.License?.LicenseKey</code></a>
+                                <div class="text-muted small">@(item.License?.User?.FullName ?? "-")</div>
+                            </td>
+                            <td>@item.ProductCode<div class="text-muted small">@(item.License?.Product?.Name ?? "-")</div></td>
+                            <td><small>@item.MachineId</small></td>
+                            <td>@item.IssuedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@(item.ExpiresAt?.ToString("dd.MM.yyyy") ?? "Sınırsız")</td>
+                            <td>@(item.IsRevoked ? "İptal" : "Aktif")</td>
+                            <td class="text-end">
+                                @if (!item.IsRevoked)
+                                {
+                                    <form method="post" action="/Admin/OfflineCertificateRevoke/@item.Id" class="d-inline" onsubmit="return confirm('Bu offline sertifika iptal edilsin mi?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="reason" value="Admin panelden iptal edildi" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">İptal Et</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form method="post" action="/Admin/OfflineCertificateRestore/@item.Id" class="d-inline" onsubmit="return confirm('Bu offline sertifika tekrar aktif edilsin mi?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-success">Aktif Et</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="text-muted text-center py-4">Henüz offline sertifika yok.</div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,713 @@
+
+/* NSX Premium Product Detail */
+.nsx-product-detail-pro {
+    padding: 38px 0 10px;
+}
+
+.nsx-product-detail-shell {
+    padding: 28px;
+    border-radius: 36px;
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(226,232,240,.96);
+    box-shadow: 0 24px 70px rgba(15,23,42,.10);
+}
+
+.nsx-pro-main-image {
+    position: relative;
+    height: 520px;
+    border-radius: 32px;
+    overflow: hidden;
+    background: linear-gradient(135deg,#fff4ec,#f8fafc);
+    border: 1px solid #e5eaf2;
+}
+
+.nsx-pro-main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nsx-pro-thumbs {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.nsx-pro-thumbs button {
+    border: 1px solid #e5eaf2;
+    background: #fff;
+    padding: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    width: 92px;
+    height: 78px;
+    flex: 0 0 92px;
+    cursor: pointer;
+}
+
+.nsx-pro-thumbs img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nsx-pro-info {
+    padding: 10px 4px;
+}
+
+.nsx-pro-info h1 {
+    font-size: clamp(2rem,4vw,3.7rem);
+    font-weight: 950;
+    letter-spacing: -1.3px;
+    line-height: 1;
+    margin: 8px 0 12px;
+}
+
+.nsx-pro-rating {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.nsx-pro-rating span {
+    color: #a855f7;
+    letter-spacing: 2px;
+    font-size: 1.1rem;
+}
+
+.nsx-pro-rating small {
+    color: #6b7280;
+    font-weight: 850;
+}
+
+.nsx-pro-description {
+    color: #6b7280;
+    white-space: pre-line;
+    line-height: 1.8;
+    font-size: 1.04rem;
+}
+
+.nsx-pro-warning {
+    display: grid;
+    gap: 3px;
+    padding: 15px;
+    border-radius: 20px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    margin: 18px 0;
+}
+
+.nsx-pro-warning strong {
+    font-weight: 950;
+}
+
+.nsx-pro-buybox {
+    margin-top: 22px;
+}
+
+.nsx-pro-license-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.nsx-pro-license {
+    position: relative;
+    padding: 18px;
+    border-radius: 24px;
+    background: #f8fafc;
+    border: 2px solid #e5eaf2;
+    cursor: pointer;
+    transition: .18s ease;
+}
+
+.nsx-pro-license.active,
+.nsx-pro-license:hover {
+    border-color: #f56800;
+    background: #fff4ec;
+    transform: translateY(-1px);
+}
+
+.nsx-pro-license.premium.active,
+.nsx-pro-license.premium:hover {
+    border-color: #3a3d46;
+    background: #fff8f1;
+}
+
+.nsx-pro-license input {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+}
+
+.nsx-pro-license span {
+    display: block;
+    color: #64748b;
+    font-weight: 900;
+    margin-bottom: 7px;
+}
+
+.nsx-pro-license strong {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 950;
+}
+
+.nsx-pro-license small {
+    display: block;
+    color: #6b7280;
+    font-weight: 800;
+    margin-top: 6px;
+}
+
+.nsx-pro-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.nsx-pro-trust-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.nsx-pro-trust-row > div {
+    border-radius: 20px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+}
+
+.nsx-pro-trust-row span {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.nsx-pro-trust-row strong {
+    display: block;
+    font-weight: 950;
+}
+
+.nsx-pro-trust-row small {
+    display: block;
+    color: #6b7280;
+    line-height: 1.45;
+}
+
+.nsx-pro-panel,
+.nsx-pro-side {
+    padding: 24px;
+    border-radius: 30px;
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(226,232,240,.96);
+    box-shadow: 0 14px 38px rgba(15,23,42,.08);
+}
+
+.nsx-pro-side {
+    position: sticky;
+    top: 110px;
+}
+
+.nsx-pro-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid #e5eaf2;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+}
+
+.nsx-pro-tabs button {
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 14px;
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 950;
+}
+
+.nsx-pro-tabs button.active {
+    color: #fff;
+    background: linear-gradient(135deg,#f56800,#3a3d46);
+}
+
+.nsx-pro-tab-content {
+    display: none;
+}
+
+.nsx-pro-tab-content.active {
+    display: block;
+}
+
+.nsx-pro-tab-content h3,
+.nsx-pro-side h3 {
+    font-weight: 950;
+    margin-bottom: 14px;
+}
+
+.nsx-pro-tab-content p {
+    color: #6b7280;
+    line-height: 1.8;
+}
+
+.nsx-faq-item {
+    border-radius: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+    margin-bottom: 10px;
+}
+
+.nsx-faq-item strong {
+    display: block;
+    font-weight: 950;
+    margin-bottom: 6px;
+}
+
+.nsx-faq-item p {
+    margin: 0;
+}
+
+.nsx-comment-box {
+    display: flex;
+    gap: 14px;
+    border-radius: 22px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+}
+
+.nsx-comment-avatar {
+    width: 54px;
+    height: 54px;
+    flex: 0 0 54px;
+    border-radius: 18px;
+    background: linear-gradient(135deg,#f56800,#3a3d46);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 950;
+}
+
+@media (max-width: 991px) {
+    .nsx-pro-main-image {
+        height: 360px;
+    }
+
+    .nsx-pro-trust-row {
+        grid-template-columns: 1fr;
+    }
+
+    .nsx-pro-side {
+        position: static;
+    }
+}
+
+@media (max-width: 575px) {
+    .nsx-product-detail-shell,
+    .nsx-pro-panel,
+    .nsx-pro-side {
+        border-radius: 24px;
+        padding: 18px;
+    }
+
+    .nsx-pro-license-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nsx-pro-main-image {
+        height: 270px;
+    }
+}
+
+/* NSX client multi-image gallery fix */
+.nsx-pro-gallery-tools {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 14px;
+    font-weight: 900;
+    color: #475569;
+}
+
+.nsx-gallery-nav {
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 14px;
+    background: #fff4ec;
+    color: #3a3d46;
+    font-size: 24px;
+    font-weight: 950;
+    line-height: 1;
+}
+
+.nsx-gallery-nav:hover {
+    background: #ffe5d2;
+}
+
+.nsx-pro-thumbs button.active {
+    border-color: #f56800;
+    box-shadow: 0 0 0 3px rgba(245, 104, 0, .14);
+}
+
+.nsx-pro-quantity-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border-radius: 20px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+    margin: 16px 0;
+}
+
+.nsx-pro-quantity-row label {
+    font-weight: 950;
+    color: #0f172a;
+}
+
+.nsx-pro-quantity-row input {
+    width: 110px;
+    border: 1px solid #dbe3ef;
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-weight: 950;
+    text-align: center;
+}
+
+.nsx-image-count {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    border-radius: 999px;
+    padding: 7px 11px;
+    background: rgba(15, 23, 42, .78);
+    color: #fff;
+    font-weight: 900;
+    font-size: .8rem;
+    backdrop-filter: blur(10px);
+}
+
+.nsx-store-mini-thumbs {
+    display: flex;
+    gap: 7px;
+    margin: 8px 0 10px;
+}
+
+.nsx-store-mini-thumbs img {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #e5eaf2;
+    background: #fff;
+}
+
+
+/* NSX Detail - meta alanı, stok/indirim rozetleri ve büyüyen galeri tetikleyici */
+.nsx-pro-main-image.nsx-detail-gallery-trigger {
+    width: 100%;
+    border: 0;
+    padding: 0;
+    display: block;
+    cursor: zoom-in;
+    text-align: left;
+    box-shadow: 0 18px 46px rgba(15, 23, 42, .10);
+}
+
+.nsx-pro-main-image.nsx-detail-gallery-trigger img {
+    object-fit: contain;
+    padding: 18px;
+    background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,.82), transparent 34%),
+        linear-gradient(135deg,#fff4ec,#f8fafc);
+    transition: transform .28s ease, filter .28s ease;
+}
+
+.nsx-pro-main-image.nsx-detail-gallery-trigger:hover img {
+    transform: scale(1.025);
+    filter: drop-shadow(0 22px 32px rgba(15, 23, 42, .16));
+}
+
+.nsx-pro-main-image .nsx-stock-badge {
+    top: 16px;
+    left: 16px;
+    bottom: auto;
+    z-index: 4;
+}
+
+.nsx-pro-main-image .nsx-stock-badge.in { background: #16a34a; }
+.nsx-pro-main-image .nsx-stock-badge.low { background: #f97316; }
+.nsx-pro-main-image .nsx-stock-badge.out { background: #dc2626; }
+
+.nsx-pro-main-image .nsx-last-stock {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    bottom: auto;
+    left: auto;
+    z-index: 4;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #fff;
+    font-weight: 950;
+    font-size: .78rem;
+}
+
+.nsx-pro-main-image .nsx-last-stock.in {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    box-shadow: 0 10px 24px rgba(22, 163, 74, .28);
+}
+
+.nsx-pro-main-image .nsx-last-stock.low {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    box-shadow: 0 10px 24px rgba(249, 115, 22, .30);
+}
+
+.nsx-pro-main-image .nsx-last-stock.out {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    box-shadow: 0 10px 24px rgba(239, 68, 68, .30);
+}
+
+.nsx-detail-discount-badge {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 4;
+    border-radius: 999px;
+    padding: 9px 13px;
+    color: #fff;
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    box-shadow: 0 12px 28px rgba(220,38,38,.30);
+    font-size: .8rem;
+    font-weight: 950;
+}
+
+.nsx-pro-main-image .nsx-image-count {
+    left: auto;
+    right: 16px;
+    bottom: 16px;
+    z-index: 4;
+}
+
+.nsx-pro-main-image .nsx-gallery-open-hint {
+    z-index: 5;
+}
+
+.nsx-pro-main-image:hover .nsx-gallery-open-hint {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nsx-pro-meta-grid {
+    display: grid;
+    gap: 12px;
+    margin: 18px 0 8px;
+}
+
+.nsx-pro-meta-card {
+    border-radius: 22px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+}
+
+.nsx-pro-meta-card span {
+    display: block;
+    color: #f56800;
+    font-size: .76rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 6px;
+}
+
+.nsx-pro-meta-card strong {
+    display: block;
+    color: #0f172a;
+    font-size: 1.05rem;
+    font-weight: 950;
+    line-height: 1.35;
+}
+
+.nsx-pro-meta-card p {
+    margin: 0;
+    color: #64748b;
+    font-weight: 800;
+    line-height: 1.65;
+}
+
+/* NSX Detail Gallery - Apple style yatay scroll ve buyuyen thumb sistemi */
+.nsx-pro-gallery {
+    position: relative;
+}
+
+.nsx-pro-main-image.nsx-detail-gallery-trigger {
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 22%, rgba(255,255,255,.95), transparent 34%),
+        linear-gradient(145deg, #fff4ec 0%, #ffffff 54%, #f8fafc 100%) !important;
+}
+
+.nsx-pro-main-image.nsx-detail-gallery-trigger::after {
+    content: "";
+    position: absolute;
+    inset: auto 26px 22px 26px;
+    height: 38px;
+    border-radius: 999px;
+    background: radial-gradient(ellipse at center, rgba(15,23,42,.16), transparent 68%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.nsx-pro-main-image.nsx-detail-gallery-trigger img {
+    position: relative;
+    z-index: 2;
+    object-fit: contain !important;
+    object-position: center !important;
+    padding: 18px !important;
+    transform-origin: center;
+}
+
+.nsx-pro-gallery-tools .nsx-gallery-nav {
+    position: static !important;
+    transform: none !important;
+    width: 42px !important;
+    height: 38px !important;
+    border-radius: 999px !important;
+    color: #0f172a !important;
+    background: rgba(255,255,255,.88) !important;
+    border: 1px solid rgba(226,232,240,.95) !important;
+    box-shadow: 0 12px 26px rgba(15,23,42,.10) !important;
+    font-size: 24px !important;
+}
+
+.nsx-pro-gallery-tools .nsx-gallery-nav:hover {
+    background: linear-gradient(135deg,#f56800,#3a3d46) !important;
+    color: #fff !important;
+    transform: translateY(-1px) !important;
+}
+
+.nsx-pro-thumbs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 16px !important;
+    padding: 8px 8px 14px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.nsx-pro-thumbs::-webkit-scrollbar {
+    height: 8px;
+}
+
+.nsx-pro-thumbs::-webkit-scrollbar-track {
+    background: #fff4ec;
+    border-radius: 999px;
+}
+
+.nsx-pro-thumbs::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg,#f56800,#3a3d46);
+    border-radius: 999px;
+}
+
+.nsx-pro-thumbs button {
+    position: relative;
+    width: 112px !important;
+    height: 86px !important;
+    flex: 0 0 112px !important;
+    scroll-snap-align: center;
+    border: 1px solid rgba(226,232,240,.95) !important;
+    border-radius: 22px !important;
+    padding: 7px !important;
+    background: rgba(255,255,255,.94) !important;
+    box-shadow: 0 12px 28px rgba(15,23,42,.09) !important;
+    overflow: hidden !important;
+    cursor: pointer;
+    opacity: .72;
+    transition: width .22s ease, flex-basis .22s ease, opacity .22s ease, transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.nsx-pro-thumbs button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(245,104,0,.13), rgba(58,61,70,.13));
+    opacity: 0;
+    transition: opacity .22s ease;
+    pointer-events: none;
+}
+
+.nsx-pro-thumbs button:hover,
+.nsx-pro-thumbs button.active {
+    width: 138px !important;
+    flex-basis: 138px !important;
+    opacity: 1;
+    transform: translateY(-3px) scale(1.02);
+    border-color: #f56800 !important;
+    box-shadow: 0 18px 42px rgba(245,104,0,.18) !important;
+}
+
+.nsx-pro-thumbs button:hover::after,
+.nsx-pro-thumbs button.active::after {
+    opacity: 1;
+}
+
+.nsx-pro-thumbs img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    border: 0 !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg,#f8fafc,#ffffff) !important;
+    transform: none !important;
+}
+
+.nsx-gallery-thumbs {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+}
+
+.nsx-gallery-thumbs button {
+    scroll-snap-align: center;
+}
+
+@media (max-width: 575px) {
+    .nsx-pro-thumbs {
+        gap: 9px !important;
+        padding-bottom: 12px !important;
+    }
+
+    .nsx-pro-thumbs button {
+        width: 88px !important;
+        height: 70px !important;
+        flex-basis: 88px !important;
+        border-radius: 18px !important;
+    }
+
+    .nsx-pro-thumbs button:hover,
+    .nsx-pro-thumbs button.active {
+        width: 106px !important;
+        flex-basis: 106px !important;
+    }
+}

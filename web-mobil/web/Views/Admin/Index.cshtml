@@ -1,0 +1,215 @@
+@model NSYazilim.Web.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Anasayfa";
+}
+
+<div class="nsx-admin-final">
+    <section class="nsx-admin-final-hero">
+        <div>
+            <div class="nsx-admin-kicker">NSX Yönetim Merkezi</div>
+            <h1>Admin Panel</h1>
+            <p>Ürün, stok, sipariş, lisans, yorum ve toplu mail yönetimini tek merkezden kontrol et.</p>
+        </div>
+
+    </section>
+
+    <section class="nsx-admin-grid-stats">
+        <a href="/Admin/Users" class="nsx-admin-stat-card">
+            <span>👥</span>
+            <small>Üye</small>
+            <strong>@Model.TotalUsers</strong>
+            <em>@Model.ActiveUsers aktif</em>
+        </a>
+
+        <a href="/Admin/Products" class="nsx-admin-stat-card">
+            <span>📦</span>
+            <small>Ürün</small>
+            <strong>@Model.TotalProducts</strong>
+            <em>@Model.InStockProducts stokta</em>
+        </a>
+
+        <a href="/Admin/Orders" class="nsx-admin-stat-card">
+            <span>🧾</span>
+            <small>Sipariş</small>
+            <strong>@Model.TotalOrders</strong>
+            <em>@Model.TotalRevenue.ToString("N2") ₺</em>
+        </a>
+
+        <a href="/Admin/Licenses" class="nsx-admin-stat-card">
+            <span>🔑</span>
+            <small>Lisans</small>
+            <strong>@Model.TotalLicenses</strong>
+            <em>@Model.ActiveLicenses aktif</em>
+        </a>
+
+        <a href="/Admin/DemoDownloads" class="nsx-admin-stat-card">
+            <span>⬇</span>
+            <small>Demo İndirenler</small>
+            <strong>@Model.TotalDemoDownloads</strong>
+            <em>toplam demo indirme</em>
+        </a>
+
+        <a href="/Admin/Comments?status=pending" class="nsx-admin-stat-card warning">
+            <span>💬</span>
+            <small>Bekleyen Yorum</small>
+            <strong>@Model.PendingComments</strong>
+            <em>@Model.ApprovedComments onaylı</em>
+        </a>
+
+        <a href="/Admin/BulkMail" class="nsx-admin-stat-card mail">
+            <span>📨</span>
+            <small>Toplu Mail</small>
+            <strong>Pro</strong>
+            <em>Kampanya gönder</em>
+        </a>
+    </section>
+
+
+    <section class="nsx-admin-revenue-board">
+        <div class="nsx-admin-revenue-main">
+            <span>💰 Siparişlerden Elde Edilen Kazanç</span>
+            <strong>@Model.TotalRevenue.ToString("N2") ₺</strong>
+            <p>Toplam sipariş geliri. Ödeme tamamlanan sipariş geliri: <b>@Model.CompletedRevenue.ToString("N2") ₺</b></p>
+        </div>
+
+        <div class="nsx-admin-revenue-mini">
+            <div>
+                <small>Bugünkü Kazanç</small>
+                <b>@Model.TodayRevenue.ToString("N2") ₺</b>
+                <em>@Model.TodayOrders sipariş</em>
+            </div>
+            <div>
+                <small>Bu Ay</small>
+                <b>@Model.ThisMonthRevenue.ToString("N2") ₺</b>
+                <em>@Model.ThisMonthOrders sipariş</em>
+            </div>
+            <div>
+                <small>Tamamlanan</small>
+                <b>@Model.PaidOrders</b>
+                <em>ödeme/sipariş</em>
+            </div>
+        </div>
+    </section>
+
+    <section class="nsx-admin-shortcuts">
+        <a href="/Admin/Products">Ürün Ekle / Güncelle</a>
+        <a href="/Admin/Orders">Siparişleri Gör</a>
+        <a href="/Admin/ManualSale">Manuel Satış Gir</a>
+        <a href="/Admin/Licenses">Lisans Yönetimi</a>
+        <a href="/Admin/Comments">Yorum Onayları</a>
+        <a href="/Admin/BulkMail">Toplu Mail</a>
+        <a href="/Admin/Users">Üye Listesi</a>
+        <a href="/Admin/DemoDownloads">Demo / Ücretsiz Program İndirenler</a>
+    </section>
+
+    <div class="row g-4 mt-1">
+        <div class="col-xl-5">
+            <section class="nsx-admin-panel-card">
+                <div class="nsx-admin-panel-head">
+                    <div>
+                        <h2>Son Siparişler</h2>
+                        <p>En son oluşturulan müşteri siparişleri.</p>
+                    </div>
+                    <a href="/Admin/Orders">Tümü</a>
+                </div>
+
+                @if (!Model.LatestOrders.Any())
+                {
+                    <div class="nsx-admin-empty">Henüz sipariş yok.</div>
+                }
+                else
+                {
+                    <div class="nsx-admin-list">
+                        @foreach (var order in Model.LatestOrders)
+                        {
+                            <div class="nsx-admin-list-row">
+                                <div>
+                                    <strong>@order.OrderNumber</strong>
+                                    <small>@order.CustomerName · @order.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+                                </div>
+                                <div class="text-end">
+                                    <b>@order.TotalAmount.ToString("N2") ₺</b>
+                                    <span>@order.OrderStatus</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
+
+        <div class="col-xl-4">
+            <section class="nsx-admin-panel-card">
+                <div class="nsx-admin-panel-head">
+                    <div>
+                        <h2>Stok Uyarıları</h2>
+                        <p>Stoku azalan veya biten ürünler.</p>
+                    </div>
+                    <a href="/Admin/Products">Ürünler</a>
+                </div>
+
+                @if (!Model.LowStockProducts.Any())
+                {
+                    <div class="nsx-admin-empty">Stok uyarısı yok.</div>
+                }
+                else
+                {
+                    <div class="nsx-admin-list">
+                        @foreach (var product in Model.LowStockProducts)
+                        {
+                            <div class="nsx-admin-list-row">
+                                <div>
+                                    <strong>@product.Name</strong>
+                                    <small>Yıllık: @product.YearlyPrice.ToString("N2") ₺ · Sınırsız: @product.LifetimePrice.ToString("N2") ₺</small>
+                                </div>
+                                <div class="text-end">
+                                    <b class="@(product.StockQuantity <= 0 ? "danger" : "warning")">@product.StockQuantity</b>
+                                    <span>stok</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
+
+        <div class="col-xl-3">
+            <section class="nsx-admin-panel-card">
+                <div class="nsx-admin-panel-head">
+                    <div>
+                        <h2>Son Lisanslar</h2>
+                        <p>Yeni lisans hareketleri.</p>
+                    </div>
+                    <a href="/Admin/Licenses">Tümü</a>
+                </div>
+
+                @if (!Model.LatestLicenses.Any())
+                {
+                    <div class="nsx-admin-empty">Henüz lisans yok.</div>
+                }
+                else
+                {
+                    <div class="nsx-admin-license-mini">
+                        @foreach (var license in Model.LatestLicenses)
+                        {
+                            <div>
+                                <strong>@license.ProductName</strong>
+                                <small>@license.CustomerName</small>
+                                <code>@license.LicenseKey</code>
+                                <span class="@(license.IsActive ? "ok" : "bad")">
+                                    @(license.IsActive ? "Aktif" : "Pasif")
+                                </span>
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
+    </div>
+</div>
+
+<div class="nsx-admin-card mt-4 nsx-admin-update-note">
+    <p>Güncelleme ZIP dosyaları artık ilgili ürünün <b>Ürün Düzenle</b> ekranından yüklenir.</p>
+    <a class="nsx-admin-btn" href="/Admin/Products">Ürünlere Git</a>
+</div>

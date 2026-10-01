@@ -1,0 +1,97 @@
+@model NSYazilim.Web.ViewModels.AdminApiServicesViewModel
+
+@{
+    ViewData["Title"] = "API Servisleri";
+}
+
+<section class="nsx-admin-page nsx-api-services-page">
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX Admin</span>
+            <h1>API Servisleri</h1>
+            <p>Lisans, güncelleme ve reklam servislerini tek ekrandan kontrol edin.</p>
+        </div>
+        <div class="nsx-admin-row-actions">
+            <a class="nsx-admin-btn" href="/api/services" target="_blank" rel="noopener">JSON Liste</a>
+            <a class="nsx-admin-btn primary" href="/api/status" target="_blank" rel="noopener">Health Check</a>
+        </div>
+    </div>
+
+    <div class="nsx-api-stat-grid">
+        <div class="nsx-admin-card nsx-api-stat">
+            <span>Lisans API</span>
+            <strong>@Model.ActiveLicenses / @Model.TotalLicenses</strong>
+            <small>Aktif lisans / toplam lisans</small>
+        </div>
+        <div class="nsx-admin-card nsx-api-stat">
+            <span>Güncelleme API</span>
+            <strong>@Model.ActiveUpdates / @Model.TotalUpdates</strong>
+            <small>Aktif paket / toplam paket</small>
+        </div>
+        <div class="nsx-admin-card nsx-api-stat">
+            <span>Reklam API</span>
+            <strong>@Model.ActiveAdvertisements / @Model.TotalAdvertisements</strong>
+            <small>Aktif reklam / toplam reklam</small>
+        </div>
+        <div class="nsx-admin-card nsx-api-stat">
+            <span>API Anahtarı</span>
+            <strong>@(Model.LicenseApiKeyConfigured ? "Tanımlı" : "Varsayılan")</strong>
+            <small>@(Model.LicenseApiKeyConfigured ? "LicenseApi:ApiKey kullanılıyor" : "appsettings.json içine LicenseApi:ApiKey eklenebilir")</small>
+        </div>
+    </div>
+
+    <div class="nsx-admin-card">
+        <div class="nsx-admin-card-head">
+            <div>
+                <strong>Servis Kataloğu</strong>
+                <small>@Model.Services.Count endpoint</small>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table nsx-admin-table align-middle nsx-api-table">
+                <thead>
+                    <tr>
+                        <th>Servis</th>
+                        <th>Method</th>
+                        <th>Endpoint</th>
+                        <th>Auth</th>
+                        <th>Parametre</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.Services)
+                {
+                    <tr>
+                        <td>
+                            <strong>@item.Name</strong>
+                            <small>@item.Description</small>
+                        </td>
+                        <td><span class="nsx-admin-pill neutral">@item.Method</span></td>
+                        <td>
+                            <code>@item.Path</code>
+                            <small>@item.SampleUrl</small>
+                        </td>
+                        <td>@item.Auth</td>
+                        <td>@item.Parameters</td>
+                        <td><span class="nsx-admin-pill @(item.IsEnabled ? "ok" : "bad")">@item.StatusLabel</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="nsx-admin-card nsx-api-note">
+        <div>
+            <strong>Programlara verilecek ana endpointler</strong>
+            <p>Lisans kontrolü için `x-api-key` header kullanmak daha temizdir. Query string örneklerinde anahtar `***` olarak maskelendi.</p>
+        </div>
+        <div class="nsx-api-code-grid">
+            <code>POST /api/license/v2/activate { email, licenseKey, productCode, machineId }</code>
+            <code>GET /api/update/check?productCode=NSXVERESIYETAKIPPROFREE&amp;version=1.0.0</code>
+            <code>GET /api/ads/active?productCode=NSXVERESIYETAKIPPROFREE&amp;slot=FREE_BOTTOM_728X90</code>
+        </div>
+    </div>
+</section>

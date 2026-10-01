@@ -1,0 +1,439 @@
+@model NSYazilim.Web.Models.Product
+@using System.Globalization
+@using NSYazilim.Web.Services
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Ürün Düzenle";
+    var safeModel = Model ?? new NSYazilim.Web.Models.Product { StockQuantity = 999, IsActive = true };
+    var imageList = safeModel.Images ?? new List<NSYazilim.Web.Models.ProductImage>();
+    var fileList = safeModel.Files ?? new List<NSYazilim.Web.Models.ProductFile>();
+
+    var yearlyValue = safeModel.YearlyPrice.ToString("0.##", CultureInfo.InvariantCulture);
+    var lifetimeValue = safeModel.LifetimePrice.ToString("0.##", CultureInfo.InvariantCulture);
+
+    var demoFile = fileList.FirstOrDefault(x => string.Equals(x.FileType, "Demo", StringComparison.OrdinalIgnoreCase));
+    var productUpdateCode = ViewBag.ProductUpdateCode as string ?? string.Empty;
+    var productUpdateList = ViewBag.ProductUpdateList as List<NSYazilim.Web.Models.ProductUpdate> ?? new List<NSYazilim.Web.Models.ProductUpdate>();
+    var selectedCategory = ProductCategoryHelper.GetKey(safeModel);
+}
+
+<style>
+        .nsx-product-edit-page .card{margin-bottom:18px}
+        .nsx-product-edit-page .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+        .nsx-product-edit-page .full{grid-column:1/-1}
+        .nsx-product-edit-page .check{display:flex;align-items:center;gap:10px}
+        .nsx-product-edit-page .check input{width:auto}
+        .nsx-product-edit-page .btn{border:0;border-radius:11px;padding:10px 15px;font-weight:800;text-decoration:none;display:inline-block;cursor:pointer}
+        .nsx-product-edit-page .primary{background:#f56800;color:white}
+        .nsx-product-edit-page .dark{background:#111827;color:white}
+        .nsx-product-edit-page .light{background:#f2f4f6;color:#111827;border:1px solid #d7dde2}
+        .nsx-product-edit-page .danger{background:#fee2e2;color:#991b1b;padding:12px 14px;border-radius:12px;margin-bottom:15px;font-weight:800}
+        .nsx-product-edit-page .muted{color:#6b7280}
+        .nsx-product-edit-page .filebox{border:1px solid #e5e7eb;background:#f9fafb;border-radius:14px;padding:12px;margin-bottom:10px}
+        .nsx-product-edit-page .filebox strong{display:block;margin-bottom:4px}
+        .nsx-product-edit-page .imgbox{display:flex;gap:14px;flex-wrap:wrap}
+        .nsx-product-edit-page .imgitem{background:white;border:1px solid #e5e7eb;border-radius:16px;padding:10px}
+        .nsx-product-edit-page .imgitem img{width:120px;height:120px;object-fit:cover;border-radius:12px;display:block;margin-bottom:8px}
+
+        .nsx-product-edit-page .updatebox{border:1px solid #f3c5a4;background:#fff7f1;border-radius:16px;padding:18px;margin-top:4px}
+        .nsx-product-edit-page .updatehead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+        .nsx-product-edit-page .updatehead h2{margin:0;font-size:18px;color:#17212b}
+        .nsx-product-edit-page .pill{display:inline-flex;align-items:center;border-radius:999px;padding:7px 11px;background:#fff0e4;color:#bd4900;font-weight:900;font-size:11px}
+        .nsx-product-edit-page .update-list{display:grid;gap:8px;margin-top:12px}
+        .nsx-product-edit-page .update-item{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid #eadfd7;background:rgba(255,255,255,.78);border-radius:12px;padding:10px 12px}
+        .nsx-product-edit-page .update-item small{margin:0}
+        .nsx-product-edit-page .update-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+        .nsx-product-edit-page .btn-mini{border:0;border-radius:10px;padding:8px 10px;font-weight:800;text-decoration:none;display:inline-block;cursor:pointer;font-size:12px}
+        .nsx-product-edit-page .btn-soft{background:#e5e7eb;color:#111827}
+        .nsx-product-edit-page .btn-red{background:#fee2e2;color:#991b1b}
+        .nsx-product-edit-page .badge-ok{color:#166534;background:#dcfce7;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px}
+        .nsx-product-edit-page .badge-off{color:#991b1b;background:#fee2e2;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px}
+        .nsx-upload-panel{display:none;position:fixed;inset:0;background:rgba(15,23,42,.52);backdrop-filter:blur(8px);z-index:99999;align-items:center;justify-content:center;padding:18px}
+        .nsx-upload-box{width:min(590px,100%);background:#fff;border-radius:26px;padding:24px;box-shadow:0 32px 90px rgba(15,23,42,.35);border:1px solid rgba(226,232,240,.9)}
+        .nsx-upload-title{font-size:22px;font-weight:950;margin:0 0 6px;color:#0f172a}
+        .nsx-upload-sub{color:#64748b;font-weight:800;margin-bottom:18px}
+        .nsx-progress-row{margin-top:14px}
+        .nsx-progress-head{display:flex;align-items:center;justify-content:space-between;font-weight:950;margin-bottom:7px;color:#111827}
+        .nsx-progress-track{height:14px;border-radius:999px;background:#e5e7eb;overflow:hidden;border:1px solid #dbe3ef}
+        .nsx-progress-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(135deg,#f56800,#3a3d46);transition:width .18s ease}
+        .nsx-progress-row.images .nsx-progress-fill{background:linear-gradient(135deg,#f59e0b,#f56800)}
+        .nsx-progress-row.demo .nsx-progress-fill{background:linear-gradient(135deg,#22c55e,#16a34a)}
+        .nsx-progress-row.update .nsx-progress-fill{background:linear-gradient(135deg,#f97316,#dc2626)}
+        .nsx-progress-total{margin-top:18px;padding:12px 14px;border-radius:16px;background:#f8fafc;color:#334155;font-weight:900}
+        .nsx-upload-error{display:none;margin-top:14px;background:#fee2e2;color:#991b1b;border-radius:14px;padding:12px 14px;font-weight:900}
+        .nsx-upload-done{display:none;margin-top:14px;background:#dcfce7;color:#166534;border-radius:14px;padding:12px 14px;font-weight:900}
+        .nsx-product-edit-page small{color:#6b7280;display:block;margin-top:6px}
+        @@media(max-width:760px){.nsx-product-edit-page .grid{grid-template-columns:1fr}.nsx-product-edit-page .updatehead{display:block}.nsx-product-edit-page .update-item{display:block}}
+</style>
+
+<section class="nsx-admin-page nsx-product-edit-page">
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX Admin</span>
+            <h1>Ürün Düzenle</h1>
+            <p>@(safeModel.Name ?? "-")</p>
+        </div>
+        <a class="nsx-admin-btn light" href="/Admin/Products">Ürünlere Dön</a>
+    </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div style="background:#dcfce7;color:#166534;padding:12px 14px;border-radius:14px;margin-bottom:15px;font-weight:800">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="danger">@TempData["Error"]</div>
+        }
+        @if (ViewBag.Error != null)
+        {
+            <div class="danger">@ViewBag.Error</div>
+        }
+
+        <form id="nsxUploadForm" method="post" enctype="multipart/form-data" action="/Admin/ProductEdit/@safeModel.Id" class="card nsx-standard-form">
+            @Html.AntiForgeryToken()
+            <div class="grid">
+                <div class="full">
+                    <label>Ürün Adı</label>
+                    <input type="text" id="Name" name="Name" value="@safeModel.Name" required />
+                </div>
+
+                <div class="full">
+                    <label>Ürün Kodu / ProductCode</label>
+                    <input type="text" id="ProductCode" name="ProductCode" value="@safeModel.ProductCode" placeholder="Örn: NSXVERESIYEDEFTERI" />
+                    <small>Bu kod programdaki sabit ProductCode ile aynı olmalı. Lisans, reklam ve güncelleme sistemleri bu koda bağlanır.</small>
+                </div>
+
+                <div class="full">
+                    <label>Kategori</label>
+                    <select id="Category" name="Category" required>
+                        @foreach (var option in ProductCategoryHelper.Options)
+                        {
+                            if (string.Equals(selectedCategory, option.Key, StringComparison.OrdinalIgnoreCase)) { <option value="@option.Key" selected>@option.Label</option> }
+                            else { <option value="@option.Key">@option.Label</option> }
+                        }
+                    </select>
+                    <small>Mağaza filtresi ve ürün detayındaki kategori etiketi bu seçimden gelir.</small>
+                </div>
+
+                <div>
+                    <label>Yıllık Fiyat</label>
+                    <input type="number" id="YearlyPrice" name="YearlyPrice" value="@yearlyValue" step="0.01" min="0" />
+                    <small>Örnek: 999.90</small>
+                </div>
+
+                <div>
+                    <label>Sınırsız Fiyat</label>
+                    <input type="number" id="LifetimePrice" name="LifetimePrice" value="@lifetimeValue" step="0.01" min="0" />
+                    <small>Örnek: 2499.90</small>
+                </div>
+
+                <div>
+                    <label>Stok Adedi</label>
+                    <input type="number" id="StockQuantity" name="StockQuantity" value="@safeModel.StockQuantity" min="0" />
+                </div>
+
+                <div>
+                    <label>Ürün Durumu</label>
+                    <div class="check">
+                        <input type="checkbox" id="IsActive" name="IsActive" value="true" @(safeModel.IsActive ? "checked" : "") />
+                        <input type="hidden" name="IsActive" value="false" />
+                        <span>Ürün aktif</span>
+                    </div>
+                </div>
+
+                <div class="full">@await Html.PartialAsync("_ProductDescriptionEditor", safeModel.Description ?? string.Empty)</div>
+
+                <div>
+                    <label>Meta Başlık</label>
+                    <input type="text" id="MetaTitle" name="MetaTitle" value="@safeModel.MetaTitle" />
+                </div>
+
+                <div>
+                    <label>Meta Açıklama</label>
+                    <input type="text" id="MetaDescription" name="MetaDescription" value="@safeModel.MetaDescription" />
+                </div>
+
+                <div class="full">
+                    <label>Mevcut Dosyalar</label>
+
+                    <div class="filebox">
+                        <strong>Demo Program Dosyası</strong>
+                        @if (demoFile != null)
+                        {
+                            <span>@demoFile.OriginalFileName</span>
+                            <br />
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px">
+                                <a href="@demoFile.FilePath" target="_blank">Dosyayı aç / indir</a>
+                                <button class="btn-mini btn-red" type="submit" form="deleteDemoForm_@demoFile.Id" onclick="return confirm('Demo program dosyası sunucudan tamamen silinsin mi?');">Sil</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="muted">Demo dosyası yok.</span>
+                        }
+                    </div>
+
+                    <small>Not: Tarayıcı güvenliği nedeniyle dosya seçme alanları eski dosyayı otomatik gösteremez. Mevcut demo dosyası yukarıda gösterilir; yeni demo dosyası seçersen eskisinin yerine geçer.</small>
+                </div>
+
+                <div class="full">
+                    <label>Yeni Görsel Ekle</label>
+                    <input type="file" id="Images" name="Images" accept="image/*" multiple data-max-files="10" />
+                    <small>Yeni görsel eklersen listeye eklenir ve ilk yeni görsel ana görsel olur. Toplam 10 görsel sınırı uygulanır.</small>
+                </div>
+
+                <div class="full">
+                    <label>Demo Program Dosyası Değiştir</label>
+                    <input type="file" id="DemoFile" name="DemoFile" />
+                    <small>Sadece demo program yüklenir. Tam sürüm/program dosyası alanı kaldırıldı.</small>
+                </div>
+
+                <div class="full updatebox">
+                    <div class="updatehead">
+                        <div>
+                            <h2>Güncelleme Dosyası Ekle</h2>
+                            <small>Bu ürüne ait masaüstü program güncellemesini buradan yükle. Program kodu otomatik: <b>@productUpdateCode</b></small>
+                        </div>
+                        <span class="pill">update.zip</span>
+                    </div>
+
+                    <div class="grid">
+                        <div>
+                            <label>Yeni Sürüm</label>
+                            <input type="text" id="UpdateVersion" name="UpdateVersion" placeholder="Örnek: 1.0.2" />
+                        </div>
+                        <div>
+                            <label>Güncelleme ZIP</label>
+                            <input type="file" id="UpdateZip" name="UpdateZip" accept=".zip,application/zip,application/x-zip-compressed" />
+                        </div>
+                        <div class="full">
+                            <label>Güncelleme Notu</label>
+                            <textarea id="UpdateNotes" name="UpdateNotes" placeholder="Örnek: Performans iyileştirmeleri ve küçük hata düzeltmeleri."></textarea>
+                        </div>
+                        <div>
+                            <label>Durum</label>
+                            <div class="check">
+                                <input type="checkbox" id="UpdateIsActive" name="UpdateIsActive" value="true" checked />
+                                <input type="hidden" name="UpdateIsActive" value="false" />
+                                <span>Bu güncelleme aktif olsun</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Zorunlu Mu?</label>
+                            <div class="check">
+                                <input type="checkbox" id="UpdateIsRequired" name="UpdateIsRequired" value="true" />
+                                <input type="hidden" name="UpdateIsRequired" value="false" />
+                                <span>Kullanıcıya zorunlu güncelleme olarak göster</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (productUpdateList.Any())
+                    {
+                        <div class="update-list">
+                            @foreach (var update in productUpdateList)
+                            {
+                                <div class="update-item">
+                                    <div>
+                                        <strong>v@update.Version</strong>
+                                        <small>@(!string.IsNullOrWhiteSpace(update.ReleaseNotes) ? update.ReleaseNotes : "Not yok")</small>
+                                        <small>@update.CreatedAt.ToString("dd.MM.yyyy HH:mm") · <a href="@update.DownloadUrl" target="_blank">ZIP indir</a></small>
+                                    </div>
+                                    <div class="update-actions">
+                                        <span class="@(update.IsActive ? "badge-ok" : "badge-off")">@(update.IsActive ? "Aktif" : "Pasif")</span>
+                                        <button class="btn-mini btn-soft" type="submit" form="toggleUpdateForm_@update.Id">@(update.IsActive ? "Pasif Yap" : "Aktif Yap")</button>
+                                        <button class="btn-mini btn-red" type="submit" form="deleteUpdateForm_@update.Id" onclick="return confirm('Güncelleme dosyası silinsin mi?');">Sil</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <small>Bu ürün için henüz güncelleme paketi yok.</small>
+                    }
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn primary" type="submit">Güncelle</button>
+                <a class="btn light" href="/Admin/Products">Vazgeç</a>
+            </div>
+        </form>
+
+        @if (demoFile != null)
+        {
+            <form id="deleteDemoForm_@demoFile.Id" method="post" action="/Admin/ProductFileDelete/@demoFile.Id" style="display:none">
+                @Html.AntiForgeryToken()
+            </form>
+        }
+
+        @if (productUpdateList.Any())
+        {
+            foreach (var update in productUpdateList)
+            {
+                <form id="toggleUpdateForm_@update.Id" method="post" action="/Admin/UpdatePackageToggle/@update.Id" style="display:none">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="/Admin/ProductEdit/@safeModel.Id" />
+                </form>
+                <form id="deleteUpdateForm_@update.Id" method="post" action="/Admin/UpdatePackageDelete/@update.Id" style="display:none">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="/Admin/ProductEdit/@safeModel.Id" />
+                </form>
+            }
+        }
+
+        <div class="card">
+            <h2>Mevcut Görseller</h2>
+            <div class="imgbox">
+                @foreach (var image in imageList.OrderByDescending(x => x.IsMain).ThenBy(x => x.SortOrder))
+                {
+                    <div class="imgitem">
+                        <img src="@image.ImagePath" />
+                        @if (image.IsMain)
+                        {
+                            <div style="font-weight:800;color:#166534;margin-bottom:8px">Kapak görseli</div>
+                        }
+                        else
+                        {
+                            <form method="post" action="/Admin/ProductImageSetMain/@image.Id" style="margin-bottom:8px">
+                                @Html.AntiForgeryToken()
+                                <button class="btn primary" type="submit">Kapak Yap</button>
+                            </form>
+                        }
+                        <form method="post" action="/Admin/ProductImageDelete/@image.Id" onsubmit="return confirm('Görsel silinsin mi?');">
+                            @Html.AntiForgeryToken()
+                            <button class="btn light" type="submit">Sil</button>
+                        </form>
+                    </div>
+                }
+
+                @if (!imageList.Any())
+                {
+                    <div class="muted">Görsel yok.</div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <div class="nsx-upload-panel" id="nsxUploadPanel" aria-hidden="true">
+        <div class="nsx-upload-box">
+            <h3 class="nsx-upload-title">Dosyalar yükleniyor</h3>
+            <div class="nsx-upload-sub">Sayfayı kapatma kral, görseller / demo program / güncelleme paketi güvenli şekilde yükleniyor.</div>
+            <div class="nsx-progress-row images" data-upload-row="Images">
+                <div class="nsx-progress-head"><span>Görseller</span><b>0%</b></div>
+                <div class="nsx-progress-track"><div class="nsx-progress-fill"></div></div>
+            </div>
+            <div class="nsx-progress-row demo" data-upload-row="DemoFile">
+                <div class="nsx-progress-head"><span>Demo Program</span><b>0%</b></div>
+                <div class="nsx-progress-track"><div class="nsx-progress-fill"></div></div>
+            </div>
+            <div class="nsx-progress-row update" data-upload-row="UpdateZip">
+                <div class="nsx-progress-head"><span>Güncelleme ZIP</span><b>0%</b></div>
+                <div class="nsx-progress-track"><div class="nsx-progress-fill"></div></div>
+            </div>
+            <div class="nsx-progress-total" id="nsxUploadTotal">Toplam: 0%</div>
+            <div class="nsx-upload-done" id="nsxUploadDone">Yükleme tamamlandı. Sayfa yenileniyor...</div>
+            <div class="nsx-upload-error" id="nsxUploadError"></div>
+        </div>
+    </div>
+
+<script>
+(function nsxImageLimitCheck(){
+    const input = document.getElementById('Images');
+    if (!input) return;
+    input.addEventListener('change', function(){
+        const max = 10;
+        if (this.files && this.files.length > max) {
+            alert('En fazla 10 görsel seçebilirsin.');
+            this.value = '';
+        }
+    });
+})();
+
+(function nsxUploadProgress(){
+    const form = document.getElementById('nsxUploadForm');
+    if (!form || !window.XMLHttpRequest || !window.FormData) return;
+
+    const rows = Array.from(document.querySelectorAll('[data-upload-row]'));
+    const panel = document.getElementById('nsxUploadPanel');
+    const totalText = document.getElementById('nsxUploadTotal');
+    const doneBox = document.getElementById('nsxUploadDone');
+    const errorBox = document.getElementById('nsxUploadError');
+
+    function fileSizeOf(inputId){
+        const input = document.getElementById(inputId);
+        if (!input || !input.files) return 0;
+        return Array.from(input.files).reduce((sum, f) => sum + (f.size || 0), 0);
+    }
+
+    function setRow(row, pct){
+        pct = Math.max(0, Math.min(100, Math.round(pct)));
+        const fill = row.querySelector('.nsx-progress-fill');
+        const label = row.querySelector('b');
+        if (fill) fill.style.width = pct + '%';
+        if (label) label.textContent = pct + '%';
+    }
+
+    function updateRows(loaded, total){
+        const sizes = {};
+        let sum = 0;
+        rows.forEach(row => {
+            const key = row.getAttribute('data-upload-row');
+            sizes[key] = fileSizeOf(key);
+            sum += sizes[key];
+        });
+        if (!sum) sum = total || 1;
+        let passed = 0;
+        rows.forEach(row => {
+            const key = row.getAttribute('data-upload-row');
+            const size = sizes[key];
+            let pct = 0;
+            if (!size) { pct = 100; }
+            else { pct = ((Math.max(0, loaded - passed)) / size) * 100; }
+            setRow(row, pct);
+            passed += size;
+        });
+        const totalPct = total ? Math.round((loaded / total) * 100) : 0;
+        if (totalText) totalText.textContent = 'Toplam: ' + Math.max(0, Math.min(100, totalPct)) + '%';
+    }
+
+    form.addEventListener('submit', function(e){
+        const hasFile = ['Images','DemoFile','UpdateZip'].some(id => {
+            const input = document.getElementById(id);
+            return input && input.files && input.files.length > 0;
+        });
+        if (!hasFile) return;
+
+        e.preventDefault();
+        if (errorBox) { errorBox.style.display = 'none'; errorBox.textContent = ''; }
+        if (doneBox) doneBox.style.display = 'none';
+        if (panel) panel.style.display = 'flex';
+        updateRows(0, 1);
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open((form.method || 'POST').toUpperCase(), form.action, true);
+        xhr.upload.onprogress = function(evt){
+            if (evt.lengthComputable) updateRows(evt.loaded, evt.total);
+        };
+        xhr.onload = function(){
+            if (xhr.status >= 200 && xhr.status < 400) {
+                updateRows(1,1);
+                if (doneBox) doneBox.style.display = 'block';
+                window.location.href = xhr.responseURL || window.location.href;
+            } else {
+                if (errorBox) { errorBox.textContent = 'Yükleme tamamlanamadı. Sunucu hata kodu: ' + xhr.status; errorBox.style.display = 'block'; }
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        };
+        xhr.onerror = function(){
+            if (errorBox) { errorBox.textContent = 'Bağlantı kesildi. Dosya yükleme başarısız oldu.'; errorBox.style.display = 'block'; }
+            if (submitBtn) submitBtn.disabled = false;
+        };
+        xhr.send(new FormData(form));
+    });
+})();
+</script>

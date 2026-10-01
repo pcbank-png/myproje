@@ -1,0 +1,460 @@
+﻿@model IReadOnlyList<NSYazilim.Web.Controllers.BlogController.SeoPage>
+@inject NSYazilim.Web.Services.SiteLocalizationService Localization
+@{
+    var featured = Model.FirstOrDefault();
+    var articles = Model.Skip(featured == null ? 0 : 1).ToList();
+
+    string ArticleUrl(NSYazilim.Web.Controllers.BlogController.SeoPage item)
+        => item.IsLanding ? $"/{item.Slug}" : $"/blog/{item.Slug}";
+
+    string ArticleCategorySource(NSYazilim.Web.Controllers.BlogController.SeoPage item)
+    {
+        return item.Slug switch
+        {
+            "veresiye-programi-nedir" or
+            "ucretsiz-veresiye-programi-nedir" or
+            "ucretsiz-cari-takip-programi" or
+            "esnaflar-icin-veresiye-takip-programi" or
+            "borc-alacak-takip-programi-ucretsiz" or
+            "bakkal-veresiye-defteri-nasil-tutulur" or
+            "cari-hesap-takibi-nasil-yapilir" or
+            "excel-yerine-veresiye-takip-programi" or
+            "veresiye-defteri-programi" or
+            "ucretsiz-cari-hesap-programi" or
+            "veresiye-cari-takip-programi-pro" or
+            "nsx-cari-takip-pro-programi" or
+            "nsx-cari-takip-pro-bulut-programi" or
+            "nsx-komisyonlu-cari-takip-pro" => "Cari ve Veresiye",
+
+            "oto-tamir-programi" or
+            "oto-galeri-programi" or
+            "oto-galeri-yonetim-programi" or
+            "oto-tamir-servis-yonetim-programi" => "Otomotiv",
+
+            "ucretsiz-teknik-servis-programi" or
+            "nsx-veri-kurtarma-pro-programi" or
+            "servis-live-programi" or
+            "teknik-servis-takip-programi" or
+            "nsx-servispro-live-teknik-servis-programi" or
+            "nsx-teknik-servis-pro-programi" => "Servis Yönetimi",
+
+            "klinik-programi" or
+            "randevu-programi" or
+            "klinik-randevu-takip-programi" or
+            "dugun-salonu-yonetim-programi" or
+            "nsx-sigorta-acente-pro-programi" => "İşletme Yönetimi",
+
+            "nsx-barkodlu-satis-cari-stok-takip-pro" => "Satış ve Stok",
+            "nsx-kasa-defteri-pro-programi" => "Finans ve Kasa",
+            "nsx-security-auditor-pro-kod-guvenlik-analizi" => "Yazılım Güvenliği",
+            "ucretsiz-bilgisayar-hizlandirma-programi" or
+            "bilgisayar-hizlandirma-programi" or
+            "oyun-hizlandirma-fps-artirma-programi" => "Teknoloji",
+            _ => "Dijital Dönüşüm"
+        };
+    }
+
+    var categoryTranslations = new Dictionary<string, string>(StringComparer.Ordinal);
+    foreach (var sourceCategory in Model.Select(ArticleCategorySource).Distinct(StringComparer.Ordinal))
+    {
+        categoryTranslations[sourceCategory] = await Localization.TranslateAsync(
+            sourceCategory,
+            cancellationToken: Context.RequestAborted);
+    }
+
+    string ArticleCategory(NSYazilim.Web.Controllers.BlogController.SeoPage item)
+    {
+        var source = ArticleCategorySource(item);
+        return categoryTranslations.TryGetValue(source, out var translated) ? translated : source;
+    }
+
+    var categories = Model.Select(ArticleCategory).Distinct().OrderBy(x => x).ToList();
+}
+
+
+<style id="nsx-blog-subpage-standard-pro">
+    .public-content-page{--nsx-subpage-hero-height:286px;background:#fff!important;}
+    .public-content-page .public-site-header .service-ribbon > .container,
+    .public-content-page .public-site-header .detail-nav.container,
+    .nsx-blog-redesign-hero > .container,
+    .nsx-blog-index-page > .nsx-blog-index-content,
+    .nsx-blog-detail-hero > .container,
+    .nsx-blog-detail-page > .nsx-blog-detail-content{
+        width:min(1505px,calc(100% - 48px))!important;
+        max-width:1505px!important;
+        margin-left:auto!important;
+        margin-right:auto!important;
+        padding-left:0!important;
+        padding-right:0!important;
+    }
+    .public-content-page > .container{
+        width:100%!important;
+        max-width:none!important;
+        margin:0!important;
+        padding:0!important;
+    }
+    @@media(min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{display:flex!important;align-items:center!important;min-height:78px!important;gap:8px!important;}
+        .public-content-page .public-site-header .brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;margin:0 auto 0 0!important;padding:0!important;}
+        .public-content-page .public-site-header .brand-logo{display:block!important;width:clamp(142px,10.8vw,184px)!important;max-width:184px!important;height:auto!important;object-fit:contain!important;}
+        .public-content-page .public-site-header .nav-links{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex:0 1 auto!important;width:auto!important;margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{white-space:nowrap!important;}
+        .public-content-page .public-site-header .nav-cta{flex:0 0 auto!important;margin-left:0!important;}
+        .public-content-page .public-site-header .menu-toggle{display:none!important;}
+    }
+    @@media(max-width:1180px) and (min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{width:calc(100% - 32px)!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(132px,12.5vw,154px)!important;}
+        .public-content-page .public-site-header .nav-links{gap:7px!important;margin-right:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{font-size:clamp(12px,1.05vw,14px)!important;}
+    }
+
+    .nsx-blog-index-page,.nsx-blog-detail-page{padding:0 0 64px!important;background:#fff!important;}
+    .nsx-blog-index-page:before,.nsx-blog-detail-page:before{display:none!important;}
+    .nsx-blog-redesign-hero,.nsx-blog-detail-hero{
+        font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;
+        position:relative!important;
+        display:block!important;
+        grid-template-columns:none!important;
+        gap:0!important;
+        align-items:initial!important;
+        height:var(--nsx-subpage-hero-height)!important;
+        min-height:var(--nsx-subpage-hero-height)!important;
+        max-height:var(--nsx-subpage-hero-height)!important;
+        width:100%!important;
+        margin:0!important;
+        padding:0!important;
+        overflow:hidden!important;
+        border:0!important;
+        border-radius:0!important;
+        color:#fff!important;
+        background:radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%)!important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22)!important;
+    }
+    .nsx-blog-redesign-hero:before,.nsx-blog-detail-hero:before{
+        content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;opacity:.10!important;
+        background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)!important;
+        background-size:72px 72px!important;
+        -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%)!important;
+        mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%)!important;
+    }
+    .nsx-blog-redesign-hero:after,.nsx-blog-detail-hero:after{display:none!important;}
+    .nsx-blog-redesign-hero > .container,.nsx-blog-detail-hero > .container{position:relative!important;z-index:2!important;height:100%!important;min-height:0!important;display:flex!important;align-items:flex-start!important;padding-top:24px!important;padding-bottom:24px!important;}
+
+    .nsx-blog-redesign-intro{max-width:980px!important;}
+    .nsx-blog-redesign-kicker,.nsx-blog-detail-hero .nsx-blog-kicker{display:flex!important;align-items:center!important;gap:10px!important;margin:0 0 14px!important;color:#39d98a!important;font-size:12px!important;font-weight:900!important;letter-spacing:.11em!important;text-transform:uppercase!important;}
+    .nsx-blog-redesign-kicker i{width:7px!important;height:7px!important;border-radius:50%!important;background:#39d98a!important;box-shadow:0 0 0 5px rgba(57,217,138,.12)!important;}
+    .nsx-blog-redesign-intro h1,.nsx-blog-detail-copy h1{max-width:860px!important;margin:0!important;color:#fff!important;font-size:42px!important;font-weight:900!important;line-height:1.06!important;letter-spacing:-.04em!important;}
+    .nsx-blog-redesign-intro h1 em{display:block!important;color:#ff6e04!important;font-style:normal!important;}
+    .nsx-blog-redesign-intro > p,.nsx-blog-detail-copy > p{max-width:900px!important;margin:12px 0 0!important;color:#d3d8df!important;font-size:14px!important;line-height:1.7!important;font-weight:520!important;}
+    .nsx-blog-redesign-stats,.nsx-blog-detail-meta{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:10px!important;margin-top:16px!important;}
+    .nsx-blog-redesign-stats span,.nsx-blog-detail-meta span{display:inline-flex!important;align-items:center!important;gap:7px!important;min-height:34px!important;padding:0 11px!important;border:1px solid rgba(255,255,255,.15)!important;border-radius:999px!important;background:rgba(255,255,255,.045)!important;color:#d9dee4!important;font-size:10px!important;font-weight:800!important;box-shadow:none!important;}
+    .nsx-blog-redesign-stats strong,.nsx-blog-detail-meta i{color:#39d98a!important;font-size:11px!important;}
+
+    .nsx-blog-index-content{padding-top:36px!important;}
+    .nsx-blog-featured-card{
+        grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)!important;
+        margin:0 0 28px!important;
+        overflow:hidden!important;
+        border:1px solid #e1e5ea!important;
+        border-radius:20px!important;
+        background:linear-gradient(135deg,#ffffff 0%,#fbfcfd 100%)!important;
+        box-shadow:0 14px 36px rgba(12,16,22,.075)!important;
+    }
+    .nsx-blog-featured-media{height:222px!important;min-height:222px!important;padding:12px!important;background:linear-gradient(145deg,#f7f9fb,#fff)!important;}
+    .nsx-blog-featured-media img{border-radius:12px!important;}
+    .nsx-blog-featured-card > div{padding:24px 28px!important;}
+    .nsx-blog-featured-card h2{margin:9px 0 9px!important;font-size:22px!important;line-height:1.2!important;}
+    .nsx-blog-featured-card p{max-width:760px!important;margin:0!important;font-size:11.5px!important;line-height:1.68!important;}
+    .nsx-blog-featured-link{display:inline-flex!important;align-items:center!important;gap:8px!important;margin-top:15px!important;padding:8px 11px!important;border:1px solid #e2e6eb!important;border-radius:10px!important;background:#fff!important;color:#20262d!important;box-shadow:0 5px 14px rgba(15,23,42,.04)!important;}
+    .nsx-blog-featured-link:hover{border-color:#ff6e04!important;color:#ff6e04!important;transform:translateY(-1px)!important;}
+
+    .nsx-blog-redesign-toolbar{
+        display:grid!important;
+        grid-template-columns:minmax(240px,.72fr) minmax(0,1.28fr)!important;
+        align-items:center!important;
+        gap:28px!important;
+        margin:0 0 22px!important;
+        padding:18px 20px!important;
+        border:1px solid #e2e6eb!important;
+        border-radius:16px!important;
+        background:linear-gradient(135deg,#fbfcfd 0%,#f5f7f9 100%)!important;
+        box-shadow:0 9px 24px rgba(15,23,42,.045)!important;
+    }
+    .nsx-blog-redesign-toolbar h2{margin:5px 0 0!important;font-size:27px!important;line-height:1.1!important;}
+    .nsx-blog-filters{max-width:none!important;justify-content:flex-end!important;padding:5px!important;border-color:#dde2e8!important;background:#fff!important;box-shadow:0 5px 14px rgba(15,23,42,.035),inset 0 1px 0 #fff!important;}
+    .nsx-blog-filters button{min-height:34px!important;padding:7px 11px!important;border-radius:8px!important;font-size:9.5px!important;}
+    .nsx-blog-filters button.active{color:#fff!important;background:#ff6e04!important;border-color:#ff6e04!important;box-shadow:0 8px 18px rgba(255,110,4,.20)!important;}
+
+    .nsx-blog-redesign-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px!important;align-items:stretch!important;}
+    .nsx-blog-redesign-card{
+        display:flex!important;
+        flex-direction:column!important;
+        min-width:0!important;
+        overflow:hidden!important;
+        border:1px solid #e1e5ea!important;
+        border-radius:16px!important;
+        background:#fff!important;
+        box-shadow:0 9px 24px rgba(12,16,22,.055)!important;
+        transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease!important;
+    }
+    .nsx-blog-redesign-card:hover{transform:translateY(-5px)!important;border-color:#d6dce3!important;box-shadow:0 18px 38px rgba(12,16,22,.11)!important;}
+    .nsx-blog-redesign-media{height:168px!important;padding:10px!important;background:linear-gradient(145deg,#f7f9fb,#fff)!important;border-bottom:1px solid #edf0f3!important;}
+    .nsx-blog-redesign-media img{border-radius:10px!important;}
+    .nsx-blog-redesign-media span{left:12px!important;bottom:12px!important;padding:5px 8px!important;border-radius:7px!important;background:rgba(17,22,28,.92)!important;box-shadow:0 4px 12px rgba(0,0,0,.16)!important;}
+    .nsx-blog-redesign-content{display:flex!important;flex:1!important;flex-direction:column!important;padding:14px 15px 15px!important;}
+    .nsx-blog-redesign-meta{gap:8px!important;font-size:8.5px!important;}
+    .nsx-blog-redesign-card h2{min-height:40px!important;margin:8px 0 7px!important;font-size:15px!important;line-height:1.32!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;}
+    .nsx-blog-redesign-card p{min-height:50px!important;margin:0!important;font-size:10.2px!important;line-height:1.58!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;overflow:hidden!important;}
+    .nsx-blog-redesign-link{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin-top:auto!important;padding-top:12px!important;border-top:1px solid #edf0f3!important;color:#ff6e04!important;font-size:9.5px!important;font-weight:900!important;}
+    .nsx-blog-redesign-link i{transition:transform .18s ease!important;}
+    .nsx-blog-redesign-card:hover .nsx-blog-redesign-link i{transform:translateX(3px)!important;}
+
+    .nsx-blog-detail-hero > .container{display:grid!important;grid-template-columns:minmax(0,1fr) 300px!important;gap:34px!important;}
+    .nsx-blog-detail-copy{min-width:0!important;}
+    .nsx-blog-detail-copy h1{font-size:42px!important;line-height:1.06!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;}
+    .nsx-blog-detail-copy > p{font-size:14px!important;line-height:1.7!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;}
+    .nsx-blog-detail-meta{margin-top:16px!important;}
+    .nsx-blog-hero-image{width:300px!important;height:172px!important;margin:0!important;padding:8px!important;justify-self:end!important;overflow:hidden!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:16px!important;background:rgba(255,255,255,.055)!important;box-shadow:0 16px 34px rgba(0,0,0,.20)!important;}
+    .nsx-blog-hero-image img{display:block!important;width:100%!important;height:138px!important;object-fit:contain!important;object-position:center!important;border-radius:10px!important;background:#fff!important;}
+    .nsx-blog-hero-image figcaption{padding:6px 5px 0!important;overflow:hidden!important;color:#aeb7c0!important;font-size:7px!important;line-height:1.2!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+    .nsx-blog-detail-content{padding-top:32px!important;}
+    .nsx-blog-detail-layout{margin-top:0!important;padding-top:0!important;border-top:0!important;}
+    .nsx-blog-article,.nsx-blog-sidebar-card{border-radius:18px!important;box-shadow:0 9px 26px rgba(12,16,22,.045)!important;}
+
+    @@media(max-width:1180px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container,.nsx-blog-redesign-hero > .container,.nsx-blog-index-page > .nsx-blog-index-content,.nsx-blog-detail-hero > .container,.nsx-blog-detail-page > .nsx-blog-detail-content{width:calc(100% - 32px)!important;}
+        .nsx-blog-redesign-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+        .nsx-blog-redesign-toolbar{grid-template-columns:1fr!important;gap:14px!important;}
+        .nsx-blog-filters{justify-content:flex-start!important;}
+        .nsx-blog-redesign-intro h1{font-size:38px!important;}
+        .nsx-blog-detail-copy h1{font-size:38px!important;}
+        .nsx-blog-detail-hero > .container{grid-template-columns:minmax(0,1fr) 260px!important;gap:24px!important;}
+        .nsx-blog-hero-image{width:260px!important;height:160px!important;}
+        .nsx-blog-hero-image img{height:126px!important;}
+    }
+    @@media(max-width:980px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+        .nsx-blog-redesign-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+        .public-content-page .public-site-header .detail-nav.container{min-height:68px!important;}
+        .public-content-page .public-site-header .brand{margin-right:auto!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(124px,28vw,154px)!important;max-width:154px!important;height:auto!important;}
+        .public-content-page .public-site-header .menu-toggle{margin-left:auto!important;}
+        .nsx-blog-detail-hero > .container{grid-template-columns:1fr!important;}
+        .nsx-blog-hero-image{display:none!important;}
+        .nsx-blog-detail-copy h1{max-width:100%!important;}
+    }
+    @@media(max-width:680px){
+        .nsx-blog-redesign-hero > .container,.nsx-blog-index-page > .nsx-blog-index-content,.nsx-blog-detail-hero > .container,.nsx-blog-detail-page > .nsx-blog-detail-content{width:calc(100% - 18px)!important;}
+        .nsx-blog-redesign-grid{grid-template-columns:1fr!important;gap:14px!important;}
+        .nsx-blog-redesign-toolbar{padding:16px!important;}
+        .nsx-blog-filters{justify-content:flex-start!important;}
+        .nsx-blog-featured-card{grid-template-columns:1fr!important;}
+        .nsx-blog-featured-media{height:205px!important;min-height:205px!important;}
+        .nsx-blog-featured-card > div{padding:20px!important;}
+        .nsx-blog-redesign-hero > .container,.nsx-blog-detail-hero > .container{padding-top:20px!important;padding-bottom:20px!important;}
+        .nsx-blog-redesign-intro h1{font-size:30px!important;}
+        .nsx-blog-detail-copy h1{font-size:30px!important;}
+        .nsx-blog-redesign-intro > p,.nsx-blog-detail-copy > p{font-size:13px!important;line-height:1.7!important;}
+        .nsx-blog-index-content{padding-top:28px!important;}
+        .nsx-blog-detail-content{padding-top:24px!important;}
+    }
+    @@media(max-width:430px){
+        .nsx-blog-redesign-stats,.nsx-blog-detail-meta{gap:7px!important;}
+        .nsx-blog-redesign-stats span,.nsx-blog-detail-meta span{width:100%!important;justify-content:center!important;}
+    }
+    @@media(max-width:520px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 18px)!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(112px,34vw,136px)!important;}
+    }
+
+
+    /* NSX KISA HERO TIPOGRAFI KILIDI - Yazilimlar sayfasi birebir referanstir. */
+    .nsx-blog-redesign-hero,.nsx-blog-detail-hero{font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;}
+    .nsx-blog-redesign-hero .nsx-blog-redesign-kicker,
+    .nsx-blog-detail-hero .nsx-blog-kicker{
+        display:flex!important;align-items:center!important;gap:10px!important;
+        margin:0 0 14px!important;color:#39d98a!important;
+        font-size:12px!important;font-weight:900!important;letter-spacing:.11em!important;text-transform:uppercase!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-kicker i,
+    .nsx-blog-detail-hero .nsx-blog-kicker:before{
+        width:7px!important;height:7px!important;flex:0 0 7px!important;border-radius:50%!important;
+        background:#39d98a!important;box-shadow:0 0 0 5px rgba(57,217,138,.12)!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-intro h1,
+    .nsx-blog-detail-hero .nsx-blog-detail-copy h1{
+        max-width:860px!important;margin:0!important;color:#fff!important;
+        font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;font-size:42px!important;font-weight:900!important;
+        line-height:1.06!important;letter-spacing:-.04em!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-intro h1 em,
+    .nsx-blog-detail-hero .nsx-blog-detail-copy h1 .nsx-short-hero-orange{
+        display:block!important;color:#ff6e04!important;font-style:normal!important;
+    }
+    .nsx-blog-detail-hero .nsx-blog-detail-copy h1 .nsx-short-hero-white{color:#fff!important;}
+    .nsx-blog-redesign-hero .nsx-blog-redesign-intro > p,
+    .nsx-blog-detail-hero .nsx-blog-detail-copy > p{
+        max-width:900px!important;margin:12px 0 0!important;color:#d3d8df!important;
+        font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;font-size:14px!important;line-height:1.7!important;font-weight:520!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-stats,
+    .nsx-blog-detail-hero .nsx-blog-detail-meta{
+        display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:10px!important;margin-top:16px!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-stats span,
+    .nsx-blog-detail-hero .nsx-blog-detail-meta span{
+        display:inline-flex!important;align-items:center!important;gap:7px!important;min-height:34px!important;padding:0 11px!important;
+        border:1px solid rgba(255,255,255,.15)!important;border-radius:999px!important;background:rgba(255,255,255,.045)!important;
+        color:#d9dee4!important;font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;font-size:10px!important;font-weight:800!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-stats strong,
+    .nsx-blog-detail-hero .nsx-blog-detail-meta i{color:#39d98a!important;font-size:11px!important;}
+
+    @@media(max-width:1180px){
+        .nsx-blog-redesign-hero .nsx-blog-redesign-intro h1,
+        .nsx-blog-detail-hero .nsx-blog-detail-copy h1{font-size:38px!important;}
+    }
+    @@media(max-width:680px){
+        .nsx-blog-redesign-hero .nsx-blog-redesign-intro h1,
+        .nsx-blog-detail-hero .nsx-blog-detail-copy h1{font-size:30px!important;}
+        .nsx-blog-redesign-hero .nsx-blog-redesign-intro > p,
+        .nsx-blog-detail-hero .nsx-blog-detail-copy > p{font-size:13px!important;line-height:1.7!important;}
+    }
+    @@media(max-width:430px){
+        .nsx-blog-redesign-hero .nsx-blog-redesign-stats,
+        .nsx-blog-detail-hero .nsx-blog-detail-meta{gap:7px!important;}
+        .nsx-blog-redesign-hero .nsx-blog-redesign-stats span,
+        .nsx-blog-detail-hero .nsx-blog-detail-meta span{width:100%!important;justify-content:center!important;}
+    }
+</style>
+
+<section class="nsx-blog-index-page nsx-blog-redesign">
+    <header class="nsx-blog-redesign-hero">
+        <div class="container">
+            <div class="nsx-blog-redesign-intro">
+                <span class="nsx-blog-redesign-kicker"><i></i> NSX Bilgi Merkezi</span>
+                <h1>İşinizi büyüten <em>uygulanabilir rehberler.</em></h1>
+                <p>Yazılım seçimi, günlük operasyonlar ve dijital iş süreçleri için sade, güvenilir ve doğrudan uygulanabilir içerikler.</p>
+                <div class="nsx-blog-redesign-stats" aria-label="Blog bilgileri">
+                    <span><strong>@Model.Count</strong> güncel rehber</span>
+                    <span><strong>@categories.Count</strong> uzmanlık alanı</span>
+                    <span><strong>NSX</strong> saha deneyimi</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container nsx-blog-index-content">
+        @if (featured != null)
+        {
+            var featuredUrl = ArticleUrl(featured);
+            <article class="nsx-blog-featured-card" data-blog-category="@ArticleCategory(featured)">
+                <a class="nsx-blog-featured-media" href="@featuredUrl" aria-label="@featured.H1 rehberini oku">
+                    <img src="@featured.ImageUrl" alt="@featured.ImageAlt" width="@featured.ImageWidth" height="@featured.ImageHeight" decoding="async" />
+                    <span>Öne çıkan rehber</span>
+                </a>
+                <div>
+                    <small>@ArticleCategory(featured) · @featured.PublishedAt.ToString("dd.MM.yyyy")</small>
+                    <h2><a href="@featuredUrl">@featured.H1</a></h2>
+                    <p>@featured.Description</p>
+                    <a class="nsx-blog-featured-link" href="@featuredUrl">Rehberi incele <i class="bi bi-arrow-up-right"></i></a>
+                </div>
+            </article>
+        }
+
+        <div class="nsx-blog-redesign-toolbar">
+            <div>
+                <span>Rehber arşivi</span>
+                <h2>İhtiyacınıza göre keşfedin</h2>
+            </div>
+            <div class="nsx-blog-filters" role="group" aria-label="Rehber kategorileri">
+                <button type="button" class="active" data-blog-filter="all" aria-pressed="true">Tüm Rehberler</button>
+                @foreach (var category in categories)
+                {
+                    <button type="button" data-blog-filter="@category" aria-pressed="false">@category</button>
+                }
+            </div>
+        </div>
+
+        @if (articles.Any())
+        {
+            <div class="nsx-blog-redesign-grid" id="nsxBlogGrid">
+                @foreach (var item in articles)
+                {
+                    var itemUrl = ArticleUrl(item);
+                    var category = ArticleCategory(item);
+                    <article class="nsx-blog-redesign-card" data-blog-category="@category">
+                        <a class="nsx-blog-redesign-media" href="@itemUrl" aria-label="@item.H1 rehberini oku">
+                            <img src="@item.ImageUrl" alt="@item.ImageAlt" width="@item.ImageWidth" height="@item.ImageHeight" loading="lazy" decoding="async" />
+                            <span>@category</span>
+                        </a>
+                        <div class="nsx-blog-redesign-content">
+                            <div class="nsx-blog-redesign-meta">
+                                <span>@item.PublishedAt.ToString("dd.MM.yyyy")</span>
+                                <span>NSX Rehber</span>
+                            </div>
+                            <h2><a href="@itemUrl">@item.H1</a></h2>
+                            <p>@item.Description</p>
+                            <a class="nsx-blog-redesign-link" href="@itemUrl">Okumaya devam et <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+        else if (featured == null)
+        {
+            <div class="nsx-blog-redesign-empty">
+                <strong>Yeni rehberler hazırlanıyor.</strong>
+                <p>Bu sırada NSX yazılımlarını inceleyebilirsiniz.</p>
+                <a href="/yazilimlar">Yazılımları keşfet</a>
+            </div>
+        }
+
+        <section class="final-cta nsx-blog-home-cta">
+            <div class="cta-glow"></div>
+            <div class="cta-copy">
+                <span class="cta-logo"><img src="/nsx-assets/logo-brand.webp" asp-append-version="true" alt="NSX Yazılım" width="1511" height="397" loading="lazy" decoding="async" fetchpriority="low" /></span>
+                <small class="nsx-blog-home-cta-kicker">Doğru çözümü birlikte seçelim</small>
+                <h2>İşletmeniz için hangi yazılımın uygun olduğundan emin değil misiniz?</h2>
+                <p>İhtiyacınızı anlatın; size uygun NSX ürününü ve kullanım yolunu birlikte netleştirelim.</p>
+            </div>
+            <div class="cta-actions">
+                <a class="primary-button" href="/iletisim">Uzman desteği alın <span>→</span></a>
+                <a class="primary-button" href="/yazilimlar">Tüm yazılımlar <span>→</span></a>
+            </div>
+        </section>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        (() => {
+            const buttons = Array.from(document.querySelectorAll('[data-blog-filter]'));
+            const cards = Array.from(document.querySelectorAll('[data-blog-category]'));
+            if (!buttons.length || !cards.length) return;
+
+            const applyFilter = (filter) => {
+                const selected = (filter || 'all').trim();
+                buttons.forEach(item => {
+                    const active = item.dataset.blogFilter === selected;
+                    item.classList.toggle('active', active);
+                    item.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
+                cards.forEach(card => {
+                    const visible = selected === 'all' || (card.dataset.blogCategory || '').trim() === selected;
+                    if (visible) {
+                        card.removeAttribute('hidden');
+                        card.style.removeProperty('display');
+                    } else {
+                        card.setAttribute('hidden', 'hidden');
+                        card.style.setProperty('display', 'none', 'important');
+                    }
+                });
+            };
+
+            buttons.forEach(button => button.addEventListener('click', () => applyFilter(button.dataset.blogFilter)));
+            applyFilter('all');
+        })();
+    </script>
+}

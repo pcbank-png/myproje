@@ -1,0 +1,126 @@
+@model NSYazilim.Web.ViewModels.AdminTranslationsViewModel
+@{
+    Layout = "_AdminLayout";
+    var isSourceLanguage = Model.Language.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase);
+    ViewData["Title"] = isSourceLanguage
+        ? $"{Model.Language.NativeName} Ana Kaynak"
+        : $"{Model.Language.NativeName} Çevirileri";
+}
+<style>
+.nsx-tr-admin{display:grid;gap:14px}.nsx-tr-head{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:16px;border:1px solid #e2e6ea;border-radius:16px;background:#fff}.nsx-tr-head h1{margin:0;font-size:19px}.nsx-tr-head p{margin:4px 0 0;color:#77828c;font-size:10px}.nsx-tr-search{display:flex;gap:7px}.nsx-tr-search input{width:260px;height:38px;padding:0 10px;border:1px solid #dce2e6;border-radius:9px}.nsx-tr-search button,.nsx-tr-back{height:38px;padding:0 12px;border:0;border-radius:9px;background:#20262d;color:#fff;font-size:10px;font-weight:850;text-decoration:none;display:inline-flex;align-items:center}.nsx-tr-list{display:grid;gap:9px}.nsx-tr-row{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px;padding:12px;border:1px solid #e3e7eb;border-radius:14px;background:#fff}.nsx-tr-source{padding:10px;border-radius:10px;background:#f7f8f9;color:#2c3339;font-size:11px;line-height:1.5}.nsx-tr-source small{display:block;margin-top:7px;color:#8b959e;font-size:8px}.nsx-tr-edit form{display:grid;gap:7px;height:100%}.nsx-tr-edit textarea{width:100%;min-height:78px;padding:9px;border:1px solid #dce2e6;border-radius:10px;resize:vertical;font:inherit;font-size:11px}.nsx-tr-edit button{justify-self:end;min-height:34px;padding:0 12px;border:0;border-radius:9px;background:#ff6e04;color:#fff;font-size:10px;font-weight:900;cursor:pointer}.nsx-tr-pagination{display:flex;justify-content:center;gap:8px}.nsx-tr-pagination a,.nsx-tr-pagination span{min-width:34px;height:34px;padding:0 10px;border:1px solid #dfe4e8;border-radius:9px;background:#fff;display:grid;place-items:center;font-size:10px;text-decoration:none}.nsx-tr-pagination .current{border-color:#ff6e04;background:#fff3e9;color:#d95700;font-weight:900}@@media(max-width:800px){.nsx-tr-head{align-items:stretch;flex-direction:column}.nsx-tr-search input{width:100%}.nsx-tr-row{grid-template-columns:1fr}}
+</style>
+<style>
+.nsx-tr-search{flex-wrap:wrap}.nsx-tr-search .auto{background:#ff6e04}.nsx-tr-search .guide-local{background:#233d60}.nsx-tr-search .auto:disabled{background:#aab1b7;cursor:not-allowed}
+.nsx-tr-context{padding:16px 18px;border:1px solid #ffd0ad;border-radius:16px;background:#fffaf6}.nsx-tr-context-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}.nsx-tr-context-head strong{font-size:13px;color:#20262d}.nsx-tr-context-head span{padding:5px 8px;border-radius:999px;background:#ff6e04;color:#fff;font-size:8px;font-weight:900;letter-spacing:.05em}.nsx-tr-context p{margin:0;color:#596572;font-size:11px;line-height:1.65}.nsx-tr-full-editor{display:grid;gap:9px;padding:14px;border:1px solid #e3e7eb;border-radius:14px;background:#fff}.nsx-tr-full-editor label{color:#20262d;font-size:11px;font-weight:900}.nsx-tr-full-editor textarea{width:100%;min-height:150px;padding:12px;border:1px solid #dce2e6;border-radius:10px;resize:vertical;font:inherit;font-size:12px;line-height:1.6}.nsx-tr-full-editor small{color:#7b8791;font-size:9px}.nsx-tr-full-actions{display:flex;justify-content:flex-end}.nsx-tr-full-actions button{min-height:38px;padding:0 17px;border:0;border-radius:9px;background:#ff6e04;color:#fff;font-size:10px;font-weight:900;cursor:pointer}
+</style>
+<div class="nsx-tr-admin">
+    <section class="nsx-tr-head">
+        <div>
+            <h1><span class="notranslate" translate="no" data-nsx-localization="off">@Model.Language.FlagEmoji @Model.Language.NativeName</span></h1>
+            @if (isSourceLanguage)
+            {
+                <p>@Model.TotalCount ana kaynak · Türkçe ana kaynak düzenleme modu · Sabit kaynak anahtarı korunur · Sayfa @Model.Page / @Model.TotalPages</p>
+            }
+            else
+            {
+                <p>@Model.TotalCount kaynak · @Model.MissingCount eksik · Kuyruk @Model.QueuePending · Çevriliyor @Model.QueueProcessing · Tamam @Model.QueueCompleted · Hatalı @Model.QueueFailed · İlerleme %@Model.QueueProgressPercent.ToString("0.0") · Sayfa @Model.Page / @Model.TotalPages</p>
+            }
+        </div>
+        <div class="nsx-tr-search">
+            <a class="nsx-tr-back" href="/Admin/Languages">Diller</a>
+            <form method="get" action="/Admin/Languages/@Uri.EscapeDataString(Model.Language.Code)/Translations">
+                <input name="q" value="@Model.Query" placeholder="Kaynak metinde ara..." />
+                <button type="submit">Ara</button>
+            </form>
+            @if (!isSourceLanguage)
+            {
+                <form method="post" action="/Admin/Languages/@Uri.EscapeDataString(Model.Language.Code)/Translations/Auto">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="q" value="@Model.Query" />
+                    <input type="hidden" name="page" value="@Model.Page" />
+                    <button class="auto" type="submit" title="Tüm eksikleri sınırsız kuyruğa al; arka plan işçisi güvenli partiler halinde tamamlasın">Tüm Eksikleri Kuyruğa Al</button>
+                </form>
+            }
+            @if (string.Equals(Model.Language.Code, "en-US", StringComparison.OrdinalIgnoreCase))
+            {
+                <form method="post" action="/Admin/Languages/@Uri.EscapeDataString(Model.Language.Code)/Translations/ApplyGuides">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="q" value="@Model.Query" />
+                    <input type="hidden" name="page" value="@Model.Page" />
+                    <button class="guide-local" type="submit" title="35 Rehber sayfasının gözden geçirilmiş İngilizce paketini internet veya harici API kullanmadan mevcut localization tablolarına uygular">Rehberleri Yerel İngilizceye Uygula</button>
+                </form>
+            }
+            @if (Model.QueueFailed > 0)
+            {
+                <form method="post" action="/Admin/Languages/@Uri.EscapeDataString(Model.Language.Code)/Translations/RetryFailed">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="q" value="@Model.Query" />
+                    <input type="hidden" name="page" value="@Model.Page" />
+                    <button type="submit">Hatalıları Yeniden Dene (@Model.QueueFailed)</button>
+                </form>
+            }
+        </div>
+    </section>
+
+    @if (Model.HasProductDescriptionMatch)
+    {
+        <section class="nsx-tr-context">
+            <div class="nsx-tr-context-head">
+                <strong>Ürün Açıklaması · @Model.MatchedProductName</strong>
+                <span>TAM METİN EŞLEŞTİ</span>
+            </div>
+            <p>@Model.MatchedProductDescription</p>
+        </section>
+
+        var fullItem = Model.Items.First();
+        <form class="nsx-tr-full-editor" method="post" action="/Admin/Languages/@Uri.EscapeDataString(Model.Language.Code)/Translations/SaveProductDescription">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="productId" value="@Model.MatchedProductId" />
+            <input type="hidden" name="q" value="@Model.Query" />
+            <label>@(isSourceLanguage ? "Ana Türkçe Açıklama" : $"Tam {Model.Language.NativeName} Açıklama")</label>
+            <textarea name="value" spellcheck="false" placeholder="@(isSourceLanguage ? "Ana Türkçe ürün açıklamasını düzenleyin..." : "Ürün açıklamasının tamamını tek seferde buraya yapıştırın...")">@fullItem.Value</textarea>
+            @if (isSourceLanguage)
+            {
+                <small>Bu alan ana kaynaktır. Kaynak anahtarı değişmez; metin değişirse eski hedef dil karşılıkları geçersizleştirilir ve güvenli diller güncel Türkçe metinle yeniden kuyruğa alınır.</small>
+            }
+            else
+            {
+                <small>Tam açıklama tek kayıt olarak tutulur ve kayıttan sonra veritabanından tekrar okunarak doğrulanır. HTML sınırı yoktur; LONGTEXT alanı kullanılır.</small>
+            }
+            <div class="nsx-tr-full-actions"><button type="submit">@(isSourceLanguage ? "Ana Kaynağı Güncelle" : "Tam Açıklamayı Kaydet")</button></div>
+        </form>
+    }
+    else
+    {
+        <section class="nsx-tr-list">
+            @foreach (var item in Model.Items)
+            {
+                <article class="nsx-tr-row">
+                    <div class="nsx-tr-source">
+                        @item.SourceText
+                        <small>@(item.FirstSeenPath ?? "/") · @item.HitCount görüntülenme</small>
+                    </div>
+                    <div class="nsx-tr-edit">
+                        <form method="post" action="/Admin/Languages/@Uri.EscapeDataString(Model.Language.Code)/Translations/Save">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="sourceKey" value="@item.SourceKey" />
+                            <input type="hidden" name="q" value="@Model.Query" />
+                            <input type="hidden" name="page" value="@Model.Page" />
+                            <textarea name="value" placeholder="@(isSourceLanguage ? "Ana Türkçe kaynak metni" : $"{Model.Language.NativeName} çevirisi")">@item.Value</textarea>
+                            <button type="submit">@(isSourceLanguage ? "Kaynağı Güncelle" : "Kaydet")</button>
+                        </form>
+                    </div>
+                </article>
+            }
+        </section>
+    }
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="nsx-tr-pagination">
+            @if (Model.Page > 1) { <a href="?page=@(Model.Page-1)&q=@Uri.EscapeDataString(Model.Query ?? "")">‹</a> }
+            <span class="current">@Model.Page / @Model.TotalPages</span>
+            @if (Model.Page < Model.TotalPages) { <a href="?page=@(Model.Page+1)&q=@Uri.EscapeDataString(Model.Query ?? "")">›</a> }
+        </nav>
+    }
+</div>

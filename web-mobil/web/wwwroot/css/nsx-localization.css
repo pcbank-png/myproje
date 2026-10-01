@@ -1,0 +1,474 @@
+/* NSX Localization Engine - Pro language selector */
+.public-site-header .service-ribbon{overflow:visible!important;position:relative;z-index:70}
+.public-site-header .service-ribbon>.container{overflow:visible!important}
+.public-site-header .service-ribbon .service-ribbon-actions{
+    display:flex!important;
+    align-items:center;
+    gap:18px!important;
+    height:100%;
+    overflow:visible;
+}
+
+/* Trigger: utility bar'in doğal bir parçası; dikkat çekmez, bilgi verir. */
+.public-site-header .service-ribbon .nsx-language-switcher{
+    position:relative;
+    display:block!important;
+    height:28px;
+    margin-left:-2px;
+    padding-left:14px;
+    color:#53606d;
+}
+.public-site-header .service-ribbon .nsx-language-switcher::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:7px;
+    width:1px;
+    height:14px;
+    background:#dde2e7;
+}
+.public-site-header .service-ribbon .nsx-language-switcher>summary{
+    list-style:none;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    width:auto;
+    min-width:138px;
+    height:28px;
+    padding:0 9px 0 5px;
+    border:1px solid #e1e6eb;
+    border-radius:9px;
+    background:rgba(255,255,255,.82);
+    color:#53606d!important;
+    line-height:1;
+    cursor:pointer;
+    user-select:none;
+    box-shadow:0 1px 3px rgba(15,23,42,.04);
+    transition:transform .16s ease,background .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease;
+}
+.public-site-header .service-ribbon .nsx-language-switcher>summary::-webkit-details-marker{display:none}
+.public-site-header .service-ribbon .nsx-language-switcher>summary::marker{display:none;content:""}
+.public-site-header .service-ribbon .nsx-language-switcher>summary:hover{
+    border-color:#cfd7df;
+    background:#fff;
+    color:#222b34!important;
+    transform:translateY(-1px);
+    box-shadow:0 5px 14px rgba(15,23,42,.08);
+}
+.public-site-header .service-ribbon .nsx-language-switcher[open]>summary{
+    border-color:#ffb47e;
+    background:#fff;
+    color:#202830!important;
+    box-shadow:0 0 0 3px rgba(255,110,4,.09),0 5px 14px rgba(16,24,32,.08);
+}
+.public-site-header .service-ribbon .nsx-language-flag,
+.public-site-header .service-ribbon .nsx-language-option-flag{
+    font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
+    font-weight:400;
+    line-height:1;
+}
+.public-site-header .service-ribbon .nsx-language-flag{
+    display:inline-grid;
+    place-items:center;
+    width:28px;
+    height:20px;
+    flex:0 0 28px;
+    font-size:16px;
+    overflow:hidden;
+    border:1px solid rgba(15,23,42,.12);
+    border-radius:5px;
+    background:#fff;
+    box-shadow:0 1px 3px rgba(15,23,42,.12);
+}
+.public-site-header .service-ribbon .nsx-language-flag img,
+.public-site-header .service-ribbon .nsx-language-option-flag img{display:block;width:100%;height:100%;object-fit:cover}
+.public-site-header .service-ribbon .nsx-language-emoji{display:grid;place-items:center;width:100%;height:100%;font-size:17px}
+.public-site-header .service-ribbon .nsx-language-code{
+    display:inline-grid;
+    place-items:center;
+    min-width:25px;
+    height:18px;
+    padding:0 5px;
+    border-radius:5px;
+    background:#f0f2f4;
+    color:#46515c!important;
+    font-size:8.5px!important;
+    font-weight:950!important;
+    letter-spacing:.06em;
+}
+.public-site-header .service-ribbon .nsx-language-current{
+    display:block;
+    max-width:92px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#5b6671!important;
+    font-size:9.5px!important;
+    font-weight:750!important;
+}
+.public-site-header .service-ribbon .nsx-language-chevron{
+    width:5px;
+    height:5px;
+    margin-left:1px;
+    margin-top:-2px;
+    border-right:1.4px solid #7a858f;
+    border-bottom:1.4px solid #7a858f;
+    transform:rotate(45deg);
+    transition:transform .16s ease,margin .16s ease;
+}
+.public-site-header .service-ribbon .nsx-language-switcher[open] .nsx-language-chevron{
+    margin-top:3px;
+    transform:rotate(225deg);
+}
+
+/* Dropdown: neutral kurumsal kart, turuncu yalnızca seçili dilin küçük vurgusunda. */
+.public-site-header .service-ribbon .nsx-language-dropdown{
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    z-index:1000;
+    display:block!important;
+    width:316px;
+    height:auto!important;
+    padding:9px;
+    border:1px solid #d9e0e6;
+    border-radius:16px;
+    background:rgba(255,255,255,.985);
+    color:#20262d;
+    box-shadow:0 24px 64px rgba(12,20,28,.18),0 5px 16px rgba(12,20,28,.07);
+    backdrop-filter:blur(16px);
+    transform-origin:top right;
+    animation:nsx-lang-open .14s cubic-bezier(.2,.7,.2,1) both;
+}
+.public-site-header .service-ribbon .nsx-language-dropdown::before{
+    content:"";
+    position:absolute;
+    top:-5px;
+    right:22px;
+    width:9px;
+    height:9px;
+    border-left:1px solid #dfe4e8;
+    border-top:1px solid #dfe4e8;
+    background:#fff;
+    transform:rotate(45deg);
+}
+.public-site-header .service-ribbon .nsx-language-dropdown-head{
+    display:flex!important;
+    align-items:center!important;
+    gap:9px!important;
+    height:auto!important;
+    padding:8px 9px 11px;
+    margin-bottom:6px;
+    border-bottom:1px solid #edf0f2;
+}
+.public-site-header .service-ribbon .nsx-language-dropdown-icon{
+    display:grid;
+    place-items:center;
+    width:28px;
+    height:28px;
+    flex:0 0 28px;
+    border:1px solid #e2e6e9;
+    border-radius:8px;
+    background:#f7f8f9;
+    color:#65717c;
+    font-size:14px;
+    font-weight:700;
+}
+.public-site-header .service-ribbon .nsx-language-dropdown-icon svg{
+    width:15px;
+    height:15px;
+    stroke:currentColor;
+    stroke-width:1.55;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+.public-site-header .service-ribbon .nsx-language-dropdown-head>span:last-child{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:2px;
+    min-width:0;
+}
+.public-site-header .service-ribbon .nsx-language-dropdown-head strong{
+    color:#252c33;
+    font-size:10.5px;
+    font-weight:900;
+    letter-spacing:.01em;
+}
+.public-site-header .service-ribbon .nsx-language-dropdown-head small{
+    color:#929ba4;
+    font-size:8px;
+    font-weight:650;
+}
+.public-site-header .service-ribbon .nsx-language-list{
+    display:flex!important;
+    flex-direction:column;
+    gap:2px!important;
+    max-height:340px;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding:1px 2px 1px 1px;
+    scrollbar-width:thin;
+    scrollbar-color:#cbd1d6 transparent;
+}
+.public-site-header .service-ribbon .nsx-language-list::-webkit-scrollbar{width:6px}
+.public-site-header .service-ribbon .nsx-language-list::-webkit-scrollbar-track{background:transparent}
+.public-site-header .service-ribbon .nsx-language-list::-webkit-scrollbar-thumb{background:#cbd1d6;border-radius:99px}
+.public-site-header .service-ribbon .nsx-language-option{
+    position:relative;
+    display:grid;
+    grid-template-columns:38px 36px minmax(0,1fr) 22px;
+    align-items:center;
+    gap:8px;
+    width:100%;
+    min-height:50px;
+    padding:6px 8px;
+    border:1px solid transparent;
+    border-radius:11px;
+    background:transparent;
+    color:#252c33;
+    text-align:left;
+    cursor:pointer;
+    transition:border-color .14s ease,background .14s ease,color .14s ease;
+}
+.public-site-header .service-ribbon .nsx-language-option:hover,
+.public-site-header .service-ribbon .nsx-language-option:focus-visible{
+    border-color:#dce3e9;
+    background:#f5f7f9;
+    outline:none;
+}
+.public-site-header .service-ribbon .nsx-language-option.is-current{
+    border-color:#ffd1b0;
+    background:linear-gradient(90deg,#fff7f1 0%,#f8fafb 76%);
+    box-shadow:inset 0 0 0 1px rgba(255,110,4,.03);
+}
+.public-site-header .service-ribbon .nsx-language-option.is-current::before{
+    content:"";
+    position:absolute;
+    left:-1px;
+    top:10px;
+    bottom:10px;
+    width:2px;
+    border-radius:99px;
+    background:#ff6e04;
+}
+.public-site-header .service-ribbon .nsx-language-option-flag{
+    display:grid;
+    place-items:center;
+    width:38px;
+    height:28px;
+    overflow:hidden;
+    border:1px solid rgba(15,23,42,.13);
+    border-radius:7px;
+    background:#fff;
+    font-size:18px;
+    box-shadow:0 2px 5px rgba(15,23,42,.1);
+}
+.public-site-header .service-ribbon .nsx-language-option-code{
+    display:grid;
+    place-items:center;
+    width:34px;
+    height:22px;
+    border-radius:6px;
+    background:#eceff1;
+    color:#56616c;
+    font-size:8.5px;
+    font-weight:950;
+    letter-spacing:.07em;
+}
+.public-site-header .service-ribbon .nsx-language-option-name{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#2e363e;
+    font-size:11.5px;
+    font-weight:800;
+    line-height:1.2;
+}
+.public-site-header .service-ribbon .nsx-language-option-check{
+    display:grid;
+    place-items:center;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:transparent;
+    color:transparent;
+    font-size:9px;
+    font-weight:950;
+}
+.public-site-header .service-ribbon .nsx-language-option.is-current .nsx-language-option-check{
+    background:#ff6e04;
+    color:#fff;
+}
+@keyframes nsx-lang-open{
+    from{opacity:0;transform:translateY(-4px) scale(.99)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* RTL altyapısı: yeni RTL dilleri de bu kuralları otomatik kullanır. */
+html[dir="rtl"] body{direction:rtl}
+html[dir="rtl"] .nsx-dir-icon>svg{transform:rotate(180deg)}
+html[dir="rtl"] .public-site-header .service-ribbon .nsx-language-switcher{margin-left:0;margin-right:-2px;padding-left:0;padding-right:14px}
+html[dir="rtl"] .public-site-header .service-ribbon .nsx-language-switcher::before{left:auto;right:0}
+html[dir="rtl"] .public-site-header .service-ribbon .nsx-language-dropdown{right:auto;left:0;transform-origin:top left}
+html[dir="rtl"] .public-site-header .service-ribbon .nsx-language-dropdown::before{right:auto;left:22px}
+html[dir="rtl"] .public-site-header .service-ribbon .nsx-language-option{text-align:right}
+html[dir="rtl"] .public-site-header .service-ribbon .nsx-language-option.is-current::before{left:auto;right:-1px}
+html[dir="rtl"] .public-site-header .account-dropdown{right:auto!important;left:0!important;transform-origin:top left!important}
+html[dir="rtl"] .public-site-header .account-dropdown::before{right:auto!important;left:31px!important}
+
+@media(max-width:760px){
+    .public-site-header .service-ribbon>.container{
+        justify-content:space-between!important;
+        width:min(calc(100% - 22px),1180px)!important;
+    }
+    .public-site-header .service-ribbon .service-ribbon-actions{
+        display:flex!important;
+        gap:0!important;
+    }
+    .public-site-header .service-ribbon .service-ribbon-actions>a{display:none!important}
+    .public-site-header .service-ribbon .nsx-language-switcher{display:block!important;height:27px;padding-left:0;margin-left:0}
+    .public-site-header .service-ribbon .nsx-language-switcher::before{display:none}
+    .public-site-header .service-ribbon .nsx-language-switcher>summary{min-width:126px;height:29px;padding-inline:5px 8px;gap:6px;border-color:#dce2e7;background:#fff}
+    .public-site-header .service-ribbon .nsx-language-current{max-width:78px;font-size:9px!important}
+    .public-site-header .service-ribbon .nsx-language-flag{width:27px;height:19px;flex-basis:27px;font-size:15px}
+    .public-site-header .service-ribbon .nsx-language-dropdown{position:fixed;top:48px;right:11px;left:auto;width:min(330px,calc(100vw - 22px));max-height:calc(100dvh - 60px);padding:9px;border-radius:16px;transform-origin:top right}
+    .public-site-header .service-ribbon .nsx-language-dropdown::before{display:none}
+    .public-site-header .service-ribbon .nsx-language-list{max-height:min(380px,calc(100dvh - 145px));gap:4px!important}
+    .public-site-header .service-ribbon .nsx-language-option{min-height:54px;grid-template-columns:42px 36px minmax(0,1fr) 22px;padding:7px 9px}
+    .public-site-header .service-ribbon .nsx-language-option-flag{width:42px;height:30px}
+    .public-site-header .service-ribbon .nsx-language-option-name{font-size:12px}
+    html[dir="rtl"] .public-site-header .service-ribbon .nsx-language-switcher{padding-right:0;margin-right:0}
+    html[dir="rtl"] .public-site-header .service-ribbon .nsx-language-dropdown{right:auto;left:11px;transform-origin:top left}
+}
+
+/* NSX Pro active-language marker: current item only = orange circle + white tick. */
+.public-site-header .service-ribbon .nsx-language-option .nsx-language-option-check{
+    display:grid!important;
+    place-items:center!important;
+    width:20px!important;
+    height:20px!important;
+    min-width:20px!important;
+    min-height:20px!important;
+    padding:0!important;
+    border:1px solid transparent!important;
+    border-radius:50%!important;
+    background:transparent!important;
+    color:transparent!important;
+    font-family:Arial,"Segoe UI",sans-serif!important;
+    font-size:11px!important;
+    font-weight:900!important;
+    line-height:20px!important;
+    text-align:center!important;
+    opacity:0!important;
+    visibility:hidden!important;
+    box-shadow:none!important;
+    transform:none!important;
+}
+.public-site-header .service-ribbon .nsx-language-option.is-current .nsx-language-option-check{
+    border-color:#ff6e04!important;
+    background:#ff6e04!important;
+    color:#fff!important;
+    opacity:1!important;
+    visibility:visible!important;
+    box-shadow:0 3px 8px rgba(255,110,4,.28),inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+.public-site-header .service-ribbon .nsx-language-option.is-current:hover .nsx-language-option-check,
+.public-site-header .service-ribbon .nsx-language-option.is-current:focus-visible .nsx-language-option-check{
+    background:#f56500!important;
+    border-color:#f56500!important;
+    color:#fff!important;
+}
+
+/* NSX Language selector final layout: always loaded, including HomePerformanceBundle. */
+.public-site-header .service-ribbon .nsx-language-switcher{
+    flex:0 0 auto!important;
+}
+.public-site-header .service-ribbon .nsx-language-switcher>summary{
+    display:grid!important;
+    grid-template-columns:26px 20px minmax(58px,1fr) 6px!important;
+    align-items:center!important;
+    column-gap:4px!important;
+    width:164px!important;
+    min-width:164px!important;
+    max-width:164px!important;
+    height:28px!important;
+    padding:0 6px 0 4px!important;
+    box-sizing:border-box!important;
+}
+.public-site-header .service-ribbon .nsx-language-flag{
+    width:26px!important;
+    height:18px!important;
+    flex:0 0 26px!important;
+}
+.public-site-header .service-ribbon .nsx-language-code-badge{
+    display:block!important;
+    overflow:visible!important;
+    justify-self:center!important;
+}
+.public-site-header .service-ribbon .nsx-language-code-badge--current{
+    width:40px!important;
+    height:23px!important;
+}
+.public-site-header .service-ribbon .nsx-language-current{
+    display:block!important;
+    width:auto!important;
+    min-width:58px!important;
+    max-width:none!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+    line-height:1!important;
+}
+.public-site-header .service-ribbon .nsx-language-chevron{
+    justify-self:end!important;
+    margin-left:0!important;
+}
+.public-site-header .service-ribbon .nsx-language-option{
+    grid-template-columns:36px 24px minmax(72px,1fr) 20px!important;
+    gap:5px!important;
+    padding:6px 7px!important;
+}
+.public-site-header .service-ribbon .nsx-language-option-flag{
+    width:36px!important;
+    height:26px!important;
+}
+.public-site-header .service-ribbon .nsx-language-code-badge--option{
+    width:24px!important;
+    height:18px!important;
+}
+.public-site-header .service-ribbon .nsx-language-option-name{
+    min-width:72px!important;
+    max-width:none!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+}
+@media(max-width:760px){
+    .public-site-header .service-ribbon .nsx-language-switcher>summary{
+        grid-template-columns:25px 20px minmax(54px,1fr) 6px!important;
+        width:156px!important;
+        min-width:156px!important;
+        max-width:156px!important;
+        height:29px!important;
+        column-gap:4px!important;
+        padding:0 6px 0 4px!important;
+    }
+    .public-site-header .service-ribbon .nsx-language-flag{
+        width:25px!important;
+        height:18px!important;
+        flex-basis:25px!important;
+    }
+    .public-site-header .service-ribbon .nsx-language-current{
+        min-width:54px!important;
+        max-width:none!important;
+        overflow:visible!important;
+        text-overflow:clip!important;
+    }
+    .public-site-header .service-ribbon .nsx-language-option{
+        grid-template-columns:38px 24px minmax(76px,1fr) 20px!important;
+        gap:6px!important;
+        padding:7px 8px!important;
+    }
+}

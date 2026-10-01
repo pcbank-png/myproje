@@ -1,0 +1,210 @@
+@model List<NSYazilim.Web.Models.Advertisement>
+@using NSYazilim.Web.Models
+@{
+    ViewData["Title"] = "Reklam Yönetimi";
+    var products = ViewBag.AdvertisementProducts as List<Product> ?? new List<Product>();
+    var selectedProductCode = ViewBag.SelectedAdvertisementProductCode as string ?? string.Empty;
+    var selectedSlotCode = ViewBag.SelectedAdvertisementSlotCode as string ?? string.Empty;
+    var isAllProductsSelected = selectedProductCode == "ALL";
+    var activeCount = ViewBag.ActiveAdvertisementCount is int ac ? ac : Model.Count(x => x.IsActive);
+    var totalViews = ViewBag.TotalAdvertisementViews is int tv ? tv : Model.Sum(x => x.ImpressionCount);
+    var totalClicks = ViewBag.TotalAdvertisementClicks is int tc ? tc : Model.Sum(x => x.ClickCount);
+    var now = DateTime.Now;
+    var slots = new[]
+    {
+        new { Code = "FREE_BOTTOM_728X90", Name = "Program Alt Banner" },
+        new { Code = "APP_TOP_728X90", Name = "Program Üst Banner" },
+        new { Code = "SITE_HOME_728X90", Name = "Site Ana Sayfa Banner" },
+        new { Code = "POPUP_600X400", Name = "Popup Reklam" }
+    };
+}
+
+<div class="nsx-admin-page nsx-ads-page">
+    <div class="nsx-admin-head nsx-ads-head">
+        <div>
+            <span class="nsx-ads-kicker">NSX Reklam Merkezi</span>
+            <h1>Reklam Yönetimi</h1>
+            <p>Ücretsiz programların alt banner reklamlarını, geçiş süresini ve tıklama linklerini buradan yönetin.</p>
+        </div>
+        <a class="nsx-admin-btn primary nsx-ads-create-btn" href="/Admin/AdvertisementAdd">Yeni Reklam Ekle</a>
+    </div>
+
+    <div class="nsx-ads-stats">
+        <div>
+            <span>Toplam Reklam</span>
+            <strong>@Model.Count</strong>
+        </div>
+        <div>
+            <span>Aktif Reklam</span>
+            <strong>@activeCount</strong>
+        </div>
+        <div>
+            <span>Gösterim</span>
+            <strong>@totalViews</strong>
+        </div>
+        <div>
+            <span>Tıklama</span>
+            <strong>@totalClicks</strong>
+        </div>
+    </div>
+
+    <div class="nsx-admin-card nsx-ads-info-card">
+        <div>
+            <strong>API adresi</strong>
+            <span>/api/ads/active?productCode=NSXVERESIYETAKIPPROFREE&amp;slot=FREE_BOTTOM_728X90</span>
+        </div>
+        <p>Bir program ve reklam alanında birden fazla aktif reklam varsa, sistem her reklamın geçiş süresine göre sıradaki reklamı otomatik döndürür.</p>
+    </div>
+
+    <form class="nsx-admin-card nsx-ads-filter" method="get" action="/Admin/Advertisements">
+        <div>
+            <label>Program</label>
+            <select name="productCode" class="form-select rounded-4">
+                <option value="">Tüm Programlar</option>
+                <option value="ALL" selected="@isAllProductsSelected">Tüm programlara yayınla</option>
+                @foreach (var product in products)
+                {
+                    var code = BuildAdCode(product);
+                    <option value="@code" selected="@(selectedProductCode == code)">@product.Name (@code)</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label>Reklam Alanı</label>
+            <select name="slotCode" class="form-select rounded-4">
+                <option value="">Tüm Alanlar</option>
+                @foreach (var slot in slots)
+                {
+                    <option value="@slot.Code" selected="@(selectedSlotCode == slot.Code)">@slot.Name</option>
+                }
+            </select>
+        </div>
+        <div class="nsx-ads-filter-actions">
+            <button class="nsx-admin-btn primary" type="submit">Filtrele</button>
+            <a class="nsx-admin-btn" href="/Admin/Advertisements">Temizle</a>
+        </div>
+    </form>
+
+    <div class="nsx-admin-card nsx-ads-table-card">
+        <div class="table-responsive">
+            <table class="table align-middle nsx-ads-table">
+                <thead>
+                    <tr>
+                        <th>Reklam</th>
+                        <th>Program / Alan</th>
+                        <th>Süre</th>
+                        <th>Zamanlama</th>
+                        <th>İstatistik</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="nsx-ads-empty">Henüz reklam eklenmemiş. İlk 728 x 90 banner reklamını ekleyerek başlayabilirsin.</div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            var isDateActive = (!item.StartDate.HasValue || item.StartDate <= now) && (!item.EndDate.HasValue || item.EndDate >= now);
+                            <tr class="@(item.IsActive && isDateActive ? "is-active" : "")">
+                                <td>
+                                    <div class="nsx-ad-preview-row">
+                                        <img src="@item.ImagePath" alt="@item.Title" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <b>@item.ProductCode</b>
+                                    <span class="d-block text-muted small">@item.SlotCode</span>
+                                    <span class="d-block text-muted small">@item.Width x @item.Height px</span>
+                                </td>
+                                <td>
+                                    <span class="nsx-ad-pill">@item.DisplaySeconds sn</span>
+                                    <span class="d-block text-muted small">Öncelik: @item.Priority / Sıra: @item.SortOrder</span>
+                                </td>
+                                <td>
+                                    <span class="d-block small">Baş: @(item.StartDate?.ToString("dd.MM.yyyy HH:mm") ?? "Hemen")</span>
+                                    <span class="d-block small">Bit: @(item.EndDate?.ToString("dd.MM.yyyy HH:mm") ?? "Süresiz")</span>
+                                </td>
+                                <td>
+                                    <span class="d-block small">Gösterim: <b>@item.ImpressionCount</b></span>
+                                    <span class="d-block small">Tıklama: <b>@item.ClickCount</b></span>
+                                </td>
+                                <td>
+                                    <span class="nsx-status-pill @(item.IsActive && isDateActive ? "active" : "passive")">
+                                        @(item.IsActive ? (isDateActive ? "Yayında" : "Zaman Dışı") : "Pasif")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="nsx-ads-actions">
+                                        <a class="nsx-admin-btn" href="/api/ads/active?productCode=@item.ProductCode&slot=@item.SlotCode" target="_blank">API Test</a>
+                                        <a class="nsx-admin-btn" href="/Admin/AdvertisementEdit/@item.Id">Düzenle</a>
+                                        <form method="post" action="/Admin/AdvertisementToggle">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button class="nsx-admin-btn" type="submit">@(item.IsActive ? "Pasif" : "Aktif")</button>
+                                        </form>
+                                        <form method="post" action="/Admin/AdvertisementDelete" onsubmit="return confirm('Bu reklam silinsin mi?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button class="nsx-admin-btn danger" type="submit">Sil</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string BuildAdCode(Product product)
+    {
+        var normalizedSource = NormalizeAdCode($"{product.ProductCode} {product.Slug} {product.Name}");
+        if (normalizedSource.Contains("VERESIYE") && (normalizedSource.Contains("FREE") || normalizedSource.Contains("UCRETSIZ")))
+            return "NSXVERESIYETAKIPPROFREE";
+
+        var existingProductCode = NormalizeAdCode(product.ProductCode);
+        if (!string.IsNullOrWhiteSpace(existingProductCode))
+            return existingProductCode;
+
+        var source = $"{product.Slug} {product.Name}".ToLowerInvariant();
+        if (source.Contains("veresiye")) return "NSXVERESIYEDEFTERI";
+        if (source.Contains("turbo")) return "NSXTURBO";
+        if (source.Contains("klinik")) return "NSXKLINIK";
+        if (source.Contains("teknik")) return "NSXTEKNIKSERVIS";
+
+        source = source.Replace('ı', 'i').Replace('ğ', 'g').Replace('ü', 'u').Replace('ş', 's').Replace('ö', 'o').Replace('ç', 'c');
+        var code = new string(source.ToUpperInvariant().Where(char.IsLetterOrDigit).ToArray());
+        return string.IsNullOrWhiteSpace(code) ? $"NSXPRODUCT{product.Id}" : code;
+    }
+
+    private string NormalizeAdCode(string? value)
+    {
+        var text = (value ?? string.Empty)
+            .Replace('\u0130', 'I')
+            .Replace('\u0131', 'i')
+            .Replace('\u00C7', 'C')
+            .Replace('\u00E7', 'c')
+            .Replace('\u011E', 'G')
+            .Replace('\u011F', 'g')
+            .Replace('\u00D6', 'O')
+            .Replace('\u00F6', 'o')
+            .Replace('\u015E', 'S')
+            .Replace('\u015F', 's')
+            .Replace('\u00DC', 'U')
+            .Replace('\u00FC', 'u')
+            .ToUpperInvariant();
+
+        return new string(text.Where(char.IsLetterOrDigit).ToArray());
+    }
+}

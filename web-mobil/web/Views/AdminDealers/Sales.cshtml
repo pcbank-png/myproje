@@ -1,0 +1,45 @@
+﻿@model List<NSYazilim.Web.Models.DealerSale>
+@{
+    ViewData["Title"] = "Bayi Sat\u0131\u015flar\u0131";
+}
+<section class="nsx-admin-page">
+    <div class="nsx-admin-page-head">
+        <div><span>NSX BAYI KANALI</span><h1>Bayi Sat&#305;&#351;lar&#305;</h1><p>Bayi taraf&#305;ndan olu&#351;turulan sat&#305;&#351;lar&#305;, m&#252;&#351;teri e-postas&#305;n&#305;, lisans durumunu ve bayi alaca&#287;&#305;n&#305; kontrol edin.</p></div>
+        <div class="d-flex gap-2"><a class="nsx-admin-btn light" href="/Admin/Bayiler">Bayiler</a><a class="nsx-admin-btn" href="/Admin/BankTransfers">Havale Onaylar&#305;</a></div>
+    </div>
+    <div class="nsx-admin-card">
+        <div class="nsx-admin-card-head"><div><strong>Sat&#305;&#351; Listesi</strong><small>@Model.Count kay&#305;t</small></div></div>
+        @if (!Model.Any()) { <div class="nsx-admin-empty">Hen&#252;z bayi sat&#305;&#351;&#305; yok.</div> }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table nsx-admin-table align-middle">
+                    <thead><tr><th>Tarih</th><th>Bayi</th><th>M&#252;&#351;teri</th><th>&#220;r&#252;n</th><th>Sat&#305;&#351;</th><th>Bayi K&#226;r&#305;</th><th>Havale</th><th>Lisans</th><th class="text-end">&#304;&#351;lem</th></tr></thead>
+                    <tbody>
+                    @foreach (var sale in Model)
+                    {
+                        var transferStatus = sale.BankTransferNotification?.Status ?? "NotSubmitted";
+                        var statusClass = transferStatus == "Approved" ? "ok" : transferStatus == "Rejected" ? "bad" : "warn";
+                        <tr>
+                            <td>@sale.CreatedAt.ToString("dd.MM.yyyy HH:mm")<small>@(sale.Order?.OrderNumber ?? "-")</small></td>
+                            <td><strong>@(sale.Dealer?.BusinessName ?? "Bayi")</strong><small>@(sale.Dealer?.Province ?? "-")</small></td>
+                            <td><strong>@(sale.CustomerUser?.FullName ?? "Musteri")</strong><small>@(sale.CustomerUser?.Email ?? "-")</small></td>
+                            <td>@(sale.Product?.Name ?? "Urun")<small>@(sale.LicenseType == "Lifetime" ? "Sinirsiz" : "Yillik") x @sale.Quantity</small></td>
+                            <td><strong>@sale.SaleAmount.ToString("N2") &#8378;</strong></td>
+                            <td><strong>@sale.CommissionAmount.ToString("N2") &#8378;</strong><small>@(sale.CommissionModeSnapshot == "Fixed" ? $"Sabit {sale.CommissionFixedAmountSnapshot:N2} TL" : $"%{sale.CommissionPercentSnapshot:N2}")</small></td>
+                            <td><span class="nsx-admin-pill @statusClass">@(transferStatus == "Approved" ? "Onaylandi" : transferStatus == "Rejected" ? "Reddedildi" : transferStatus == "Pending" ? "Admin Onayi Bekliyor" : "Havale Bekliyor")</span></td>
+                            <td><strong>@(sale.Order?.Licenses?.Count ?? 0)</strong><small>m&#252;&#351;teri e-postas&#305;na ba&#287;l&#305;</small></td>
+                            <td class="text-end">
+                                <form method="post" action="/Admin/Bayiler/SatisSil/@sale.Id" class="d-inline" onsubmit="return confirm('Bu bayi satis kaydi silinsin mi? Siparis, havale ve lisans kayitlari korunur.');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="nsx-admin-btn danger sm">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

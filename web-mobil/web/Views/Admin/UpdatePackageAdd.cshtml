@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Güncelleme Ekle";
+}
+
+<div class="nsx-admin-page nsx-update-admin-page">
+    <div class="nsx-admin-head">
+        <div>
+            <h1>Yeni Güncelleme Paketi</h1>
+            <p>Program açılışta veya menüden kontrol edildiğinde buradaki aktif sürümü görecek.</p>
+        </div>
+        <a class="nsx-admin-btn" href="/Admin/ProductUpdates">Listeye Dön</a>
+    </div>
+
+    <form class="nsx-admin-card nsx-update-form nsx-standard-form" method="post" enctype="multipart/form-data" action="/Admin/ProductUpdateAdd">
+        @Html.AntiForgeryToken()
+
+        <div class="nsx-update-form-note">
+            <strong>Önerilen yapı:</strong>
+            <span>ZIP içine sadece programın güncellenecek exe/dll dosyalarını koy. Firma, kayıt, database ve kullanıcı dosyalarını koyma.</span>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Ürün Kodu</label>
+                <input class="form-control" name="productCode" value="NSXVERESIYETAKIPPROFREE" placeholder="NSXVERESIYETAKIPPROFREE" required />
+                <small class="text-muted">WPF tarafındaki productCode ile aynı olmalı.</small>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Yeni Versiyon</label>
+                <input class="form-control" name="version" placeholder="1.0.2" required />
+                <small class="text-muted">Format: 1.0.2 / 1.0.3 gibi olmalı.</small>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Güncelleme Notu</label>
+                <textarea class="form-control" name="releaseNotes" rows="4" placeholder="Örn: Performans iyileştirmeleri ve küçük hata düzeltmeleri."></textarea>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Update ZIP</label>
+                <input class="form-control" type="file" name="updateZip" accept=".zip" required />
+                <small class="text-muted">Maksimum 300 MB. Dosya otomatik olarak /wwwroot/updates/urun-kodu/versiyon/update.zip içine kaydedilir.</small>
+            </div>
+            <div class="col-md-6">
+                <label class="nsx-check-card">
+                    <input type="checkbox" name="isActive" value="true" checked />
+                    <span>
+                        <b>Aktif yayınla</b>
+                        <small>Aynı ürünün eski aktif paketleri otomatik pasif olur.</small>
+                    </span>
+                </label>
+            </div>
+            <div class="col-md-6">
+                <label class="nsx-check-card">
+                    <input type="checkbox" name="isRequired" value="true" />
+                    <span>
+                        <b>Zorunlu güncelleme</b>
+                        <small>Program tarafı bu bilgiye göre iptal seçeneğini kapatabilir.</small>
+                    </span>
+                </label>
+            </div>
+            <div class="col-12">
+                <button class="nsx-admin-btn primary" type="submit">Güncelleme Paketini Kaydet</button>
+            </div>
+        </div>
+    </form>
+</div>

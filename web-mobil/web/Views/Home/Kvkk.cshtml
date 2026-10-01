@@ -1,0 +1,37 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "KVKK Aydınlatma Metni";
+    ViewData["MetaDescription"] = "NSX Yazılım kişisel verilerin işlenmesi, korunması ve KVKK kapsamındaki başvuru hakları hakkında aydınlatma metni.";
+}
+
+<section class="nsx-info-page">
+    <header class="nsx-info-hero">
+        <div class="container nsx-info-hero-inner">
+            <div class="nsx-info-hero-copy">
+                <span class="nsx-info-kicker">YASAL BİLGİLENDİRME</span>
+                <h1>KVKK <em>Aydınlatma Metni</em></h1>
+                <p>Kişisel verilerinizin hangi amaçlarla işlendiğini, nasıl korunduğunu ve haklarınızı açık biçimde anlatıyoruz.</p>
+                <div class="nsx-info-hero-points" aria-label="KVKK bilgilendirme başlıkları">
+                    <span><b>✓</b> 6698 sayılı KVKK</span>
+                    <span><b>✓</b> Veri güvenliği</span>
+                    <span><b>✓</b> Başvuru hakları</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="nsx-info-divider" aria-hidden="true"></div>
+    <div class="container nsx-info-layout">
+        <article class="nsx-legal-content">
+            <p class="nsx-legal-date">Son güncelleme: 17 Temmuz 2026</p>
+            <section><h2>1. Veri sorumlusu</h2><p>6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında NSX Yazılım, internet sitesi ve sunduğu hizmetlerle bağlantılı olarak elde edilen kişisel veriler bakımından veri sorumlusu sıfatıyla hareket eder.</p></section>
+            <section><h2>2. İşlenebilecek kişisel veriler</h2><p>Kimlik ve iletişim bilgileri, hesap ve üyelik bilgileri, sipariş ve ödeme işlem kayıtları, destek talepleri, lisans ve ürün kullanımına ilişkin işlem bilgileri ile site güvenliği için gerekli teknik kayıtlar işlenebilir.</p></section>
+            <section><h2>3. İşleme amaçları</h2><p>Veriler; üyelik ve sipariş işlemlerini yürütmek, dijital ürün ve lisans teslimini sağlamak, destek taleplerini yanıtlamak, güvenliği sağlamak, hizmet kalitesini geliştirmek ve yasal yükümlülükleri yerine getirmek amacıyla işlenebilir.</p></section>
+            <section><h2>4. Aktarım</h2><p>Kişisel veriler, yalnızca hizmetin yürütülmesi veya yasal yükümlülüklerin yerine getirilmesi için gerekli olduğu ölçüde; barındırma, ödeme, e-posta, muhasebe ve yetkili kamu kuruluşları gibi ilgili taraflarla mevzuata uygun biçimde paylaşılabilir.</p></section>
+            <section><h2>5. Toplama yöntemi ve hukuki sebep</h2><p>Veriler; internet sitesi formları, kullanıcı hesabı, sipariş ve destek süreçleri ile elektronik iletişim kanalları üzerinden otomatik veya kısmen otomatik yöntemlerle toplanabilir. İşleme faaliyeti; sözleşmenin kurulması veya ifası, hukuki yükümlülük, meşru menfaat ve gerektiğinde açık rıza hukuki sebeplerine dayanır.</p></section>
+            <section><h2>6. Saklama ve güvenlik</h2><p>Kişisel veriler, işleme amacı ve ilgili yasal saklama süreleri boyunca muhafaza edilir. Yetkisiz erişim, kayıp veya kötüye kullanımı önlemek için makul teknik ve idari tedbirler uygulanır; süresi dolan veriler mevzuata uygun şekilde silinir, yok edilir veya anonim hâle getirilir.</p></section>
+            <section><h2>7. KVKK kapsamındaki haklarınız</h2><p>KVKK'nın 11. maddesi kapsamında verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme, amacına uygun kullanılıp kullanılmadığını öğrenme, aktarılan tarafları bilme, eksik veya yanlış verilerin düzeltilmesini ve şartları oluştuğunda silinmesini isteme haklarına sahipsiniz.</p></section>
+            <section><h2>8. Başvuru</h2><p>Taleplerinizi kimliğinizi ve başvuru konusunu açıklayarak <a href="mailto:destek@@nsxyazilim.com">destek@nsxyazilim.com</a> adresine veya <a href="/iletisim">iletişim sayfasındaki</a> kanallara iletebilirsiniz.</p></section>
+        </article>
+        @await Html.PartialAsync("_CorporateAside")
+    </div>
+</section>

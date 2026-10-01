@@ -1,0 +1,213 @@
+:root{
+  --nsx-ink:#10151b;
+  --nsx-ink-2:#1d242c;
+  --nsx-muted:#697582;
+  --nsx-line:#e3e7eb;
+  --nsx-soft:#f5f7f9;
+  --nsx-paper:#fff;
+  --nsx-orange:#ff6e04;
+  --nsx-orange-2:#ff8a2e;
+  --nsx-green:#20b976;
+  --nsx-radius-sm:12px;
+  --nsx-radius:18px;
+  --nsx-radius-lg:26px;
+  --nsx-shadow:0 18px 45px rgba(12,17,23,.08);
+  --nsx-shadow-hover:0 26px 65px rgba(12,17,23,.13),0 12px 28px rgba(255,110,4,.10);
+  --nsx-ease:cubic-bezier(.2,.72,.2,1);
+}
+
+html{scroll-behavior:smooth;}
+body{color:var(--nsx-ink);text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;}
+::selection{background:rgba(255,110,4,.22);color:#0d1116;}
+a,button,input,select,summary{outline-offset:3px;}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid rgba(255,110,4,.30)!important;}
+
+/* Ortak NSX yön işareti: ince metin oklarının yerine kalın, kurumsal ikon. */
+.nsx-dir-icon{
+  --nsx-dir-bg:linear-gradient(180deg,#fff 0%,#f3f5f7 100%);
+  position:relative!important;display:inline-grid!important;place-items:center!important;flex:0 0 30px!important;
+  width:30px!important;min-width:30px!important;max-width:30px!important;height:30px!important;min-height:30px!important;max-height:30px!important;
+  margin:0!important;padding:0!important;border:1px solid #dfe4e8!important;border-radius:10px!important;
+  background:var(--nsx-dir-bg)!important;color:#e95b00!important;font-size:0!important;line-height:0!important;
+  box-shadow:0 6px 14px rgba(12,17,23,.09),inset 0 1px 0 #fff!important;
+  transform:none;overflow:hidden!important;transition:transform .2s var(--nsx-ease),background .2s ease,box-shadow .2s ease!important;
+}
+.nsx-dir-icon>svg{display:block!important;width:16px!important;height:16px!important;overflow:visible!important;stroke:currentColor!important;fill:none!important;}
+.nsx-dir-icon:before,.nsx-dir-icon:after{content:none!important;display:none!important;}
+a:hover .nsx-dir-icon:not(.is-left),button:hover .nsx-dir-icon:not(.is-left){transform:translateX(3px)!important;border-color:rgba(255,110,4,.42)!important;box-shadow:0 9px 18px rgba(12,17,23,.11),0 4px 10px rgba(255,110,4,.08),inset 0 1px 0 #fff!important;}
+a:hover .nsx-dir-icon.is-left,button:hover .nsx-dir-icon.is-left{transform:translateX(-3px)!important;}
+.nsx-dir-icon.is-compact{flex-basis:25px!important;width:25px!important;min-width:25px!important;max-width:25px!important;height:25px!important;min-height:25px!important;max-height:25px!important;border-radius:8px!important;}
+.nsx-dir-icon.is-compact>svg{width:14px!important;height:14px!important;}
+
+/* Ortak bölüm ritmi ve başlık hiyerarşisi */
+.solutions-section,.conversion-section,.nsx-video-safe-page,.nsx-blog-index-page,.nsx-blog-detail-page,.nsx-video-detail-page,.detail-content{
+  position:relative;
+}
+.solutions-section>.container,.conversion-section>.container{
+  width:min(1505px,calc(100% - 48px));
+}
+.nsx-store-section-head,.section-heading,.conversion-heading,.nsx-video-section-head,.nsx-blog-filter-head{
+  position:relative;
+}
+.nsx-store-section-head:before,.section-heading:before,.conversion-heading:before{
+  content:"";position:absolute;left:0;top:-16px;width:42px;height:4px;border-radius:999px;
+  background:linear-gradient(90deg,var(--nsx-orange),var(--nsx-orange-2));
+  box-shadow:0 0 0 6px rgba(255,110,4,.07);
+}
+.nsx-store-section-head h2,.section-heading h2,.conversion-heading h2,
+.nsx-video-section-head h2,.nsx-blog-index-page h2{
+  text-wrap:balance;letter-spacing:-.04em;
+}
+.home-products-heading{display:flex;align-items:end;justify-content:space-between;gap:28px;margin:0 0 24px;}
+.home-products-heading>div>span{display:block;margin-bottom:8px;color:var(--nsx-orange);font-size:10px;font-weight:900;letter-spacing:.12em;}
+.home-products-heading h2{max-width:720px;margin:0;color:var(--nsx-ink);font-size:clamp(28px,3.2vw,43px);font-weight:900;line-height:1.05;letter-spacing:-.045em;text-wrap:balance;}
+.home-products-heading>a{display:inline-flex;align-items:center;gap:10px;min-height:43px;padding:0 7px 0 14px;border:1px solid #dfe4e8;border-radius:13px;background:#fff;color:#303943;font-size:10px;font-weight:850;white-space:nowrap;box-shadow:0 8px 18px rgba(12,17,23,.055);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.home-products-heading>a b{display:grid;place-items:center;width:29px;height:29px;border-radius:9px;background:var(--nsx-orange);color:#fff;}
+.home-products-heading>a:hover{transform:translateY(-2px);border-color:rgba(255,110,4,.35);box-shadow:0 12px 24px rgba(255,110,4,.10);}
+.software-toolbar.is-search-only{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;}
+.software-toolbar.is-search-only .software-search{margin-top:0!important;}
+
+/* Gerçek ürün görselleriyle premium kart sistemi */
+.home-product-card,.software-list-page .product-card,.nsx-video-card,.nsx-video-safe-card,.nsx-blog-card,.nsx-blog-redesign-card,.nsx-blog-featured-card,.nsx-related-card{
+  isolation:isolate;
+  transform:translateZ(0);
+  transition:transform .26s var(--nsx-ease),box-shadow .26s var(--nsx-ease),border-color .26s var(--nsx-ease)!important;
+}
+.home-product-card:after,.software-list-page .product-card:after{
+  content:"";position:absolute;z-index:6;inset:0;pointer-events:none;opacity:0;
+  background:radial-gradient(360px circle at var(--nsx-pointer-x,50%) var(--nsx-pointer-y,35%),rgba(255,255,255,.34),transparent 42%);
+  transition:opacity .25s ease;
+}
+.home-product-card:hover:after,.software-list-page .product-card:hover:after{opacity:.48;}
+.home-product-card:hover,.software-list-page .product-card:hover,.nsx-video-card:hover,.nsx-video-safe-card:hover,.nsx-blog-card:hover,.nsx-blog-redesign-card:hover,.nsx-blog-featured-card:hover,.nsx-related-card:hover{
+  transform:translateY(-6px)!important;box-shadow:var(--nsx-shadow-hover)!important;
+}
+.home-product-card .product-visual,.software-list-page .product-card .product-visual{
+  position:relative;background:linear-gradient(145deg,#f7f8fa,#edf1f4)!important;
+}
+.home-product-card .product-visual:after,.software-list-page .product-card .product-visual:after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(125deg,transparent 0 52%,rgba(255,255,255,.34) 60%,transparent 69%);
+  transform:translateX(-115%);transition:transform .65s var(--nsx-ease);
+}
+.home-product-card:hover .product-visual:after,.software-list-page .product-card:hover .product-visual:after{transform:translateX(115%);}
+.home-product-card .product-visual img,.software-list-page .product-card .product-visual img{
+  transition:transform .45s var(--nsx-ease),filter .3s ease!important;
+}
+.home-product-card:hover .product-visual img,.software-list-page .product-card:hover .product-visual img{
+  transform:scale(1.035)!important;filter:saturate(1.03) contrast(1.015);
+}
+.home-product-card .product-body h3,.software-list-page .product-card .product-body h2{text-wrap:balance;}
+.home-product-card .product-body p,.software-list-page .product-card .product-body p{color:var(--nsx-muted)!important;}
+.home-product-card .product-body li,.software-list-page .product-card .product-body li{transition:color .18s ease,transform .18s ease;}
+.home-product-card:hover .product-body li,.software-list-page .product-card:hover .product-body li{color:#39434d;transform:translateX(2px);}
+
+/* Araç çubuğu ve sekmeler */
+.software-toolbar,.detail-tabs{
+  border:1px solid rgba(19,26,33,.08)!important;
+  background:rgba(249,250,251,.88)!important;
+  box-shadow:0 14px 35px rgba(12,17,23,.055),inset 0 1px 0 #fff!important;
+  backdrop-filter:blur(14px);
+}
+.detail-tabs{position:sticky;top:10px;z-index:12;}
+.category-tabs button,.detail-tabs button{transition:background .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease!important;}
+.category-tabs button:hover,.detail-tabs button:hover{transform:translateY(-1px);}
+.software-search input,.software-search select{
+  border-color:#dfe4e8!important;background:#fff!important;transition:border-color .18s ease,box-shadow .18s ease!important;
+}
+.software-search input:focus,.software-search select:focus{border-color:var(--nsx-orange)!important;box-shadow:0 0 0 4px rgba(255,110,4,.10)!important;}
+
+/* Ürün detayında güven ve satın alma odağı */
+.detail-media,.detail-purchase,.detail-tab-panel{
+  border-color:rgba(20,28,36,.09)!important;box-shadow:var(--nsx-shadow)!important;
+}
+.detail-purchase{position:relative;overflow:hidden;}
+.detail-purchase:before{
+  content:"";position:absolute;right:-90px;top:-90px;width:220px;height:220px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,110,4,.13),transparent 70%);
+}
+.detail-main-image img{transition:transform .4s var(--nsx-ease),filter .25s ease!important;}
+.license-card,.detail-buy,.detail-demo,.detail-whatsapp{transition:transform .2s var(--nsx-ease),box-shadow .2s ease,border-color .2s ease!important;}
+.license-card:hover,.detail-demo:hover,.detail-whatsapp:hover{transform:translateY(-2px);}
+.detail-buy:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(255,110,4,.25)!important;}
+.detail-feature-grid span,.detail-specs>div,.detail-support-steps span,.detail-review-card,.detail-faq-list details{
+  transition:transform .2s var(--nsx-ease),border-color .2s ease,box-shadow .2s ease;
+}
+.detail-feature-grid span:hover,.detail-specs>div:hover,.detail-support-steps span:hover,.detail-review-card:hover,.detail-faq-list details:hover{
+  transform:translateY(-2px);border-color:rgba(255,110,4,.30)!important;box-shadow:0 12px 28px rgba(12,17,23,.06);
+}
+
+/* Blog ve video yüzeylerinde aynı kart kalitesi */
+.nsx-blog-card,.nsx-blog-featured,.nsx-blog-featured-card,.nsx-blog-redesign-card,.nsx-video-card,.nsx-video-safe-card,.nsx-video-description-panel,.nsx-blog-sidebar-card,.nsx-related-videos{
+  border-color:rgba(18,25,32,.09)!important;box-shadow:var(--nsx-shadow)!important;
+}
+.nsx-blog-card img,.nsx-blog-featured-card img,.nsx-blog-redesign-card img,.nsx-video-card img,.nsx-video-safe-card img,.nsx-related-videos img{transition:transform .42s var(--nsx-ease),filter .25s ease!important;}
+.nsx-blog-card:hover img,.nsx-blog-featured-card:hover img,.nsx-blog-redesign-card:hover img,.nsx-video-card:hover img,.nsx-video-safe-card:hover img,.nsx-related-card:hover img{transform:scale(1.035);filter:saturate(1.05);}
+
+/* Footer: koyu kurumsal kapanış */
+.public-content-page>.container:has(>.nsx-footer-v2){width:100%!important;max-width:none!important;padding:0!important;}
+.nsx-footer-v2{
+  margin-top:54px!important;border-top:0!important;color:#eef2f5!important;
+  background:
+    radial-gradient(circle at 82% 12%,rgba(255,110,4,.12),transparent 28%),
+    linear-gradient(145deg,#151a20 0%,#0b0f13 58%,#11171d 100%)!important;
+}
+.nsx-footer-v2:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.13;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:54px 54px;mask-image:linear-gradient(to bottom,#000,transparent 75%);}
+.nsx-footer-v2__shell{position:relative;z-index:1;}
+.nsx-footer-v2__assurance{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;margin:-1px 0 34px;
+  border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.06);
+}
+.nsx-footer-v2__assurance>div{display:grid;grid-template-columns:42px 1fr;align-items:center;gap:11px;min-height:76px;padding:12px 16px;background:rgba(7,10,13,.58);}
+.nsx-footer-v2__assurance b{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,var(--nsx-orange-2),var(--nsx-orange));color:#fff;font-size:16px;box-shadow:0 9px 20px rgba(255,110,4,.19);}
+.nsx-footer-v2__assurance span{display:flex;flex-direction:column;gap:3px;min-width:0;}
+.nsx-footer-v2__assurance strong{color:#fff;font-size:11px;}
+.nsx-footer-v2__assurance small{color:#94a0ab;font-size:8.5px;line-height:1.35;}
+.nsx-footer-v2__brand p,.nsx-footer-v2__column a{color:#9ba6b1!important;}
+.nsx-footer-v2__column h3{color:#fff!important;}
+.nsx-footer-v2__trust span{border-color:rgba(255,255,255,.10)!important;background:rgba(255,255,255,.045)!important;color:#c8d0d7!important;}
+.nsx-footer-v2__bar{border-color:rgba(255,255,255,.09)!important;background:rgba(255,255,255,.045)!important;}
+.nsx-footer-v2__payment strong{color:#fff!important;}.nsx-footer-v2__payment small{color:#93a0ac!important;}
+.nsx-footer-v2__account-links a,.nsx-footer-v2__social a{border-color:rgba(255,255,255,.10)!important;background:rgba(255,255,255,.055)!important;color:#d7dde3!important;}
+.nsx-footer-v2__bottom{border-top:1px solid rgba(255,255,255,.075);color:#7f8b96!important;}
+.nsx-footer-v2__bottom a{color:#9ba6b1!important;}
+
+/* Footer metin bağlantıları: üst şeritteki üç bağlantıyla aynı beyaz hover. */
+.nsx-footer-v2__column a:hover,
+.nsx-footer-v2__bottom a:hover{
+  color:#fff!important;
+}
+
+/* Kontrollü görünme animasyonu */
+.nsx-pro-v2-ready .nsx-reveal{opacity:0;transform:translateY(18px);transition:opacity .62s var(--nsx-ease),transform .62s var(--nsx-ease);transition-delay:var(--nsx-reveal-delay,0ms);}
+.nsx-pro-v2-ready .nsx-reveal.is-visible{opacity:1;transform:none;}
+
+@media (max-width:980px){
+  .solutions-section>.container,.conversion-section>.container{width:calc(100% - 24px);}
+  .detail-tabs{position:relative;top:auto;}
+  .nsx-footer-v2__assurance{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:600px){
+  .solutions-section>.container,.conversion-section>.container{width:calc(100% - 18px);}
+  .nsx-store-section-head:before,.section-heading:before,.conversion-heading:before{top:-11px;width:32px;height:3px;}
+  .home-product-card:hover,.software-list-page .product-card:hover,.nsx-video-card:hover,.nsx-video-safe-card:hover,.nsx-blog-card:hover,.nsx-blog-redesign-card:hover{transform:translateY(-3px)!important;}
+  .nsx-footer-v2{margin-top:34px!important;}
+  .home-products-heading{align-items:flex-start;flex-direction:column;gap:15px;margin-bottom:18px;}
+  .nsx-footer-v2__assurance{grid-template-columns:1fr;border-radius:15px;margin-bottom:26px;}
+  .nsx-footer-v2__assurance>div{min-height:66px;padding:10px 12px;}
+  .nsx-dir-icon{flex-basis:28px!important;width:28px!important;min-width:28px!important;max-width:28px!important;height:28px!important;min-height:28px!important;max-height:28px!important;border-radius:9px!important;}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+  .nsx-pro-v2-ready .nsx-reveal{opacity:1!important;transform:none!important;}
+}
+
+/* NSX Performance Pro 2 - below-fold render containment */
+@supports (content-visibility:auto){
+  .nsx-footer-v2,.detail-page .detail-content,.videos-page .video-library,.conversion-section{content-visibility:auto;contain-intrinsic-size:auto 800px;}
+  .nsx-footer-v2{contain-intrinsic-size:auto 620px;}
+}
+@media (max-width:980px){
+  .nsx-footer-v2,.detail-page .detail-content,.videos-page .video-library,.conversion-section{content-visibility:visible;contain-intrinsic-size:none;}
+}

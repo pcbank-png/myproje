@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS CampaignCoupons (
+    Id INT NOT NULL AUTO_INCREMENT,
+    Code VARCHAR(50) NOT NULL,
+    Title VARCHAR(150) NOT NULL,
+    DiscountType VARCHAR(20) NOT NULL DEFAULT 'Percent',
+    DiscountValue DECIMAL(18,2) NOT NULL DEFAULT 0,
+    MinimumCartAmount DECIMAL(18,2) NULL,
+    UsageLimit INT NULL,
+    UsedCount INT NOT NULL DEFAULT 0,
+    StartDate DATETIME NULL,
+    EndDate DATETIME NULL,
+    IsActive TINYINT(1) NOT NULL DEFAULT 1,
+    IsDeleted TINYINT(1) NOT NULL DEFAULT 0,
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (Id),
+    UNIQUE INDEX UX_CampaignCoupons_Code (Code)
+);

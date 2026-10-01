@@ -1,0 +1,31 @@
+@model List<NSYazilim.Web.Models.DealerSale>
+@{
+    ViewData["Title"] = "Sat\u0131\u015flar\u0131m ve Lisanslar";
+    var dealer = ViewBag.Dealer as NSYazilim.Web.Models.Dealer;
+}
+<div class="dealer-head"><div><div class="dealer-kicker">BAYI HAREKETLERI</div><h1>Sat&#305;&#351;lar&#305;m ve Lisanslar</h1><p>Her lisans m&#252;&#351;terinin site &#252;yeli&#287;indeki e-posta adresine ba&#287;l&#305; olu&#351;ur.</p></div><a class="dealer-btn primary" href="/Bayi/Satis/Yeni">+ Yeni Sat&#305;&#351;</a></div>
+<div class="dealer-card">
+@if (!Model.Any()) { <div class="dealer-empty">Hen&#252;z sat&#305;&#351; kayd&#305;n&#305;z yok.</div> }
+else
+{
+    <div class="dealer-table-wrap"><table class="dealer-table"><thead><tr><th>Sipari&#351;</th><th>M&#252;&#351;teri</th><th>&#220;r&#252;n</th><th>Sat&#305;&#351;</th><th>Alacak</th><th>Havale</th><th>Lisans</th><th></th></tr></thead><tbody>
+    @foreach (var sale in Model)
+    {
+        var transfer = sale.BankTransferNotification?.Status ?? "NotSubmitted";
+        var approved = transfer == "Approved" || sale.Order?.PaymentStatus == "Paid";
+        var rejected = transfer == "Rejected" || sale.Order?.PaymentStatus == "Rejected";
+        var licenseCount = sale.Order?.Licenses?.Count ?? 0;
+        <tr>
+            <td><strong>@(sale.Order?.OrderNumber ?? $"BAYI-{sale.Id}")</strong><small>@sale.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small></td>
+            <td><strong>@(sale.CustomerUser?.FullName ?? "Musteri")</strong><small>@(sale.CustomerUser?.Email ?? "-")</small></td>
+            <td>@(sale.Product?.Name ?? "Urun")<small>@(sale.LicenseType == "Lifetime" ? "Sinirsiz" : "Yillik") x @sale.Quantity</small></td>
+            <td><strong>@sale.SaleAmount.ToString("N2") &#8378;</strong></td>
+            <td><strong>@sale.CommissionAmount.ToString("N2") &#8378;</strong><small>@(approved ? "Onayli alacak" : rejected ? "Iptal" : "Beklemede")</small></td>
+            <td><span class="dealer-pill @(approved ? "ok" : rejected ? "bad" : "warn")">@(approved ? "Onaylandi" : rejected ? "Reddedildi" : transfer == "Pending" ? "Admin Onayi" : "Bildirim Bekliyor")</span></td>
+            <td><strong>@licenseCount</strong><small>@(approved ? "Musteri e-postasina bagli" : "Onaydan sonra")</small></td>
+            <td><a class="dealer-btn light sm" href="/Bayi/Satis/@sale.Id">A&#231;</a></td>
+        </tr>
+    }
+    </tbody></table></div>
+}
+</div>

@@ -1,0 +1,145 @@
+@model NSYazilim.Web.ViewModels.AdminLanguagesViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dil Motoru";
+}
+<style>
+.nsx-lang-admin{display:grid;gap:18px}.nsx-lang-hero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:20px;border:1px solid #e3e7eb;border-radius:18px;background:#fff}.nsx-lang-hero h1{margin:0 0 6px;font-size:22px}.nsx-lang-hero p{margin:0;color:#6d7884;font-size:12px}.nsx-lang-badge{padding:10px 14px;border-radius:12px;background:#fff4eb;color:#d95700;font-weight:900}.nsx-lang-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.nsx-lang-card{padding:16px;border:1px solid #e3e7eb;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(12,17,23,.05)}.nsx-lang-card-head{display:flex;align-items:center;gap:11px}.nsx-lang-flag{font-size:27px}.nsx-lang-card-head strong{display:block}.nsx-lang-card-head small{display:block;color:#89939d;margin-top:2px}.nsx-lang-status{margin-left:auto;padding:5px 8px;border-radius:999px;background:#eef1f3;color:#6d7780;font-size:9px;font-weight:900}.nsx-lang-status.on{background:#eaf8ef;color:#18814c}.nsx-lang-progress{height:8px;margin:14px 0 7px;border-radius:999px;background:#edf0f2;overflow:hidden}.nsx-lang-progress i{display:block;height:100%;background:#ff6e04}.nsx-lang-meta{display:flex;justify-content:space-between;color:#727d87;font-size:10px}.nsx-lang-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.nsx-lang-actions a,.nsx-lang-actions button{min-height:34px;padding:0 11px;border:1px solid #dfe4e8;border-radius:9px;background:#fff;color:#2d343b;font-size:10px;font-weight:850;text-decoration:none;cursor:pointer}.nsx-lang-actions a{display:inline-flex;align-items:center;justify-content:center;line-height:1.1}.nsx-lang-actions .primary{border-color:#ff6e04;background:#ff6e04;color:#fff}.nsx-lang-add{padding:18px;border:1px solid #e3e7eb;border-radius:18px;background:#fff}.nsx-lang-add h2{margin:0 0 13px;font-size:17px}.nsx-lang-form{display:grid;grid-template-columns:1fr .7fr 1fr 1fr .55fr .55fr .55fr auto;gap:8px;align-items:end}.nsx-lang-form label{display:grid;gap:5px;color:#68737e;font-size:9px;font-weight:850}.nsx-lang-form input,.nsx-lang-form select{height:38px;padding:0 9px;border:1px solid #dce2e6;border-radius:9px;background:#fff}.nsx-lang-form button{height:38px;padding:0 14px;border:0;border-radius:9px;background:#ff6e04;color:#fff;font-weight:900;cursor:pointer}@@media(max-width:1000px){.nsx-lang-grid{grid-template-columns:1fr}.nsx-lang-form{grid-template-columns:repeat(2,minmax(0,1fr))}.nsx-lang-form button{grid-column:1/-1}}@@media(max-width:600px){.nsx-lang-hero{grid-template-columns:1fr}.nsx-lang-form{grid-template-columns:1fr}}
+</style>
+<style>
+.nsx-lang-edit{margin-top:12px;padding-top:10px;border-top:1px dashed #dfe4e8}.nsx-lang-edit summary{cursor:pointer;color:#68737e;font-size:10px;font-weight:850}.nsx-lang-edit form{display:grid;grid-template-columns:1fr 1fr .5fr .5fr .5fr auto;gap:7px;margin-top:9px}.nsx-lang-edit input,.nsx-lang-edit select{min-width:0;height:34px;padding:0 8px;border:1px solid #dce2e6;border-radius:8px}.nsx-lang-edit button{border:0;border-radius:8px;background:#ff6e04;color:#fff;font-weight:900}.nsx-lang-add>p{margin:-6px 0 13px;color:#6d7884;font-size:10px}.nsx-lang-check{display:flex!important;grid-column:1/-1;grid-template-columns:auto 1fr!important;align-items:center;gap:8px!important}.nsx-lang-check input{width:18px;height:18px}@@media(max-width:1000px){.nsx-lang-edit form{grid-template-columns:repeat(2,minmax(0,1fr))}.nsx-lang-edit button{min-height:34px;grid-column:1/-1}}@@media(max-width:600px){.nsx-lang-edit form{grid-template-columns:1fr}}
+</style>
+<style>
+.nsx-lang-runtime{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:7px;padding-top:7px;border-top:1px dashed #e8ecef;color:#7b8590;font-size:9px}.nsx-lang-runtime b{color:#49535d}.nsx-lang-runtime .error{max-width:100%;color:#b64a23;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nsx-lang-actions .resume{display:inline-flex;align-items:center;gap:5px;border-color:#ffd4b5;background:#fff7f1;color:#c95400}.nsx-lang-actions .resume span{font-size:11px}.nsx-lang-actions .delete{border-color:#f1c5c5;background:#fff5f5;color:#b42318}.nsx-lang-actions form{margin:0}
+</style>
+<div class="nsx-lang-admin">
+    <section class="nsx-lang-hero">
+        <div>
+            <h1>NSX Localization Engine</h1>
+            <p>Diller koddan bağımsız yönetilir. Yeni dil eklendiğinde veritabanı yapısı veya site kodu değişmez.</p>
+        </div>
+        <div class="nsx-lang-badge">@Model.TotalResources kaynak metin · @(Model.MachineTranslationAvailable ? "AUTO HAZIR" : "MANUEL")</div>
+    </section>
+
+    <section class="nsx-lang-grid">
+        @foreach (var row in Model.Languages)
+        {
+            <article class="nsx-lang-card">
+                <div class="nsx-lang-card-head">
+                    <span class="nsx-lang-flag notranslate" translate="no" data-nsx-localization="off">@row.Language.FlagEmoji</span>
+                    <div class="notranslate" translate="no" data-nsx-localization="off"><strong>@row.Language.NativeName</strong><small>@row.Language.Code · /@row.Language.UrlCode/ · @row.Language.Direction</small></div>
+                    <span class="nsx-lang-status @(row.Language.IsActive ? "on" : "")">@(row.Language.IsActive ? "AKTİF" : "PASİF")</span>
+                </div>
+                <div class="nsx-lang-progress"><i style="width:@row.CoveragePercent.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%"></i></div>
+                <div class="nsx-lang-meta"><span>@row.TranslationCount / @Model.TotalResources çeviri</span><b>%@row.CoveragePercent.ToString("0.0")</b></div>
+                @if (!row.Language.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase))
+                {
+                    <div class="nsx-lang-meta" style="margin-top:7px;gap:8px;flex-wrap:wrap">
+                        <span>Kuyruk: @row.QueuePending</span><span>Çevriliyor: @row.QueueProcessing</span><span>Tamam: @row.QueueCompleted</span><span>Hatalı: @row.QueueFailed</span><b>%@row.QueueProgressPercent.ToString("0.0")</b>
+                    </div>
+                    <div class="nsx-lang-runtime">
+                        <span>Son çeviri: <b>@(row.QueueLastCompletedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</b></span>
+                        <span>Son işlem: <b>@(row.QueueLastActivityAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</b></span>
+                        <span>Sonraki deneme: <b>@(row.QueueNextAttemptAt?.ToString("dd.MM.yyyy HH:mm") ?? (row.QueuePending > 0 ? "hazır" : "-"))</b></span>
+                        @if (!string.IsNullOrWhiteSpace(row.QueueLastError))
+                        {
+                            <span class="error" title="@row.QueueLastError">Son hata: @row.QueueLastError</span>
+                        }
+                    </div>
+                }
+                <div class="nsx-lang-actions">
+                    <a class="primary" href="/Admin/Languages/@Uri.EscapeDataString(row.Language.Code)/Translations">Çevirileri Yönet</a>
+                    @if (!row.Language.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase)
+                        && (row.QueuePending > 0 || row.QueueProcessing > 0 || row.QueueFailed > 0 || row.TranslationCount < Model.TotalResources))
+                    {
+                        <form method="post" action="/Admin/Languages/Resume/@row.Language.Id">
+                            @Html.AntiForgeryToken()
+                            <button class="resume" type="submit" title="Bekleyen ve hata alan işleri şimdi yeniden dene"><span aria-hidden="true">▶</span> Devam Ettir</button>
+                        </form>
+                        @if (row.Language.Code.StartsWith("en", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <form method="post" action="/Admin/Languages/ForceCloseFromCatalog/@row.Language.Id">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" title="HTTP 429 beklerken seed/katalog İngilizcesi olan işleri hemen kapat">Katalog ile kapat</button>
+                            </form>
+                        }
+                    }
+                    <form method="post" action="/Admin/Languages/Toggle/@row.Language.Id">@Html.AntiForgeryToken()<button type="submit">@(row.Language.IsActive ? "Pasif Yap" : "Aktif Yap")</button></form>
+                    @if (row.Language.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <span class="nsx-lang-status on">KAYNAK / VARSAYILAN</span>
+                    }
+                    @if (!row.Language.IsDefault
+                        && !string.Equals(row.Language.Code, "tr-TR", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <form method="post" action="/Admin/Languages/Delete/@row.Language.Id" onsubmit="return confirm('Bu dil ve bu dile ait tüm çeviri kayıtları silinsin mi?');">
+                            @Html.AntiForgeryToken()
+                            <button class="delete" type="submit">Dili Sil</button>
+                        </form>
+                    }
+                </div>
+                <details class="nsx-lang-edit">
+                    <summary>Dil bilgilerini düzenle</summary>
+                    <form method="post" action="/Admin/Languages/Edit/@row.Language.Id">
+                        @Html.AntiForgeryToken()
+                        <input name="nativeName" value="@row.Language.NativeName" aria-label="Yerel ad" required />
+                        <input name="englishName" value="@row.Language.EnglishName" aria-label="İngilizce ad" required />
+                        <input name="flagEmoji" value="@row.Language.FlagEmoji" aria-label="Bayrak" />
+                        <select name="direction" aria-label="Yazı yönü">
+                            @if (row.Language.Direction == "RTL") { <option value="LTR">LTR</option><option selected value="RTL">RTL</option> }
+                            else { <option selected value="LTR">LTR</option><option value="RTL">RTL</option> }
+                        </select>
+                        <input name="sortOrder" type="number" value="@row.Language.SortOrder" min="0" max="9999" aria-label="Sıra" />
+                        <button type="submit">Güncelle</button>
+                    </form>
+                </details>
+            </article>
+        }
+    </section>
+
+    <section class="nsx-lang-add">
+        <h2>Yeni Dil Ekle</h2>
+        <p>Dil veritabanına eklenir; aktif seçilirse genel site dil seçicisinde hemen görünür.</p>
+        <form class="nsx-lang-form" method="post" action="/Admin/Languages/Add">
+            @Html.AntiForgeryToken()
+            <label>Dil Kodu<input name="code" placeholder="fr-FR" required /></label>
+            <label>URL Kodu<input name="urlCode" placeholder="fr" required /></label>
+            <label>Yerel Ad<input name="nativeName" placeholder="Français" required /></label>
+            <label>İngilizce Ad<input name="englishName" placeholder="French" required /></label>
+            <label>Bayrak<input name="flagEmoji" placeholder="🇫🇷" /></label>
+            <label>Yön<select name="direction"><option value="LTR">LTR</option><option value="RTL">RTL</option></select></label>
+            <label>Sıra<input name="sortOrder" type="number" value="100" min="0" max="9999" /></label>
+            <label class="nsx-lang-check"><input name="activateNow" type="checkbox" value="true" /><span>Ekler eklemez aktif et ve site dil seçicisinde göster</span></label>
+            <label class="nsx-lang-check">
+                <input name="autoTranslateNow" type="checkbox" value="true" checked disabled />
+                <span>Yeni dil eklenince tüm mevcut site, ürün, uzun açıklama, kategori, video, reklam ve dinamik içerikler otomatik kuyruğa alınır. @(Model.MachineTranslationAvailable ? "Çeviri motoru arka planda tamamlar." : "Google Cloud / DeepL etkinleşene kadar kuyruk güvenle bekler.")</span>
+            </label>
+            <button type="submit">Dili Ekle</button>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const token = document.querySelector('.nsx-lang-admin input[name="__RequestVerificationToken"]')?.value;
+            if (!token) return;
+
+            const heartbeat = () => {
+                if (document.visibilityState !== 'visible') return;
+                fetch('/Admin/Languages/Heartbeat', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    cache: 'no-store',
+                    headers: {
+                        'RequestVerificationToken': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }).catch(() => { });
+            };
+
+            heartbeat();
+            window.setInterval(heartbeat, 30000);
+        })();
+    </script>
+}

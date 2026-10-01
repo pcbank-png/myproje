@@ -1,0 +1,36 @@
+/* NSX proje geneli tek tipografi sistemi */
+:root{--nsx-font:"Segoe UI Variable Text","Segoe UI",Arial,sans-serif;--nsx-type-body:14px;--nsx-type-control:14px}
+html,body,button,input,select,textarea,option,optgroup,table,th,td,label,summary,dialog{
+  font-family:var(--nsx-font)!important;font-stretch:normal!important;font-kerning:normal!important;font-optical-sizing:auto!important;
+  font-variant:normal!important;text-rendering:optimizeLegibility!important;-webkit-font-smoothing:antialiased!important;-moz-osx-font-smoothing:grayscale!important
+}
+body{font-size:var(--nsx-type-body);line-height:1.55}
+h1,h2,h3,h4,h5,h6{font-family:var(--nsx-font)!important;font-stretch:normal!important;font-kerning:normal!important;letter-spacing:-.025em;text-rendering:optimizeLegibility!important}
+h1,h2{font-weight:750}h3,h4{font-weight:700}h5,h6{font-weight:650}
+p,li,dd,dt,blockquote,figcaption{font-family:var(--nsx-font)!important}
+small{font-family:var(--nsx-font)!important;font-size:.84em;letter-spacing:0}
+.nsx-footer-v2,
+.nsx-footer-v2 :is(h1,h2,h3,h4,h5,h6,p,a,span,strong,b,small,em,i,label,button){
+  font-family:var(--nsx-font)!important;font-stretch:normal!important;font-kerning:normal!important;font-optical-sizing:auto!important;
+  font-variant:normal!important;text-rendering:optimizeLegibility!important
+}
+.nsx-footer-v2__column h3{letter-spacing:-.015em!important}
+input,select,textarea{font-size:var(--nsx-type-control);font-weight:400;line-height:1.35;letter-spacing:0!important}
+button,[role="button"],.btn,[class*="-btn"],[class*="_btn"],[class*="-button"],[class*="_button"]{
+  font-family:var(--nsx-font)!important;font-stretch:normal!important;font-size:var(--nsx-type-control);font-weight:700;line-height:1.15;
+  letter-spacing:0!important;text-transform:none;text-rendering:optimizeLegibility!important
+}
+.public-site-header .nav-links>a,.public-site-header .nav-products-trigger{
+  font-family:var(--nsx-font)!important;font-size:12px!important;font-weight:700!important;line-height:1.15!important;letter-spacing:0!important;text-transform:none!important
+}
+.public-site-header .account-welcome-label{
+  font-family:var(--nsx-font)!important;font-size:12px!important;font-weight:750!important;line-height:1.15!important;letter-spacing:0!important
+}
+.public-site-header .account-welcome-name,.public-site-header .nav-category-copy small,.public-site-header .account-link-copy small{
+  font-family:var(--nsx-font)!important;font-weight:500!important;letter-spacing:0!important
+}
+.public-site-header .nav-category-copy strong,.public-site-header .account-link-copy{
+  font-family:var(--nsx-font)!important;font-weight:700!important;letter-spacing:0!important
+}
+code,kbd,samp,pre{font-family:"Cascadia Mono","Segoe UI Mono",Consolas,monospace!important}
+@media(max-width:600px){:root{--nsx-type-body:13.5px;--nsx-type-control:13px}}

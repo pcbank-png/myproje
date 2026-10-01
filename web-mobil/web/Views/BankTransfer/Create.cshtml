@@ -1,0 +1,228 @@
+﻿@model NSYazilim.Web.ViewModels.BankTransferNotificationViewModel
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@{
+    ViewData["Robots"] = "noindex, nofollow, noarchive";
+    ViewData["Title"] = "Satın Alma Bildirimi";
+    ViewData["SkipActiveCampaign"] = true;
+    var product = Model.Product;
+    var image = product?.Images?.OrderByDescending(x => x.IsMain).ThenBy(x => x.SortOrder).FirstOrDefault()?.ImagePath ?? "/assets/img/01_veresiye_kutu.webp";
+    var licenseName = Model.LicenseType == "Lifetime" ? "Sınırsız Lisans" : "Yıllık Lisans";
+    var yearlyChecked = Model.LicenseType != "Lifetime" ? "checked" : null;
+    var lifetimeChecked = Model.LicenseType == "Lifetime" ? "checked" : null;
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    const string transferDescriptionSource = "Lütfen Havale/EFT yaparken açıklama kısmını boş bırakınız.";
+    var localizedTransferDescription = await SiteLocalization.TranslateAsync(transferDescriptionSource, currentLanguage.Code, Context.RequestAborted);
+    string Money(decimal value) => $"{value:N2} TL";
+}
+
+<style id="nsx-bank-transfer-pro-standard">
+.public-content-page{--nsx-subpage-hero-height:286px;background:#fff!important;}
+.public-content-page > .container{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;}
+.public-content-page .public-site-header .service-ribbon > .container,
+.public-content-page .public-site-header .detail-nav.container,
+.nsx-purchase-page .nsx-purchase-hero > .container,
+.nsx-purchase-page .nsx-purchase-layout.container{width:min(1505px,calc(100% - 48px))!important;max-width:1505px!important;margin-left:auto!important;margin-right:auto!important;}
+@@media (min-width:981px){
+    .public-content-page .public-site-header .detail-nav.container{display:flex!important;align-items:center!important;min-height:78px!important;gap:8px!important;}
+    .public-content-page .public-site-header .brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;margin:0 auto 0 0!important;padding:0!important;}
+    .public-content-page .public-site-header .brand-logo{display:block!important;width:clamp(142px,10.8vw,184px)!important;max-width:184px!important;height:auto!important;object-fit:contain!important;}
+    .public-content-page .public-site-header .nav-links{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex:0 1 auto!important;width:auto!important;margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+    .public-content-page .public-site-header .nav-cta{margin-left:0!important;}
+    .public-content-page .public-site-header .menu-toggle{display:none!important;}
+}
+body:has(.nsx-purchase-page) .public-site-header .nav-links > a[href="/store"]{color:#fff!important;border-color:#ff6e04!important;background:#ff6e04!important;box-shadow:0 0 0 1px rgba(255,110,4,.18),0 12px 26px rgba(255,110,4,.20)!important;}
+body:has(.nsx-purchase-page) .public-site-header .nav-links > a[href="/store"]::after{background:#fff!important;}
+.nsx-purchase-page{padding:0 0 70px!important;background:#fff!important;color:#101820!important;}
+.nsx-purchase-page .nsx-purchase-hero{position:relative!important;display:block!important;grid-template-columns:none!important;gap:0!important;width:100%!important;height:var(--nsx-subpage-hero-height)!important;min-height:var(--nsx-subpage-hero-height)!important;max-height:var(--nsx-subpage-hero-height)!important;box-sizing:border-box!important;margin:0!important;padding:0!important;overflow:hidden!important;color:#fff!important;background:radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%)!important;border-top:1px solid rgba(255,255,255,.04)!important;border-bottom:1px solid rgba(255,255,255,.06)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22)!important;}
+.nsx-purchase-page .nsx-purchase-hero > .container{position:relative!important;z-index:2!important;width:min(1505px,calc(100% - 48px))!important;max-width:1505px!important;height:100%!important;min-height:0!important;box-sizing:border-box!important;margin-left:auto!important;margin-right:auto!important;display:grid!important;grid-template-columns:minmax(0,1fr) 238px!important;align-items:flex-start!important;gap:28px!important;padding:24px 0!important;}
+.nsx-purchase-page .nsx-purchase-hero:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.10;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:72px 72px;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);}
+.nsx-purchase-page .nsx-purchase-hero > .container > div:first-child{position:relative;z-index:2;max-width:980px!important;}
+.nsx-purchase-page .nsx-purchase-hero > .container > div:first-child > span{display:inline-flex!important;align-items:center!important;gap:10px!important;width:fit-content!important;min-height:38px!important;margin:0 0 16px!important;padding:0 16px!important;border:1px solid rgba(57,217,138,.24)!important;border-radius:999px!important;background:rgba(57,217,138,.08)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 10px 24px rgba(0,0,0,.12)!important;color:#7df0b1!important;font-size:12px!important;font-weight:900!important;letter-spacing:.11em!important;text-transform:uppercase!important;}
+.nsx-purchase-page .nsx-purchase-hero > .container > div:first-child > span:before{content:"";width:8px;height:8px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 6px rgba(57,217,138,.12);}
+.nsx-purchase-page .nsx-purchase-hero h1{max-width:900px!important;margin:0!important;color:#fff!important;font-size:42px!important;font-weight:900!important;line-height:1.06!important;letter-spacing:-.04em!important;}
+.nsx-purchase-page .nsx-purchase-hero h1 em{display:block!important;color:#ff6e04!important;font-style:normal!important;}
+.nsx-purchase-page .nsx-purchase-hero p{max-width:900px!important;margin:12px 0 0!important;color:#d3d8df!important;font-size:14px!important;line-height:1.7!important;font-weight:520!important;}
+.nsx-purchase-page .nsx-purchase-steps{position:relative;z-index:2;display:flex!important;flex-direction:column!important;gap:10px!important;min-width:258px!important;padding:0!important;border:0!important;background:transparent!important;align-self:flex-start!important;}
+.nsx-purchase-page .nsx-purchase-steps > div{display:flex!important;align-items:center!important;gap:12px!important;min-height:46px!important;padding:0 16px!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:999px!important;background:rgba(255,255,255,.065)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 10px 20px rgba(0,0,0,.10)!important;color:#e9edf2!important;backdrop-filter:blur(4px)!important;}
+.nsx-purchase-page .nsx-purchase-steps b{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;width:26px!important;height:26px!important;border-radius:999px!important;background:rgba(255,255,255,.10)!important;color:#f6f8fb!important;font-size:12px!important;font-weight:900!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)!important;}
+.nsx-purchase-page .nsx-purchase-steps .done{border-color:rgba(57,217,138,.24)!important;background:rgba(57,217,138,.10)!important;}
+.nsx-purchase-page .nsx-purchase-steps .done b{background:#39d98a!important;color:#06120b!important;}
+.nsx-purchase-page .nsx-purchase-steps .active{border-color:rgba(255,110,4,.46)!important;background:linear-gradient(135deg,rgba(255,110,4,.22) 0%,rgba(255,110,4,.14) 100%)!important;box-shadow:0 14px 26px rgba(255,110,4,.16)!important;}
+.nsx-purchase-page .nsx-purchase-steps .active b{background:#ff6e04!important;color:#fff!important;}
+.nsx-purchase-page .nsx-purchase-steps span{display:flex!important;flex-direction:column!important;justify-content:center!important;gap:2px!important;min-width:0!important;}
+.nsx-purchase-page .nsx-purchase-steps strong{display:block!important;color:#fff!important;font-size:13px!important;line-height:1.15!important;font-weight:900!important;letter-spacing:-.01em!important;}
+.nsx-purchase-page .nsx-purchase-steps small{display:block!important;color:#c7d0da!important;font-size:11px!important;line-height:1.1!important;font-weight:700!important;opacity:.9!important;}
+.nsx-purchase-page .nsx-purchase-steps .active small{color:#ffe0c9!important;opacity:1!important;}
+.nsx-purchase-page .nsx-purchase-steps .done small{color:#b8efd0!important;opacity:1!important;}
+.nsx-purchase-page > .nsx-info-divider{display:none!important;}
+.nsx-purchase-page .nsx-purchase-layout{grid-template-columns:minmax(0,1.35fr) minmax(340px,.65fr)!important;gap:24px!important;padding-top:38px!important;padding-bottom:0!important;}
+.nsx-purchase-page .nsx-purchase-form-panel,.nsx-purchase-page .nsx-purchase-summary > section{border:1px solid #e1e6eb!important;border-radius:20px!important;background:#fff!important;box-shadow:0 14px 38px rgba(15,23,42,.055)!important;}
+.nsx-purchase-page .nsx-purchase-form-panel{padding:28px!important;}
+.nsx-purchase-page .nsx-purchase-section-head > span{background:#171b20!important;color:#ff6e04!important;}
+.nsx-purchase-page .nsx-purchase-section-head small,.nsx-purchase-page .nsx-purchase-summary > section > span{color:#ff6e04!important;}
+.nsx-purchase-page .nsx-purchase-section-head h2{color:#171b20!important;font-size:23px!important;font-weight:900!important;}
+.nsx-purchase-page .nsx-purchase-license{border:1px solid #dfe4e9!important;border-radius:14px!important;background:#fafbfc!important;box-shadow:none!important;}
+.nsx-purchase-page .nsx-purchase-license.active{border-color:#ff6e04!important;background:#fff8f2!important;box-shadow:0 0 0 2px rgba(255,110,4,.09)!important;}
+.nsx-purchase-page .nsx-purchase-license input{accent-color:#ff6e04!important;}
+.nsx-purchase-page .nsx-purchase-fields input,.nsx-purchase-page .nsx-purchase-fields textarea{border-radius:11px!important;border-color:#dfe4e9!important;background:#fafbfc!important;}
+.nsx-purchase-page .nsx-purchase-fields input:focus,.nsx-purchase-page .nsx-purchase-fields textarea:focus{border-color:#ff6e04!important;box-shadow:0 0 0 3px rgba(255,110,4,.10)!important;}
+.nsx-purchase-page .nsx-purchase-warning{border-color:#ffd8bc!important;border-radius:12px!important;background:#fff8f2!important;}
+.nsx-purchase-page .nsx-purchase-warning > b{background:#ff6e04!important;}
+.nsx-purchase-page .nsx-purchase-submit{min-height:52px!important;border-radius:12px!important;background:#ff6e04!important;color:#fff!important;box-shadow:0 10px 24px rgba(255,110,4,.22)!important;}
+.nsx-purchase-page .nsx-purchase-submit:hover{background:#171b20!important;}
+.nsx-purchase-page .nsx-purchase-summary{top:20px!important;gap:14px!important;}
+.nsx-purchase-page .nsx-purchase-summary > section{padding:22px!important;}
+.nsx-purchase-page .nsx-purchase-product img{border-radius:12px!important;}
+.nsx-purchase-page .nsx-purchase-total strong{color:#ff6e04!important;}
+.nsx-purchase-page .nsx-bank-help{border-radius:12px!important;background:#171b20!important;}
+.nsx-purchase-page .nsx-bank-help a{color:#ff8a33!important;}
+@@media (max-width:1180px){
+    .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container,.nsx-purchase-page .nsx-purchase-hero > .container,.nsx-purchase-page .nsx-purchase-layout.container{width:calc(100% - 32px)!important;}
+    .nsx-purchase-page .nsx-purchase-hero h1{font-size:38px!important;}
+}
+@@media (max-width:980px){
+    .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+    .nsx-purchase-page .nsx-purchase-hero > .container{grid-template-columns:1fr!important;gap:16px!important;}
+    .nsx-purchase-page .nsx-purchase-steps{flex-direction:row!important;flex-wrap:wrap!important;min-width:0!important;}
+    .nsx-purchase-page .nsx-purchase-layout{grid-template-columns:1fr!important;}
+    .nsx-purchase-page .nsx-purchase-summary{position:static!important;}
+}
+@@media (max-width:680px){
+    .nsx-purchase-page .nsx-purchase-hero > .container,.nsx-purchase-page .nsx-purchase-layout.container{width:calc(100% - 18px)!important;}
+    .nsx-purchase-page .nsx-purchase-hero > .container{padding-top:20px!important;padding-bottom:20px!important;}
+    .nsx-purchase-page .nsx-purchase-hero h1{font-size:30px!important;}
+    .nsx-purchase-page .nsx-purchase-hero p{font-size:13px!important;}
+    .nsx-purchase-page .nsx-purchase-steps{gap:8px!important;flex-wrap:nowrap!important;overflow-x:auto!important;scrollbar-width:none!important;}
+    .nsx-purchase-page .nsx-purchase-steps::-webkit-scrollbar{display:none!important;}
+    .nsx-purchase-page .nsx-purchase-steps > div{flex:0 0 auto!important;}
+    .nsx-purchase-page .nsx-purchase-steps > div{min-height:40px!important;padding:0 12px!important;}
+    .nsx-purchase-page .nsx-purchase-form-panel{padding:20px!important;}
+    .nsx-purchase-page .nsx-purchase-layout{padding-top:26px!important;}
+}
+</style>
+
+<section class="nsx-purchase-page">
+    <div class="nsx-purchase-hero">
+        <div class="container nsx-purchase-hero-inner">
+            <div><span>SATIN ALMA BİLDİRİMİ</span><h1>Ödemenizi bildirin,<br /><em>lisansınızı hazırlayalım.</em></h1><p>Havale veya EFT işleminizden sonra bilgileri gönderin. Ödemeniz kontrol edildiğinde lisansınız hesabınıza tanımlanır.</p></div>
+            <div class="nsx-purchase-steps" aria-label="Satın alma adımları"><div class="done"><b>1</b><span><strong>Ürünü seçin</strong><small>Tamamlandı</small></span></div><div class="active"><b>2</b><span><strong>Ödemeyi bildirin</strong><small>Şu anki adım</small></span></div><div><b>3</b><span><strong>Lisansı alın</strong><small>Onay sonrası</small></span></div></div>
+        </div>
+    </div>
+    <div class="nsx-info-divider"></div>
+
+    <div class="container nsx-purchase-layout">
+        <main class="nsx-purchase-form-panel">
+            @if (TempData["Error"] is string error) { <div class="nsx-form-message is-error">@error</div> }
+            <div class="nsx-purchase-section-head"><span>01</span><div><small>LİSANS SEÇİMİ</small><h2>Lisans türünü seçin</h2><p>İhtiyacınıza uygun lisans seçeneğini belirleyin. Ödenecek tutar otomatik güncellenir.</p></div></div>
+            <form method="post" action="/Havale-Bildirimi" class="nsx-purchase-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ProductId" />
+                <div asp-validation-summary="ModelOnly" class="nsx-validation"></div>
+                <div class="nsx-purchase-license-grid">
+                    <label class="nsx-purchase-license @(Model.LicenseType != "Lifetime" ? "active" : "")" data-price="@Money(Model.YearlyPayableAmount)" data-base-price="@Money(Model.YearlyPrice)" data-discount="@Money(Model.YearlyCampaignDiscountAmount)" data-campaign-name="@Model.YearlyCampaignName" data-campaign-text="@Model.YearlyCampaignDiscountText" data-license-name="Yıllık Lisans" data-transfer-description="@localizedTransferDescription"><input type="radio" name="LicenseType" value="Yearly" @yearlyChecked /><span>YILLIK LİSANS</span><strong>@Money(Model.YearlyPayableAmount)</strong><small>365 gün kullanım</small></label>
+                    <label class="nsx-purchase-license @(Model.LicenseType == "Lifetime" ? "active" : "")" data-price="@Money(Model.LifetimePayableAmount)" data-base-price="@Money(Model.LifetimePrice)" data-discount="@Money(Model.LifetimeCampaignDiscountAmount)" data-campaign-name="@Model.LifetimeCampaignName" data-campaign-text="@Model.LifetimeCampaignDiscountText" data-license-name="Sınırsız Lisans" data-transfer-description="@localizedTransferDescription"><input type="radio" name="LicenseType" value="Lifetime" @lifetimeChecked /><span>SINIRSIZ LİSANS</span><strong>@Money(Model.LifetimePayableAmount)</strong><small>Ömür boyu kullanım</small></label>
+                </div>
+
+                <div class="nsx-purchase-section-head form-head"><span>02</span><div><small>BİLDİRİM BİLGİLERİ</small><h2>Ödeme bilgilerini girin</h2><p>Hesabınızdaki bilgiler otomatik alınmıştır. Havalenin kim tarafından gönderildiğini belirtin.</p></div></div>
+                <div class="nsx-purchase-fields">
+                    <label>Ad soyad<input type="text" value="@Model.FullName" readonly /></label>
+                    <label>E-posta<input type="email" value="@Model.Email" readonly /></label>
+                    <label>Telefon<input type="text" value="@(Model.Phone ?? "-")" readonly /></label>
+                    <label>Ödenecek tutar<input id="bankTransferAmountDisplay" type="text" value="@Money(Model.Amount)" readonly /></label>
+                    <label>Gönderen ad soyad<input asp-for="SenderName" autocomplete="name" required /><span asp-validation-for="SenderName" class="nsx-field-error"></span></label>
+                    <label>Gönderen banka<input asp-for="SenderBank" placeholder="Örnek: Ziraat Bankası" /></label>
+                    <label>Dekont / işlem numarası<input asp-for="ReceiptNumber" placeholder="Varsa yazın" /></label>
+                    <label>Havale tarihi<input asp-for="TransferDate" type="date" /></label>
+                    <label class="full">Ek not<textarea asp-for="Note" rows="4" placeholder="Eklemek istediğiniz bir not varsa yazın"></textarea></label>
+                </div>
+                <div class="nsx-purchase-warning"><b>!</b><div><strong>Önemli ödeme bilgisi</strong><p>Lütfen Havale/EFT yaparken açıklama kısmını boş bırakınız.</p></div></div>
+                <button type="submit" class="nsx-purchase-submit">Satın Alma Bildirimini Gönder <span>→</span></button>
+            </form>
+        </main>
+
+        <aside class="nsx-purchase-summary">
+            <section><span>SİPARİŞ ÖZETİ</span><div class="nsx-purchase-product"><img src="@image" alt="@(product?.Name ?? "Ürün") ürün görseli" /><div><strong>@(product?.Name ?? "Ürün")</strong><small><span id="bankSummaryLicense">@licenseName</span> · Dijital teslimat</small></div></div><dl><div><dt>Ürün tutarı</dt><dd id="bankSummaryLinePrice">@Money(Model.OriginalAmount)</dd></div><div id="bankSummaryDiscountRow" class="discount" style="@(Model.HasCampaignDiscount ? "" : "display:none")"><dt>Kampanya indirimi</dt><dd id="bankSummaryDiscount">-@Money(Model.CampaignDiscountAmount)</dd></div><div><dt>Teslimat</dt><dd>Ücretsiz</dd></div><div><dt>Ödeme yöntemi</dt><dd>Havale / EFT</dd></div></dl><div class="nsx-purchase-total"><span>Ödenecek toplam</span><strong id="bankSummaryTotal">@Money(Model.Amount)</strong></div><div id="bankCampaignInfo" class="nsx-purchase-campaign" style="@(Model.HasCampaignDiscount ? "" : "display:none")"><strong id="bankCampaignName">@Model.CampaignName</strong><span id="bankCampaignText">@Model.CampaignDiscountText</span></div></section>
+            <section class="nsx-bank-box"><span>BANKA BİLGİLERİ</span>@if(Model.HasBankInfo){<p>Ödemeyi aşağıdaki hesaba yaptıktan sonra formu gönderin.</p><dl><div><dt>Banka</dt><dd>@Model.BankName</dd></div><div><dt>Alıcı</dt><dd>@Model.AccountHolder</dd></div><div><dt>IBAN</dt><dd class="iban">@Model.Iban</dd></div>@if(!string.IsNullOrWhiteSpace(Model.BankBranch)){<div><dt>Şube</dt><dd>@Model.BankBranch</dd></div>}<div><dt>Açıklama</dt><dd id="bankTransferDescription">@localizedTransferDescription</dd></div></dl>}else{<div class="nsx-form-message is-error">Banka bilgileri henüz tanımlanmamış. Lütfen destek ekibiyle iletişime geçin.</div>}<div class="nsx-bank-help"><strong>Yardıma mı ihtiyacınız var?</strong><a href="https://wa.me/905434624226" target="_blank" rel="noreferrer">WhatsApp destek →</a></div></section>
+        </aside>
+    </div>
+</section>
+
+@section Scripts {
+    <style id="nsx-purchase-steps-readable-pro">
+        /* Bu sayfaya özel: açık hero üzerinde 1-2-3 adımlarını net ve Pro göster. */
+        .nsx-purchase-page .nsx-purchase-steps{gap:9px!important;min-width:272px!important;}
+        .nsx-purchase-page .nsx-purchase-steps > div{
+            min-height:48px!important;
+            padding:5px 15px!important;
+            gap:12px!important;
+            border:1px solid #dfe5ea!important;
+            border-radius:14px!important;
+            background:rgba(255,255,255,.94)!important;
+            box-shadow:0 10px 24px rgba(22,31,41,.08),inset 0 1px 0 #fff!important;
+            color:#1d2731!important;
+            backdrop-filter:blur(8px)!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps b{
+            width:28px!important;height:28px!important;
+            border:1px solid #ffd0ae!important;
+            background:#fff3e9!important;
+            color:#d95800!important;
+            font-size:12px!important;font-weight:950!important;
+            box-shadow:none!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps strong{
+            color:#17212b!important;
+            font-size:13px!important;line-height:1.15!important;font-weight:950!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps small{
+            display:block!important;
+            margin-top:2px!important;
+            color:#707c88!important;
+            font-size:10px!important;line-height:1.15!important;font-weight:750!important;
+            opacity:1!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps .done{
+            border-color:#ffc69b!important;
+            background:linear-gradient(135deg,#fff8f2 0%,#fff1e5 100%)!important;
+            box-shadow:0 10px 24px rgba(255,110,4,.09),inset 0 1px 0 #fff!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps .done b{
+            border-color:#ffb77f!important;
+            background:#ff8a33!important;
+            color:#fff!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps .done small{color:#a95a21!important;}
+        .nsx-purchase-page .nsx-purchase-steps .active{
+            border-color:#f05d00!important;
+            background:linear-gradient(135deg,#ff8628 0%,#ff6e04 58%,#e95600 100%)!important;
+            box-shadow:0 13px 28px rgba(255,110,4,.24),inset 0 1px 0 rgba(255,255,255,.34)!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps .active b{
+            border-color:rgba(255,255,255,.55)!important;
+            background:rgba(255,255,255,.94)!important;
+            color:#e85d00!important;
+        }
+        .nsx-purchase-page .nsx-purchase-steps .active strong{color:#fff!important;}
+        .nsx-purchase-page .nsx-purchase-steps .active small{color:#fff0e5!important;opacity:1!important;}
+        @@media(max-width:680px){
+            .nsx-purchase-page .nsx-purchase-steps{min-width:0!important;}
+            .nsx-purchase-page .nsx-purchase-steps > div{min-height:44px!important;padding:4px 12px!important;}
+        }
+    </style>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script><partial name="_ValidationScriptsPartial" />
+    <script>
+    (() => {
+        const cards = document.querySelectorAll('.nsx-purchase-license');
+        cards.forEach(card => card.querySelector('input')?.addEventListener('change', () => {
+            cards.forEach(item => item.classList.remove('active')); card.classList.add('active');
+            const price = card.dataset.price || '', base = card.dataset.basePrice || price, discount = card.dataset.discount || '';
+            const campaignTextValue = card.dataset.campaignText || '', hasDiscount = campaignTextValue && !discount.startsWith('0,00') && !discount.startsWith('0.00');
+            const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+            const amount = document.getElementById('bankTransferAmountDisplay'); if (amount) amount.value = price;
+            set('bankSummaryLicense', card.dataset.licenseName || ''); set('bankSummaryLinePrice', base); set('bankSummaryDiscount', `-${discount}`); set('bankSummaryTotal', price); set('bankCampaignName', card.dataset.campaignName || ''); set('bankCampaignText', campaignTextValue); set('bankTransferDescription', card.dataset.transferDescription || '');
+            const row = document.getElementById('bankSummaryDiscountRow'); if(row) row.style.display = hasDiscount ? '' : 'none';
+            const info = document.getElementById('bankCampaignInfo'); if(info) info.style.display = hasDiscount ? '' : 'none';
+        }));
+    })();
+    </script>
+}

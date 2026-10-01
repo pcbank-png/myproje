@@ -1,0 +1,140 @@
+@{
+    var nsxAdminPath = (Context.Request.Path.Value ?? "/Admin").TrimEnd('/');
+    if (string.IsNullOrWhiteSpace(nsxAdminPath))
+        nsxAdminPath = "/Admin";
+
+    string AdminActive(string path)
+    {
+        var value = path.TrimEnd('/');
+        if (string.IsNullOrWhiteSpace(value))
+            value = "/Admin";
+
+        if (string.Equals(value, "/Admin", StringComparison.OrdinalIgnoreCase))
+            return string.Equals(nsxAdminPath, "/Admin", StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty;
+
+        return nsxAdminPath.StartsWith(value, StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty;
+    }
+
+}
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+    <link rel="stylesheet" href="~/css/nsx-design-tokens.css" asp-append-version="true" />
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PDG25HQG');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>@(ViewData["Title"] ?? "Admin Panel") - NSX Admin</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/nsx-admin-comments.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-admin-dashboard-final.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-admin-bulkmail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-campaign.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-admin-advertisements.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-mobile-fix.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-no-blue.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-videos.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-online-visitors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-global-type.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-admin-unified.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-admin-localization.css" asp-append-version="true" />
+</head>
+<body class="nsx-admin-body">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDG25HQG"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="nsx-admin-shell">
+        <aside class="nsx-admin-sidebar">
+            <a class="nsx-admin-logo" href="/Admin">
+                <span>NSX</span>
+                <div>
+                    <strong>Admin Panel</strong>
+                    <small>Yönetim merkezi</small>
+                </div>
+            </a>
+
+            <nav class="nsx-admin-menu" aria-label="Admin menüsü">
+                <a class="@AdminActive("/Admin")" href="/Admin">Anasayfa</a>
+                <a class="@AdminActive("/Admin/OnlineVisitors")" href="/Admin/OnlineVisitors">Sitede Kim Var?</a>
+                <a class="@AdminActive("/Admin/VisitorStatistics")" href="/Admin/VisitorStatistics">Ziyaretçi İstatistikleri</a>
+                <a class="@AdminActive("/Admin/ActiveInstallations")" href="/Admin/ActiveInstallations">Aktif Kurulum İstatistikleri</a>
+                <a class="@AdminActive("/Admin/Users")" href="/Admin/Users">Üyeler</a>
+                <a class="@AdminActive("/Admin/Payments")" href="/Admin/Payments">Satışlar / Ödemeler</a>
+                <a class="@AdminActive("/Admin/Orders")" href="/Admin/Orders">Siparişler</a>
+                <a class="@AdminActive("/Admin/Bayiler")" href="/Admin/Bayiler">Bayilik Y&#246;netimi</a>
+                <a class="@AdminActive("/Admin/ManualSale")" href="/Admin/ManualSale">Manuel Satış Gir</a>
+                <a class="@AdminActive("/Admin/BankTransfers")" href="/Admin/BankTransfers">Havale Bildirimleri</a>
+                <a class="@AdminActive("/Admin/Licenses") @AdminActive("/Admin/ManualLicense")" href="/Admin/Licenses">Lisanslar</a>
+                <a class="@AdminActive("/Admin/DemoDownloads")" href="/Admin/DemoDownloads">Demo İndirenler</a>
+                <a class="@AdminActive("/Admin/Advertisements") @AdminActive("/Admin/Advertisement")" href="/Admin/Advertisements">Reklam Yönetimi</a>
+                <a class="@AdminActive("/Admin/Languages")" href="/Admin/Languages">Dil Motoru</a>
+                <a class="@AdminActive("/Admin/Products") @AdminActive("/Admin/ProductAdd") @AdminActive("/Admin/ProductEdit")" href="/Admin/Products">Ürünler</a>
+                <a class="@AdminActive("/Admin/ProductCategories")" href="/Admin/ProductCategories">Ürün Kategorileri</a>
+                <a class="@AdminActive("/Admin/Videos")" href="/Admin/Videos">Video Yönetimi</a>
+                <a class="@AdminActive("/Admin/Campaigns") @AdminActive("/Admin/Campaign")" href="/Admin/Campaigns">Kampanyalar</a>
+                <a class="@AdminActive("/Admin/Comments")" href="/Admin/Comments">Yorumlar</a>
+                <a class="@AdminActive("/Admin/BulkMail")" href="/Admin/BulkMail">Toplu Mail</a>
+                <a class="@AdminActive("/Admin/Messages")" href="/Admin/Messages">Mesajlar</a>
+                <a class="@AdminActive("/Admin/LiveChat")" href="/Admin/LiveChat">Canlı Destek</a>
+                <a class="@AdminActive("/Admin/ApiServices")" href="/Admin/ApiServices">API Servisleri</a>
+                <a class="@AdminActive("/Admin/SupportProgram")" href="/Admin/SupportProgram">Destek Programı</a>
+                <a href="/" target="_blank" rel="noopener">Siteyi Aç</a>
+            </nav>
+        </aside>
+
+        <div class="nsx-admin-content">
+            <header class="nsx-admin-topbar">
+                <div>
+                    <div class="nsx-admin-top-kicker">NSX Yazılım</div>
+                    <strong>@(ViewData["Title"] ?? "Admin Panel")</strong>
+                </div>
+                <div class="nsx-admin-top-actions">
+                    <a class="nsx-admin-btn light" href="/">Client</a>
+                    <a class="nsx-admin-btn dark" href="/Account/Logout">Çıkış</a>
+                </div>
+            </header>
+
+            <div class="nsx-admin-global-quick-shell">
+                <nav class="nsx-admin-global-quick" aria-label="Hızlı erişim">
+                    <a class="@AdminActive("/Admin/Users")" href="/Admin/Users">Üyeler</a>
+                    <a class="@AdminActive("/Admin/Licenses") @AdminActive("/Admin/ManualLicense")" href="/Admin/Licenses">Lisanslar</a>
+                    <a class="@AdminActive("/Admin/DemoDownloads")" href="/Admin/DemoDownloads">Demo</a>
+                    <a class="@AdminActive("/Admin/VisitorStatistics")" href="/Admin/VisitorStatistics">İstatistik</a>
+                    <a class="@AdminActive("/Admin/Advertisements") @AdminActive("/Admin/Advertisement")" href="/Admin/Advertisements">Reklam</a>
+                    <a class="@AdminActive("/Admin/Payments")" href="/Admin/Payments">Ödemeler</a>
+                    <a class="@AdminActive("/Admin/Orders")" href="/Admin/Orders">Siparişler</a>
+                    <a class="@AdminActive("/Admin/BankTransfers")" href="/Admin/BankTransfers">Havale</a>
+                </nav>
+            </div>
+
+            <main class="nsx-admin-main">
+                @await Html.PartialAsync("_Alerts")
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/nsx-localization.js" asp-append-version="true"></script>
+    <script>
+        (() => {
+            if (!window.matchMedia('(max-width: 900px)').matches) return;
+
+            const activeMenuItem = document.querySelector('.nsx-admin-menu > a.active');
+            activeMenuItem?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+        })();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

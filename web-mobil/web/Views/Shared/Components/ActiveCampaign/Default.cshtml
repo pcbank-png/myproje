@@ -1,0 +1,26 @@
+@model NSYazilim.Web.ViewModels.ActiveCampaignBannerViewModel
+
+<aside class="public-campaign-bar" aria-label="Aktif kampanya">
+    <div class="public-campaign-inner">
+        <span class="public-campaign-label"><i></i> AKTİF KAMPANYA</span>
+        <div class="public-campaign-copy">
+            <strong>@Model.Name</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.Description) && !string.Equals(Model.Description, Model.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                <span>@Model.Description</span>
+            }
+        </div>
+        <b class="public-campaign-discount">@Model.DiscountText</b>
+        <div class="public-campaign-meta">
+            @if (Model.MinimumAmount > 0)
+            {
+                <small>@Model.MinimumAmount.ToString("N0") TL ve üzeri</small>
+            }
+            @if (Model.EndDate.HasValue)
+            {
+                <small>@Model.EndDate.Value.ToString("dd.MM.yyyy") tarihine kadar</small>
+            }
+        </div>
+        <a href="/store">Ürünleri İncele <span class="nsx-dir-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5.5 6.5 6.5L9 18.5"></path></svg></span></a>
+    </div>
+</aside>

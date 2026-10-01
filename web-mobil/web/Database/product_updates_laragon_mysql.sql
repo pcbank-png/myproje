@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS ProductUpdates (
+    Id INT NOT NULL AUTO_INCREMENT,
+    ProductCode VARCHAR(100) NOT NULL,
+    Version VARCHAR(50) NOT NULL,
+    DownloadUrl VARCHAR(500) NOT NULL,
+    Notes TEXT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
+    IsRequired BOOLEAN NOT NULL DEFAULT FALSE,
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (Id)
+);
+
+CREATE INDEX IX_ProductUpdates_ProductCode_IsActive
+ON ProductUpdates (ProductCode, IsActive);

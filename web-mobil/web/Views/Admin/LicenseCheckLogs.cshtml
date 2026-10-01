@@ -1,0 +1,134 @@
+@model List<NSYazilim.Web.Models.LicenseCheckLog>
+
+@{
+    ViewData["Title"] = "Lisans Kontrol Logları";
+    var productCode = ViewBag.ProductCode as string ?? string.Empty;
+    bool? success = ViewBag.Success is bool successValue ? successValue : null;
+}
+
+<div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger rounded-4">@TempData["Error"]</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Lisans Kontrol Logları</h1>
+            <div class="text-muted">V2 lisans aktivasyon/kontrol denemeleri.</div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-danger" href="/Admin/LicenseSecurityLogs">Şüpheli Kullanımlar</a>
+            <a class="btn btn-outline-info" href="/Admin/LicenseDevices">Cihazlar</a>
+            <form method="post" action="/Admin/LicenseCheckLogsClear" class="d-inline" onsubmit="return confirm('Seçili filtreye uyan lisans kontrol logları silinecek. Filtre yoksa tüm kontrol logları silinir. Emin misiniz?');">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="productCode" value="@productCode" />
+                @if (success.HasValue)
+                {
+                    <input type="hidden" name="success" value="@success.Value.ToString().ToLowerInvariant()" />
+                }
+                <button type="submit" class="btn btn-outline-danger">Logları Temizle</button>
+            </form>
+            <a class="btn btn-outline-dark" href="/Admin/Licenses">Lisanslara Dön</a>
+        </div>
+    </div>
+
+    <form method="get" class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Ürün Kodu</label>
+                <input class="form-control" name="productCode" value="@productCode" placeholder="NSXVERESIYEDEFTERI" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Sonuç</label>
+                <select class="form-select" name="success">
+                    <option value="">Tümü</option>
+                    <option value="true" selected="@(success == true)">Başarılı</option>
+                    <option value="false" selected="@(success == false)">Başarısız</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" type="submit">Filtrele</button>
+            </div>
+            <div class="col-md-2">
+                <a class="btn btn-outline-secondary w-100" href="/Admin/LicenseCheckLogs">Temizle</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Lisans</th>
+                            <th>Ürün</th>
+                            <th>E-posta</th>
+                            <th>Cihaz</th>
+                            <th>Sürüm</th>
+                            <th>IP</th>
+                            <th>Sonuç</th>
+                            <th>Mesaj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><small>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm:ss")</small></td>
+                            <td>
+                                @if (item.License != null)
+                                {
+                                    <a href="/Admin/LicenseEdit/@item.LicenseId"><code>@item.LicenseKeyMasked</code></a>
+                                    <div class="text-muted small">@(item.License.User?.FullName ?? "-")</div>
+                                }
+                                else
+                                {
+                                    <code>@item.LicenseKeyMasked</code>
+                                }
+                            </td>
+                            <td>@item.ProductCode</td>
+                            <td><small>@item.RequestEmail</small></td>
+                            <td><small>@item.MachineId</small><div class="text-muted small">@item.DeviceName</div></td>
+                            <td>@item.AppVersion</td>
+                            <td>@item.IpAddress</td>
+                            <td>
+                                @if (item.Success)
+                                {
+                                    <span class="badge bg-success">Başarılı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Başarısız</span>
+                                }
+                                <div class="text-muted small">@item.Status</div>
+                            </td>
+                            <td>@item.Message</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="text-muted text-center py-4">Henüz kayıt yok.</div>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+        <form method="post" action="/Admin/LicenseCheckLogsClear"
+              onsubmit="return confirm('Lisans kontrol loglarının tamamını kalıcı olarak silmek istiyor musunuz? Bu işlem geri alınamaz.');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger px-4">
+                Listeyi Temizle / Sil
+            </button>
+        </form>
+    </div>
+</div>

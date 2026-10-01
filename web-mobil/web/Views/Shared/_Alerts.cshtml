@@ -1,0 +1,49 @@
+@using System.Text.Json
+@using System.Text.Encodings.Web
+@{
+    var success = TempData["Success"]?.ToString();
+    var error = TempData["Error"]?.ToString();
+    var warning = TempData["Warning"]?.ToString();
+    var info = TempData["Info"]?.ToString();
+
+    var type = "";
+    var message = "";
+
+    if (!string.IsNullOrWhiteSpace(success))
+    {
+        type = "success";
+        message = success;
+    }
+    else if (!string.IsNullOrWhiteSpace(error))
+    {
+        type = "error";
+        message = error;
+    }
+    else if (!string.IsNullOrWhiteSpace(warning))
+    {
+        type = "warning";
+        message = warning;
+    }
+    else if (!string.IsNullOrWhiteSpace(info))
+    {
+        type = "info";
+        message = info;
+    }
+}
+
+@if (!string.IsNullOrWhiteSpace(message))
+{
+    <div class="container nsx-alert-container">
+        <div class="nsx-inline-alert nsx-alert-@type">
+            <div class="nsx-alert-dot"></div>
+            <div>@message</div>
+        </div>
+    </div>
+
+    <script>
+        window.nsxStartupAlert = {
+            type: '@type',
+            message: @Html.Raw(JsonSerializer.Serialize(message, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }))
+        };
+    </script>
+}

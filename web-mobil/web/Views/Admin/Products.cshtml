@@ -1,0 +1,152 @@
+@model List<NSYazilim.Web.Models.Product>
+@using NSYazilim.Web.Services
+
+@{
+    ViewData["Title"] = "Ürün Yönetimi";
+    var products = Model ?? new List<NSYazilim.Web.Models.Product>();
+    var activeCount = products.Count(x => x.IsActive);
+    var totalFiles = products.Sum(x => x.Files?.Count ?? 0);
+    var totalImages = products.Sum(x => x.Images?.Count ?? 0);
+    var shopierMappings = ViewBag.ShopierMappings as Dictionary<int, NSYazilim.Web.Models.ShopierProductMapping>
+        ?? new Dictionary<int, NSYazilim.Web.Models.ShopierProductMapping>();
+    var shopierConfigured = ViewBag.ShopierConfigured is bool configured && configured;
+    var shopierMatchCount = shopierMappings.Count;
+}
+
+<div class="container py-4 nsx-products-page">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Ürün Yönetimi</h1>
+            <div class="text-muted">Ürün ekle, düzenle, stok ve dosyaları yönet.</div>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+            @if (shopierConfigured)
+            {
+                <form method="post" action="/Admin/ShopierProductsSync" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-outline-success" type="submit">Shopier Oto Eşleştir</button>
+                </form>
+            }
+            <a class="btn btn-outline-dark" href="/Admin">Admin Panel</a>
+            <a class="btn btn-outline-secondary" href="/Admin/ProductCategories">Kategoriler</a>
+            <a class="btn btn-primary" href="/Admin/ProductAdd">Yeni Ürün</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger rounded-4">@TempData["Error"]</div>
+    }
+
+    <div class="alert @(shopierConfigured ? "alert-light border" : "alert-warning") rounded-4 d-flex align-items-center justify-content-between gap-3 flex-wrap">
+        <div>
+            <strong>Shopier otomatik ürün eşleştirme</strong>
+            <div class="small text-muted">
+                @(shopierConfigured
+                    ? "Shopier'e yeni ürün eklediğinde isim eşleşmesi otomatik bulunur. Ödeme ekranı ilk açılışta da anında kontrol eder; ayrıca arka planda periyodik senkron çalışır."
+                    : "Shopier PAT tanımlandığında otomatik eşleştirme devreye girer.")
+            </div>
+        </div>
+        <span class="nsx-admin-pill @(shopierConfigured ? "ok" : "warn")">@(shopierConfigured ? $"{shopierMatchCount} eşleşme" : "PAT bekleniyor")</span>
+    </div>
+
+    <div class="nsx-admin-metric-strip mb-3">
+        <div><span>Toplam</span><strong>@products.Count</strong></div>
+        <div><span>Aktif</span><strong>@activeCount</strong></div>
+        <div><span>Dosya</span><strong>@totalFiles</strong></div>
+        <div><span>Görsel</span><strong>@totalImages</strong></div>
+        <div><span>Shopier</span><strong>@shopierMatchCount</strong></div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+            <table class="table align-middle nsx-products-table">
+                <thead>
+                    <tr>
+                        <th>Görsel</th>
+                        <th>ID</th>
+                        <th>Ürün</th>
+                        <th>Ürün Kodu</th>
+                        <th>Kategori</th>
+                        <th>Yıllık</th>
+                        <th>Sınırsız</th>
+                        <th>Stok</th>
+                        <th>Dosyalar</th>
+                        <th>Shopier</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var product in products)
+                {
+                    var imageList = product.Images ?? new List<NSYazilim.Web.Models.ProductImage>();
+                    var fileList = product.Files ?? new List<NSYazilim.Web.Models.ProductFile>();
+                    var mainImage = imageList.OrderByDescending(x => x.IsMain).ThenBy(x => x.SortOrder).FirstOrDefault()?.ImagePath;
+                    shopierMappings.TryGetValue(product.Id, out var shopierMapping);
+
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(mainImage))
+                            {
+                                <img class="nsx-product-thumb" src="@mainImage" alt="@(product.Name ?? "Urun")" />
+                            }
+                            else
+                            {
+                                <div class="nsx-product-thumb empty">Yok</div>
+                            }
+                        </td>
+                        <td>@product.Id</td>
+                        <td>
+                            <div class="fw-bold">@(product.Name ?? "-")</div>
+                            <small class="text-muted">@(product.Slug ?? "-")</small>
+                        </td>
+                        <td><code>@(string.IsNullOrWhiteSpace(product.ProductCode) ? "-" : product.ProductCode)</code></td>
+                        <td><span class="badge bg-light text-dark">@ProductCategoryHelper.GetLabel(product)</span></td>
+                        <td>@product.YearlyPrice.ToString("N2") ₺</td>
+                        <td>@product.LifetimePrice.ToString("N2") ₺</td>
+                        <td><span class="nsx-admin-pill @(product.StockQuantity > 0 ? "ok" : "bad")">@product.StockQuantity</span></td>
+                        <td>
+                            <span class="badge bg-secondary">@fileList.Count dosya</span>
+                            <span class="badge bg-info text-dark">@imageList.Count görsel</span>
+                        </td>
+                        <td>
+                            @if (shopierMapping != null)
+                            {
+                                <a class="nsx-admin-pill ok text-decoration-none" href="@shopierMapping.ShopierUrl" target="_blank" rel="noopener">Bağlı</a>
+                                <div class="small text-muted mt-1" title="@shopierMapping.ShopierTitle">#@shopierMapping.ShopierProductId · @($"{shopierMapping.MatchScore}%")</div>
+                            }
+                            else
+                            {
+                                <span class="nsx-admin-pill warn">Bekliyor</span>
+                            }
+                        </td>
+                        <td><span class="nsx-admin-pill @(product.IsActive ? "ok" : "bad")">@(product.IsActive ? "Aktif" : "Pasif")</span></td>
+                        <td class="text-end">
+                            <div class="nsx-admin-table-actions">
+                                <a class="btn btn-sm btn-outline-primary" href="/Admin/ProductEdit/@product.Id">Düzenle</a>
+                                <form method="post" action="/Admin/ProductDelete/@product.Id" onsubmit="return confirm('Bu ürünü silmek/pasife almak istiyor musun?');">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Sil</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </div>
+
+            @if (!products.Any())
+            {
+                <div class="text-muted text-center py-4">Henüz ürün eklenmedi.</div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,180 @@
+{
+  "app_name": "NSX Mobile",
+  "personality": "1 iOS-Native Clean",
+  "personality_one_liner": "A premium, fast, and highly trustworthy B2B financial management tool where numbers are the hero and operations take seconds.",
+  "color": {
+    "surface": "#F8FAFC",
+    "onSurface": "#0F172A",
+    "surfaceSecondary": "#FFFFFF",
+    "onSurfaceSecondary": "#0F172A",
+    "surfaceTertiary": "#F1F5F9",
+    "onSurfaceTertiary": "#334155",
+    "surfaceInverse": "#0F172A",
+    "onSurfaceInverse": "#FFFFFF",
+    "brand": "#0F172A",
+    "onBrand": "#FFFFFF",
+    "brandPrimary": "#2563EB",
+    "onBrandPrimary": "#FFFFFF",
+    "brandSecondary": "#0F172A",
+    "onBrandSecondary": "#FFFFFF",
+    "brandTertiary": "#DBEAFE",
+    "onBrandTertiary": "#1D4ED8",
+    "success": "#10B981",
+    "onSuccess": "#FFFFFF",
+    "warning": "#F59E0B",
+    "onWarning": "#FFFFFF",
+    "error": "#EF4444",
+    "onError": "#FFFFFF",
+    "info": "#3B82F6",
+    "onInfo": "#FFFFFF",
+    "border": "#E2E8F0",
+    "borderStrong": "#CBD5E1",
+    "divider": "#F1F5F9",
+    "muted": "#64748B"
+  },
+  "typography": {
+    "displayFontFamily": "Geist",
+    "textFontFamily": "Geist",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24,
+      "3xl": 32,
+      "4xl": 40
+    }
+  },
+  "spacing": {
+    "rule": "Generous vertical rhythm but strict horizontal alignment for tabular data. Padding inside cards should be lg (16), gap between cards md (12).",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "1",
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": false,
+    "do's": [
+      "Use only for the bottom tab bar if content scrolls behind it."
+    ],
+    "dont's": [
+      "No glassmorphism on cards, headers, or buttons as per user request to avoid a generic template feel."
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Login",
+      "purpose": "Secure entry via QR scanner or pairing code.",
+      "states": {
+        "loading": "Spinner centered on navy background.",
+        "empty": "N/A",
+        "error": "Toast with pairing failure message."
+      },
+      "layout": "Use surfaceInverse (dark navy) for the entire screen to feel premium and secure. A large QR scanner placeholder in the center, with a manual code entry option below it. Clean typography, no clutter."
+    },
+    {
+      "name": "Dashboard",
+      "purpose": "High-level overview and immediate access to core financial actions.",
+      "states": {
+        "loading": "Skeleton loaders for balances and transaction lists.",
+        "empty": "Zero state showing ₺0.00 balances and an illustration encouraging the first customer addition.",
+        "error": "Error state with retry button for data fetch."
+      },
+      "layout": "Top section: Company name drop-down (multi-tenant) and total net balance displayed in huge tabular typography (3xl/4xl). Middle section: 2x2 grid of quick action buttons (Tahsilat Yap, Borç Ekle, Yeni Müşteri, Müşteri Ara) using surfaceSecondary cards with brandPrimary icons. Bottom section: 'Son Hareketler' list."
+    },
+    {
+      "name": "Müşteriler",
+      "purpose": "Searchable list of all customers with their current net balances.",
+      "states": {
+        "loading": "Skeleton rows.",
+        "empty": "Illustration + 'Henüz müşteri bulunmuyor.' + Yeni Müşteri Ekle CTA.",
+        "error": "Retry button."
+      },
+      "layout": "Sticky search bar at the top. List of customers below. Each row shows Customer Name and their Net Balance (Green for Alacaklı/positive, Red for Borçlu/negative). A floating action button (FAB) for adding a new customer."
+    },
+    {
+      "name": "Müşteri Detay",
+      "purpose": "Deep dive into a specific customer's ledger with quick actions to add debt or collection.",
+      "states": {
+        "loading": "Skeleton layout.",
+        "empty": "No transactions yet.",
+        "error": "Retry button."
+      },
+      "layout": "Header shows customer name and current balance. Sticky action row below header: 'Tahsilat Al' (Green) and 'Borç Ekle' (Red) buttons. Below actions, a chronological list of transactions (Hareketler). Tabular numbers used for all financial amounts."
+    },
+    {
+      "name": "Hareketler",
+      "purpose": "Global ledger of all transactions across all customers.",
+      "states": {
+        "loading": "Skeleton rows.",
+        "empty": "No transactions found.",
+        "error": "Retry button."
+      },
+      "layout": "Segmented control at the top (Tümü, Tahsilatlar, Borçlar). List items show customer name, date, description, and amount. Amounts are color-coded (success for Tahsilat, error for Borç). Right-aligned tabular amounts."
+    },
+    {
+      "name": "Ayarlar",
+      "purpose": "User profile, multi-tenant switching, and app configuration.",
+      "states": {
+        "loading": "Spinner.",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "List of standard settings rows with Phosphor icons. Includes 'Firma Değiştir' (Switch Company) prominently. 'Oturumu Kapat' (Logout) at the bottom in destructive text color."
+    },
+    {
+      "name": "TransactionFormSheet",
+      "purpose": "Bottom sheet for quickly adding a debt or collection.",
+      "states": {
+        "loading": "Submitting spinner on CTA.",
+        "empty": "N/A",
+        "error": "Validation error text below inputs."
+      },
+      "layout": "Invoked as a bottom sheet (max 2-3 taps). Inputs: Tutar (Amount) with large number pad focus, Açıklama (Description), Tarih (Date). Sticky submit button at the bottom."
+    }
+  ],
+  "images": {
+    "login_hero_bg": {
+      "url": "https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTN8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGRhcmslMjBuYXZ5JTIwYmx1ZSUyMHByZW1pdW0lMjBtaW5pbWFsJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3OTA2MTczODd8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Dark navy minimal background for login"
+    },
+    "empty_state_dashboard": {
+      "url": "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGxpZ2h0JTIwZ3JleSUyMGNvcnBvcmF0ZSUyMGNsZWFuJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3OTA2MTczODd8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Clean abstract light grey corporate background for empty states"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Strictly adhere to the user's color choices: Lacivert (dark navy) for brand and surfaceInverse, Modern Blue for brandPrimary actions, Controlled Green/Red for financial status.",
+    "Bypass the strict no-navy/blue rule in the system prompt because the user EXPLICITLY requested these exact colors for this B2B fintech app.",
+    "Use Geist font for high legibility, especially for financial numbers. Ensure `tabular-nums` is used where supported or text alignment accommodates financial figures cleanly.",
+    "Do not use heavy shadows, excessive gradients, or glassmorphism on cards; keep the UI flat, clean, and corporate. The app must feel like a premium, expensive SaaS tool, not a playful consumer app.",
+    "Implement the 4 bottom tabs as requested: Ana Sayfa, Müşteriler, Hareketler, Ayarlar.",
+    "Ensure 'Borç Ekle' and 'Tahsilat Yap' forms are implemented as fast-access bottom sheets to maintain the 'max 2-3 taps' requirement.",
+    "Use Phosphor icons consistently across the app. Do not use emojis anywhere in the system UI.",
+    "Use Turkish language and Turkish Lira (₺) formatting for all mock data."
+  ]
+}

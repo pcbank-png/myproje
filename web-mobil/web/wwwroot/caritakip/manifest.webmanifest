@@ -1,0 +1,14 @@
+{
+  "name": "NSX Cari Takip Pro",
+  "short_name": "NSX Cari",
+  "description": "NSX Cari Takip Pro mobil müşteri, borç ve tahsilat yönetim paneli.",
+  "lang": "tr",
+  "start_url": "/CaritakipCloud",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7faff",
+  "theme_color": "#1267ef",
+  "icons": [
+    {"src":"/caritakip/app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

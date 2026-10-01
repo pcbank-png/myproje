@@ -1,0 +1,74 @@
+@model IReadOnlyList<NSYazilim.Web.Models.ProductVideo>
+@using NSYazilim.Web.Services
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Video Yönetimi";
+}
+
+<section class="nsx-video-admin-head">
+    <div>
+        <span class="nsx-video-kicker">YouTube Entegrasyonu</span>
+        <h1>Video Yönetimi</h1>
+        <p>YouTube bağlantısını seçtiğiniz programa bağlayın. Program adı, açıklaması ve işlem butonları site tarafında otomatik kullanılır.</p>
+    </div>
+    <a class="nsx-admin-btn primary nsx-video-create-btn" href="/Admin/Videos/Create">Yeni Video Ekle</a>
+</section>
+
+@if (!Model.Any())
+{
+    <section class="nsx-admin-card nsx-video-empty">
+        <div class="nsx-video-empty-icon">▶</div>
+        <h2>Henüz video eklenmedi</h2>
+        <p>İlk YouTube videonuzu bir programa bağlayarak video merkezini oluşturmaya başlayın.</p>
+        <a class="nsx-admin-btn primary" href="/Admin/Videos/Create">İlk Videoyu Ekle</a>
+    </section>
+}
+else
+{
+    <section class="nsx-video-admin-grid">
+        @foreach (var item in Model)
+        {
+            var productName = item.Product?.Name ?? "Program bulunamadı";
+            var displayTitle = !string.IsNullOrWhiteSpace(item.Title)
+                ? item.Title
+                : $"{productName} {(string.IsNullOrWhiteSpace(item.VideoType) ? "Program" : item.VideoType)} Videosu";
+            var thumbnail = YouTubeVideoHelper.GetThumbnailUrl(item.YouTubeVideoId);
+
+            <article class="nsx-admin-card nsx-video-admin-card @(item.IsActive ? "" : "is-passive")">
+                <a class="nsx-video-admin-thumb" href="/videolar/@item.Slug" target="_blank" rel="noopener">
+                    <img src="@thumbnail" alt="@displayTitle" loading="lazy" />
+                    <span class="nsx-video-play">▶</span>
+                    @if (item.IsFeatured)
+                    {
+                        <strong>Öne Çıkan</strong>
+                    }
+                </a>
+
+                <div class="nsx-video-admin-body">
+                    <div class="nsx-video-admin-meta">
+                        <span>@(string.IsNullOrWhiteSpace(item.VideoType) ? "Program Videosu" : item.VideoType)</span>
+                        <span>Sıra: @item.SortOrder</span>
+                    </div>
+                    <h2>@displayTitle</h2>
+                    <p><b>Bağlı program:</b> @productName</p>
+                    <div class="nsx-video-admin-status @(item.IsActive ? "active" : "passive")">
+                        @(item.IsActive ? "Yayında" : "Yayında Değil")
+                    </div>
+                </div>
+
+                <div class="nsx-video-admin-actions">
+                    <a class="nsx-admin-btn" href="/Admin/Videos/Edit/@item.Id">Düzenle</a>
+                    <a class="nsx-admin-btn light" href="/videolar/@item.Slug" target="_blank" rel="noopener">Sitede Aç</a>
+                    <form method="post" action="/Admin/Videos/Toggle/@item.Id">
+                        @Html.AntiForgeryToken()
+                        <button class="nsx-admin-btn" type="submit">@(item.IsActive ? "Yayından Kaldır" : "Yayınla")</button>
+                    </form>
+                    <form method="post" action="/Admin/Videos/Delete/@item.Id" onsubmit="return confirm('Bu video kaydı silinsin mi? YouTube üzerindeki video silinmez.');">
+                        @Html.AntiForgeryToken()
+                        <button class="nsx-admin-btn danger" type="submit">Sil</button>
+                    </form>
+                </div>
+            </article>
+        }
+    </section>
+}

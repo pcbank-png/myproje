@@ -1,0 +1,103 @@
+@{
+    ViewData["Title"] = "Destek Programı";
+    var programExists = ViewBag.ProgramExists is bool exists && exists;
+    var programSize = ViewBag.ProgramSize as string ?? "-";
+    var programUpdatedAt = ViewBag.ProgramUpdatedAt is DateTime updatedAt ? updatedAt : (DateTime?)null;
+    var downloadUrl = ViewBag.DownloadUrl as string ?? "/uzaktan-yardim-indir";
+}
+
+<style>
+    .nsx-support-admin-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px;align-items:start}
+    .nsx-support-admin-card{position:relative;overflow:hidden;border:1px solid #e3e8ef;border-radius:18px;background:#fff;box-shadow:0 14px 34px rgba(15,23,42,.06)}
+    .nsx-support-admin-card:before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:linear-gradient(90deg,#ff6e04,#ff9b45)}
+    .nsx-support-admin-body{padding:24px}
+    .nsx-support-admin-kicker{display:flex;align-items:center;gap:8px;margin-bottom:8px;color:#ff6e04;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+    .nsx-support-admin-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#ff6e04;box-shadow:0 0 0 5px rgba(255,110,4,.1)}
+    .nsx-support-admin-card h2{margin:0;color:#172033;font-size:23px;font-weight:900;letter-spacing:-.025em}
+    .nsx-support-admin-card p{margin:8px 0 0;color:#6f7c8c;font-size:13px;line-height:1.7}
+    .nsx-support-upload-zone{display:block;margin-top:20px;padding:22px;border:1.5px dashed #cfd8e5;border-radius:15px;background:linear-gradient(145deg,#fbfcfe,#f7f9fc);cursor:pointer;transition:.18s ease}
+    .nsx-support-upload-zone:hover{border-color:#ff6e04;background:#fffaf6}
+    .nsx-support-upload-zone input{display:block;width:100%;margin-top:14px}
+    .nsx-support-upload-zone strong{display:block;color:#172033;font-size:15px;font-weight:900}
+    .nsx-support-upload-zone small{display:block;margin-top:5px;color:#7a8797;font-size:11px;line-height:1.6}
+    .nsx-support-admin-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .nsx-support-admin-actions button{min-height:42px;border:0;border-radius:11px;padding:0 18px;background:#172033;color:#fff;font-weight:850;box-shadow:0 10px 22px rgba(23,32,51,.16)}
+    .nsx-support-admin-actions button:hover{background:#ff6e04}
+    .nsx-support-current{display:grid;gap:12px;margin-top:20px}
+    .nsx-support-meta{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 14px;border:1px solid #e7ebf0;border-radius:12px;background:#fbfcfd}
+    .nsx-support-meta span{color:#7b8795;font-size:11px;font-weight:700}
+    .nsx-support-meta strong{color:#172033;font-size:12px;font-weight:900;text-align:right;word-break:break-word}
+    .nsx-support-state{display:inline-flex;align-items:center;gap:7px;width:max-content;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:900}
+    .nsx-support-state.is-ok{background:#ebfbf2;color:#1b8f50;border:1px solid #c9f0da}
+    .nsx-support-state.is-empty{background:#fff5ed;color:#c96010;border:1px solid #ffd7b9}
+    .nsx-support-state i{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px currentColor;opacity:.22}
+    .nsx-support-public-preview{margin-top:20px;padding:18px;border-radius:15px;background:linear-gradient(135deg,#172033 0%,#24334e 100%);color:#fff}
+    .nsx-support-public-preview small{display:block;color:#b7c1cf;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+    .nsx-support-public-preview strong{display:block;margin-top:7px;font-size:17px;font-weight:900}
+    .nsx-support-public-preview p{color:#cbd3dd;font-size:11px}
+    .nsx-support-public-preview a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;margin-top:12px;padding:0 14px;border-radius:10px;background:#ff6e04;color:#fff!important;text-decoration:none;font-size:11px;font-weight:900}
+    @@media(max-width:980px){.nsx-support-admin-grid{grid-template-columns:1fr}}
+</style>
+
+<div class="nsx-admin-page">
+    <div class="nsx-admin-head">
+        <div>
+            <h1>Destek Programı</h1>
+            <p>İletişim sayfasındaki ücretsiz uzaktan yardım indirme alanını buradan yönetin.</p>
+        </div>
+        <a class="nsx-admin-btn" href="/iletisim" target="_blank" rel="noopener">İletişim Sayfasını Aç</a>
+    </div>
+
+    <div class="nsx-support-admin-grid">
+        <section class="nsx-support-admin-card">
+            <div class="nsx-support-admin-body">
+                <div class="nsx-support-admin-kicker">Program Yükleme</div>
+                <h2>NSX Uzaktan Yardım Lite EXE</h2>
+                <p>Gözat ile portable Lite EXE dosyasını seçin. Yeni yükleme mevcut dosyanın yerini güvenli şekilde alır; sitedeki indirme URL'si değişmez.</p>
+
+                <form method="post" action="/Admin/UploadSupportProgram" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <label class="nsx-support-upload-zone">
+                        <strong>EXE dosyasını seçin</strong>
+                        <small>Yalnızca geçerli Windows .exe dosyası kabul edilir. Maksimum boyut 300 MB.</small>
+                        <input class="form-control" type="file" name="supportProgram" accept=".exe,application/vnd.microsoft.portable-executable,application/x-msdownload" required />
+                    </label>
+                    <div class="nsx-support-admin-actions">
+                        <button type="submit">Destek Programını Yükle / Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <aside class="nsx-support-admin-card">
+            <div class="nsx-support-admin-body">
+                <div class="nsx-support-admin-kicker">Canlı Durum</div>
+                @if (programExists)
+                {
+                    <div class="nsx-support-state is-ok"><i></i> İndirmeye hazır</div>
+                }
+                else
+                {
+                    <div class="nsx-support-state is-empty"><i></i> Henüz program yüklenmedi</div>
+                }
+
+                <div class="nsx-support-current">
+                    <div class="nsx-support-meta"><span>Dosya</span><strong>NSXUzaktanYardimLite.exe</strong></div>
+                    <div class="nsx-support-meta"><span>Boyut</span><strong>@programSize</strong></div>
+                    <div class="nsx-support-meta"><span>Son yükleme</span><strong>@(programUpdatedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</strong></div>
+                    <div class="nsx-support-meta"><span>Sabit URL</span><strong>@downloadUrl</strong></div>
+                </div>
+
+                <div class="nsx-support-public-preview">
+                    <small>Public indirme</small>
+                    <strong>Ücretsiz Uzaktan Yardım Programını İndir</strong>
+                    <p>İletişim sayfasındaki sağ kart bu sabit URL'yi kullanır. Yeni EXE yüklediğinizde link değiştirmeye gerek kalmaz.</p>
+                    @if (programExists)
+                    {
+                        <a href="/uzaktan-yardim-indir" target="_blank" rel="noopener">İndirmeyi Test Et →</a>
+                    }
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>

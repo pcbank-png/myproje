@@ -1,0 +1,100 @@
+@model List<NSYazilim.Web.Models.Campaign>
+
+@{
+    ViewData["Title"] = "Kampanyalar";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-1">Kampanyalar</h1>
+            <p class="text-muted mb-0">Satın alma sırasında değerlendirilecek kampanyaları yönetin.</p>
+        </div>
+        <a href="/AdminCampaigns/Create" class="btn btn-primary rounded-pill px-4">Yeni Kampanya</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-3">@TempData["Success"]</div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Kod</th>
+                            <th>Ad</th>
+                            <th>Durum</th>
+                            <th>Minimum Tutar</th>
+                            <th>İndirim</th>
+                            <th>Tarih</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.Code))
+                                    {
+                                        <span class="badge bg-danger">@item.Code</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="fw-semibold">@item.Name</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Pasif</span>
+                                    }
+                                </td>
+                                <td>@item.MinimumCartTotal.ToString("N2") TL</td>
+                                <td>
+                                    @if (item.DiscountType == "Amount")
+                                    {
+                                        <span>@item.DiscountValue.ToString("N2") TL</span>
+                                    }
+                                    else
+                                    {
+                                        <span>%@item.DiscountValue.ToString("N2")</span>
+                                    }
+                                </td>
+                                <td>
+                                    @(item.StartDate?.ToString("dd.MM.yyyy") ?? "-")
+                                    -
+                                    @(item.EndDate?.ToString("dd.MM.yyyy") ?? "-")
+                                </td>
+                                <td class="text-end">
+                                    <a href="/AdminCampaigns/Edit/@item.Id" class="btn btn-sm btn-outline-primary rounded-pill">Düzenle</a>
+                                    <form method="post" action="/AdminCampaigns/Delete/@item.Id" class="d-inline" onsubmit="return confirm('Kampanya silinsin mi?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Sil</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">Henüz kampanya yok.</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

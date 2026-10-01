@@ -1,0 +1,261 @@
+@model NSYazilim.Web.Models.Product
+@using NSYazilim.Web.Services
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Yeni Ürün Ekle";
+    var safeModel = Model ?? new NSYazilim.Web.Models.Product { StockQuantity = 999, IsActive = true };
+    var selectedCategory = safeModel.Category ?? string.Empty;
+}
+
+<style>
+        .nsx-product-add-page .card{margin-bottom:18px}
+        .nsx-product-add-page .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+        .nsx-product-add-page .full{grid-column:1/-1}
+        .nsx-product-add-page .check{display:flex;align-items:center;gap:10px;min-height:48px}
+        .nsx-product-add-page .check input{width:auto}
+        .nsx-product-add-page .btn{border:0;border-radius:11px;padding:10px 15px;font-weight:800;text-decoration:none;display:inline-block;cursor:pointer}
+        .nsx-product-add-page .primary{background:#f56800;color:white}
+        .nsx-product-add-page .dark{background:#111827;color:white}
+        .nsx-product-add-page .light{background:#f2f4f6;color:#111827;border:1px solid #d7dde2}
+        .nsx-product-add-page .note{background:#fff7f1;border:1px solid #f2c3a1;color:#9a4210;padding:14px 16px;border-radius:12px;margin-bottom:18px;font-weight:700}
+        .nsx-product-add-page .danger{background:#fee2e2;color:#991b1b;padding:12px 14px;border-radius:12px;margin-bottom:15px;font-weight:800}
+        .nsx-product-add-page .debug{background:#29313a;color:#fff;padding:14px;border-radius:12px;margin-bottom:16px;font-size:13px;word-break:break-all}
+        .nsx-product-add-page #IsActive{width:20px!important;height:20px!important;margin:0!important;appearance:none!important;-webkit-appearance:none!important;border:1px solid #c9d1d9!important;border-radius:3px!important;background:#fff!important;cursor:pointer!important}
+        .nsx-product-add-page #IsActive:checked{border-color:#ff6e04!important;background-color:#ff6e04!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4' d='M3 8.2 6.3 11.5 13 4.8'/%3E%3C/svg%3E")!important;background-position:center!important;background-repeat:no-repeat!important;background-size:15px 15px!important}
+        .nsx-upload-panel{display:none;position:fixed;inset:0;background:rgba(15,23,42,.52);backdrop-filter:blur(8px);z-index:99999;align-items:center;justify-content:center;padding:18px}
+        .nsx-upload-box{width:min(560px,100%);background:#fff;border-radius:26px;padding:24px;box-shadow:0 32px 90px rgba(15,23,42,.35);border:1px solid rgba(226,232,240,.9)}
+        .nsx-upload-title{font-size:22px;font-weight:950;margin:0 0 6px;color:#0f172a}
+        .nsx-upload-sub{color:#64748b;font-weight:800;margin-bottom:18px}
+        .nsx-progress-row{margin-top:14px}
+        .nsx-progress-head{display:flex;align-items:center;justify-content:space-between;font-weight:950;margin-bottom:7px;color:#111827}
+        .nsx-progress-track{height:14px;border-radius:999px;background:#e5e7eb;overflow:hidden;border:1px solid #dbe3ef}
+        .nsx-progress-fill{height:100%;width:0%;border-radius:999px;background:linear-gradient(135deg,#f56800,#3a3d46);transition:width .18s ease}
+        .nsx-progress-row.images .nsx-progress-fill{background:linear-gradient(135deg,#f59e0b,#f56800)}
+        .nsx-progress-row.demo .nsx-progress-fill{background:linear-gradient(135deg,#22c55e,#16a34a)}
+        .nsx-progress-total{margin-top:18px;padding:12px 14px;border-radius:16px;background:#f8fafc;color:#334155;font-weight:900}
+        .nsx-upload-error{display:none;margin-top:14px;background:#fee2e2;color:#991b1b;border-radius:14px;padding:12px 14px;font-weight:900}
+        .nsx-upload-done{display:none;margin-top:14px;background:#dcfce7;color:#166534;border-radius:14px;padding:12px 14px;font-weight:900}
+        .nsx-product-add-page small{color:#6b7280}
+        @@media(max-width:760px){.nsx-product-add-page .grid{grid-template-columns:1fr}}
+</style>
+
+<section class="nsx-admin-page nsx-product-add-page">
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX Admin</span>
+            <h1>Yeni Ürün Ekle</h1>
+            <p>Ürün bilgileri, stok, görseller ve demo dosyası.</p>
+        </div>
+        <a class="nsx-admin-btn light" href="/Admin/Products">Ürünlere Dön</a>
+    </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="danger">@ViewBag.Error</div>
+        }
+
+        @if (ViewBag.DebugKeys != null)
+        {
+            <div class="debug">Gelen Form Alanları: @ViewBag.DebugKeys</div>
+        }
+
+        <form id="nsxUploadForm" method="post" enctype="multipart/form-data" action="/Admin/ProductAdd" class="card nsx-standard-form" autocomplete="off">
+            @Html.AntiForgeryToken()
+            <div class="grid">
+                <div class="full">
+                    <label>Ürün Adı</label>
+                    <input type="text" id="Name" name="Name" value="@safeModel.Name" placeholder="Örn: NSX Veresiye Takip" required />
+                </div>
+
+                <div>
+                    <label>Kategori</label>
+                    <select id="Category" name="Category" required>
+                        <option value="">Kategori seçin</option>
+                        @foreach (var option in ProductCategoryHelper.Options)
+                        {
+                            if (string.Equals(selectedCategory, option.Key, StringComparison.OrdinalIgnoreCase)) { <option value="@option.Key" selected>@option.Label</option> }
+                            else { <option value="@option.Key">@option.Label</option> }
+                        }
+                    </select>
+                    <small>Mağaza filtresi ve ürün detayındaki kategori etiketi bu seçimden gelir.</small>
+                </div>
+
+                <div>
+                    <label>Ürün Kodu / ProductCode</label>
+                    <input type="text" id="ProductCode" name="ProductCode" value="@safeModel.ProductCode" placeholder="Örn: NSXVERESIYEDEFTERI" />
+                    <small>Lisans ve güncelleme sistemindeki ürün koduyla aynı olmalı.</small>
+                </div>
+
+                <div>
+                    <label>Yıllık Fiyat</label>
+                    <input type="number" id="YearlyPrice" name="YearlyPrice" value="@safeModel.YearlyPrice" step="0.01" min="0" />
+                </div>
+
+                <div>
+                    <label>Sınırsız Fiyat</label>
+                    <input type="number" id="LifetimePrice" name="LifetimePrice" value="@safeModel.LifetimePrice" step="0.01" min="0" />
+                </div>
+
+                <div>
+                    <label>Stok Adedi</label>
+                    <input type="number" id="StockQuantity" name="StockQuantity" value="@(safeModel.StockQuantity <= 0 ? 999 : safeModel.StockQuantity)" min="0" />
+                </div>
+
+                <div>
+                    <label>Ürün Durumu</label>
+                    <div class="check">
+                        <input type="checkbox" id="IsActive" name="IsActive" value="true" checked />
+                        <input type="hidden" name="IsActive" value="false" />
+                        <span>Ürün aktif</span>
+                    </div>
+                </div>
+
+                <div class="full">@await Html.PartialAsync("_ProductDescriptionEditor", safeModel.Description ?? string.Empty)</div>
+
+                <div>
+                    <label>Meta Başlık</label>
+                    <input type="text" id="MetaTitle" name="MetaTitle" value="@safeModel.MetaTitle" />
+                </div>
+
+                <div>
+                    <label>Meta Açıklama</label>
+                    <input type="text" id="MetaDescription" name="MetaDescription" value="@safeModel.MetaDescription" />
+                </div>
+
+                <div class="full">
+                    <label>Ürün Görselleri</label>
+                    <input type="file" id="Images" name="Images" accept="image/*" multiple data-max-files="10" />
+                    <small>En fazla 10 görsel yüklenir.</small>
+                </div>
+
+                <div class="full">
+                    <label>Demo Program Dosyası</label>
+                    <input type="file" id="DemoFile" name="DemoFile" />
+                    <small>Sadece demo program yüklenir. Tam sürüm/program dosyası alanı kaldırıldı.</small>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn primary" type="submit">Ürünü Kaydet</button>
+                <a class="btn light" href="/Admin/Products">Vazgeç</a>
+            </div>
+        </form>
+    </section>
+
+    <div class="nsx-upload-panel" id="nsxUploadPanel" aria-hidden="true">
+        <div class="nsx-upload-box">
+            <h3 class="nsx-upload-title">Dosyalar yükleniyor</h3>
+            <div class="nsx-upload-sub">Sayfayı kapatma kral, görseller ve demo program güvenli şekilde yükleniyor.</div>
+            <div class="nsx-progress-row images" data-upload-row="Images">
+                <div class="nsx-progress-head"><span>Görseller</span><b>0%</b></div>
+                <div class="nsx-progress-track"><div class="nsx-progress-fill"></div></div>
+            </div>
+            <div class="nsx-progress-row demo" data-upload-row="DemoFile">
+                <div class="nsx-progress-head"><span>Demo Program</span><b>0%</b></div>
+                <div class="nsx-progress-track"><div class="nsx-progress-fill"></div></div>
+            </div>
+            <div class="nsx-progress-total" id="nsxUploadTotal">Toplam: 0%</div>
+            <div class="nsx-upload-done" id="nsxUploadDone">Yükleme tamamlandı. Sayfa yenileniyor...</div>
+            <div class="nsx-upload-error" id="nsxUploadError"></div>
+        </div>
+    </div>
+
+<script>
+(function nsxImageLimitCheck(){
+    const input = document.getElementById('Images');
+    if (!input) return;
+    input.addEventListener('change', function(){
+        const max = 10;
+        if (this.files && this.files.length > max) {
+            alert('En fazla 10 görsel seçebilirsin.');
+            this.value = '';
+        }
+    });
+})();
+
+(function nsxUploadProgress(){
+    const form = document.getElementById('nsxUploadForm');
+    if (!form || !window.XMLHttpRequest || !window.FormData) return;
+
+    const rows = Array.from(document.querySelectorAll('[data-upload-row]'));
+    const panel = document.getElementById('nsxUploadPanel');
+    const totalText = document.getElementById('nsxUploadTotal');
+    const doneBox = document.getElementById('nsxUploadDone');
+    const errorBox = document.getElementById('nsxUploadError');
+
+    function fileSizeOf(inputId){
+        const input = document.getElementById(inputId);
+        if (!input || !input.files) return 0;
+        return Array.from(input.files).reduce((sum, f) => sum + (f.size || 0), 0);
+    }
+
+    function setRow(row, pct){
+        pct = Math.max(0, Math.min(100, Math.round(pct)));
+        const fill = row.querySelector('.nsx-progress-fill');
+        const label = row.querySelector('b');
+        if (fill) fill.style.width = pct + '%';
+        if (label) label.textContent = pct + '%';
+    }
+
+    function updateRows(loaded, total){
+        const sizes = {};
+        let sum = 0;
+        rows.forEach(row => {
+            const key = row.getAttribute('data-upload-row');
+            sizes[key] = fileSizeOf(key);
+            sum += sizes[key];
+        });
+        if (!sum) sum = total || 1;
+        let passed = 0;
+        rows.forEach(row => {
+            const key = row.getAttribute('data-upload-row');
+            const size = sizes[key];
+            let pct = 0;
+            if (!size) { pct = 100; }
+            else { pct = ((Math.max(0, loaded - passed)) / size) * 100; }
+            setRow(row, pct);
+            passed += size;
+        });
+        const totalPct = total ? Math.round((loaded / total) * 100) : 0;
+        if (totalText) totalText.textContent = 'Toplam: ' + Math.max(0, Math.min(100, totalPct)) + '%';
+    }
+
+    form.addEventListener('submit', function(e){
+        const hasFile = ['Images','DemoFile'].some(id => {
+            const input = document.getElementById(id);
+            return input && input.files && input.files.length > 0;
+        });
+        if (!hasFile) return;
+
+        e.preventDefault();
+        if (errorBox) { errorBox.style.display = 'none'; errorBox.textContent = ''; }
+        if (doneBox) doneBox.style.display = 'none';
+        if (panel) panel.style.display = 'flex';
+        updateRows(0, 1);
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open((form.method || 'POST').toUpperCase(), form.action, true);
+        xhr.upload.onprogress = function(evt){
+            if (evt.lengthComputable) updateRows(evt.loaded, evt.total);
+        };
+        xhr.onload = function(){
+            if (xhr.status >= 200 && xhr.status < 400) {
+                updateRows(1,1);
+                if (doneBox) doneBox.style.display = 'block';
+                window.location.href = xhr.responseURL || '/Admin/Products';
+            } else {
+                if (errorBox) { errorBox.textContent = 'Yükleme tamamlanamadı. Sunucu hata kodu: ' + xhr.status; errorBox.style.display = 'block'; }
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        };
+        xhr.onerror = function(){
+            if (errorBox) { errorBox.textContent = 'Bağlantı kesildi. Dosya yükleme başarısız oldu.'; errorBox.style.display = 'block'; }
+            if (submitBtn) submitBtn.disabled = false;
+        };
+        xhr.send(new FormData(form));
+    });
+})();
+</script>

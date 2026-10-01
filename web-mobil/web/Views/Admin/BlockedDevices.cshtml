@@ -1,0 +1,71 @@
+@model List<NSYazilim.Web.Models.BlockedDevice>
+
+@{
+    ViewData["Title"] = "Engelli Cihazlar";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Engelli Cihazlar</h1>
+            <div class="text-muted">V2 lisans kontrolünde reddedilecek cihazlar.</div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-info" href="/Admin/LicenseDevices">Cihazlar</a>
+            <a class="btn btn-outline-dark" href="/Admin/Licenses">Lisanslara Dön</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Cihaz</th>
+                            <th>Ürün Kodu</th>
+                            <th>Sebep</th>
+                            <th>Oluşturma</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><small>@item.MachineId</small></td>
+                            <td>@(string.IsNullOrWhiteSpace(item.ProductCode) ? "Tüm ürünler" : item.ProductCode)</td>
+                            <td>@item.Reason</td>
+                            <td>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@(item.IsActive ? "Aktif" : "Pasif")</td>
+                            <td class="text-end">
+                                @if (item.IsActive)
+                                {
+                                    <form method="post" action="/Admin/BlockedDeviceDisable/@item.Id" class="d-inline" onsubmit="return confirm('Bu cihaz engeli kaldırılsın mı?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-success">Engeli Kaldır</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">@(item.DisabledAt?.ToString("dd.MM.yyyy HH:mm") ?? "Pasif")</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="text-muted text-center py-4">Engelli cihaz yok.</div>
+            }
+        </div>
+    </div>
+</div>

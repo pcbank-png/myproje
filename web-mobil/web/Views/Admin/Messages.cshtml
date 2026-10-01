@@ -1,0 +1,64 @@
+@model List<NSYazilim.Web.Models.MailLog>
+
+@{
+    ViewData["Title"] = "Mesajlar / Canlı Destek";
+}
+
+<div class="nsx-bulkmail-page">
+    <section class="nsx-bulkmail-hero">
+        <div>
+            <div class="nsx-bulkmail-kicker">NSX Admin</div>
+            <h1>Mesajlar / Canlı Destek</h1>
+            <p>Footer iletişim ve sağ alt canlı destek penceresinden gelen mesajları burada takip edebilirsiniz.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            @if (Model != null && Model.Any())
+            {
+                <form method="post" action="/Admin/MessagesClear" onsubmit="return confirm('Tüm mesaj kayıtları silinsin mi?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger rounded-4 fw-bold px-4">Tümünü Sil</button>
+                </form>
+            }
+            <a href="/Admin" class="btn btn-light rounded-4 fw-bold px-4">Admin Panel</a>
+        </div>
+    </section>
+
+    <section class="nsx-bulkmail-card mt-4">
+        <h2>Gelen Mesajlar</h2>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="nsx-bulkmail-empty">Henüz mesaj yok.</div>
+        }
+        else
+        {
+            <div class="nsx-bulkmail-log-list">
+                @foreach (var item in Model)
+                {
+                    <div class="nsx-bulkmail-log">
+                        <div>
+                            <strong>@item.ToName</strong>
+                            <small>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm") · @(item.MailType == "LiveSupport" ? "Canlı destek mesajı" : (item.IsSuccess ? "Mail gönderildi" : "Mail gönderilemedi / kayıt alındı"))</small>
+                            <em>@(item.MailType == "LiveSupport" ? "Canlı Destek" : item.Subject)</em>
+                            <p class="mb-2" style="white-space:pre-wrap;color:#374151">@item.Body</p>
+                            @if (!string.IsNullOrWhiteSpace(item.ErrorMessage))
+                            {
+                                <code>@item.ErrorMessage</code>
+                            }
+                        </div>
+                        <div class="d-flex flex-column align-items-end gap-2">
+                            <span class="@(item.IsSuccess ? "ok" : "bad")">
+                                @(item.MailType == "LiveSupport" ? "Destek" : (item.IsSuccess ? "Gönderildi" : "Kayıtlı"))
+                            </span>
+                            <form method="post" action="/Admin/MessageDelete" onsubmit="return confirm('Bu mesaj kaydı silinsin mi?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-4">Sil</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+</div>

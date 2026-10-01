@@ -1,0 +1,156 @@
+@model List<NSYazilim.Web.Models.LicenseDevice>
+
+@{
+    ViewData["Title"] = "Lisans Cihazları";
+    var productCode = ViewBag.ProductCode as string ?? string.Empty;
+    bool? blocked = ViewBag.Blocked is bool blockedValue ? blockedValue : null;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Lisans Cihazları</h1>
+            <div class="text-muted">Lisanslara bağlanan cihazları ve son görülme bilgilerini takip et.</div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-warning" href="/Admin/BlockedDevices">Engelli Cihazlar</a>
+            <a class="btn btn-outline-danger" href="/Admin/LicenseSecurityLogs">Şüpheli Kullanımlar</a>
+            <a class="btn btn-outline-dark" href="/Admin/Licenses">Lisanslara Dön</a>
+        </div>
+    </div>
+
+    <form method="get" class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Ürün Kodu</label>
+                <input class="form-control" name="productCode" value="@productCode" placeholder="NSXVERESIYEDEFTERI" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Durum</label>
+                <select class="form-select" name="blocked">
+                    <option value="">Tümü</option>
+                    <option value="false" selected="@(blocked == false)">Aktif</option>
+                    <option value="true" selected="@(blocked == true)">Engelli</option>
+                </select>
+            </div>
+            <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filtrele</button></div>
+            <div class="col-md-2"><a class="btn btn-outline-secondary w-100" href="/Admin/LicenseDevices">Temizle</a></div>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Lisans</th>
+                            <th>Ürün</th>
+                            <th>E-posta</th>
+                            <th>Cihaz</th>
+                            <th>Sürüm</th>
+                            <th>IP</th>
+                            <th>İlk Aktivasyon</th>
+                            <th>Son Görülme</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var device in Model)
+                    {
+                        var isPrimaryDevice = string.Equals(device.License?.MachineId, device.MachineId, StringComparison.Ordinal);
+                        <tr>
+                            <td>
+                                <a href="/Admin/LicenseEdit/@device.LicenseId"><code>@device.License?.LicenseKey</code></a>
+                                <div class="text-muted small">@(device.License?.User?.FullName ?? "-")</div>
+                            </td>
+                            <td>@device.ProductCode<div class="text-muted small">@(device.License?.Product?.Name ?? "-")</div></td>
+                            <td><small>@device.AttemptEmail</small></td>
+                            <td><small>@device.MachineId</small><div class="text-muted small">@device.DeviceName</div></td>
+                            <td>@device.AppVersion<div class="text-muted small">@device.OsVersion</div></td>
+                            <td>
+                                <div>@device.LastIpAddress</div>
+                                @{
+                                    var deviceIp = device.LastIpAddress ?? string.Empty;
+                                    var deviceLocationText = string.Join(" / ", new[] { device.LastCity, device.LastRegion, device.LastCountry }
+                                        .Where(x => !string.IsNullOrWhiteSpace(x)));
+                                    var isLocalTestIp = deviceIp == "::1" || deviceIp == "127.0.0.1" || deviceIp.StartsWith("192.168.") || deviceIp.StartsWith("10.");
+                                }
+                                @if (!string.IsNullOrWhiteSpace(deviceLocationText))
+                                {
+                                    <div class="text-muted small">@deviceLocationText</div>
+                                }
+                                else if (isLocalTestIp)
+                                {
+                                    <div class="text-muted small">Yerel test / localhost</div>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(device.LastIpAddress))
+                                {
+                                    <div class="text-muted small">Konum bekleniyor</div>
+                                }
+                            </td>
+                            <td>@device.FirstActivatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@device.LastSeenAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                @if (device.IsRejected)
+                                {
+                                    <span class="badge bg-warning text-dark">Reddedildi</span>
+                                    <div class="text-muted small">@device.DeviceStatus</div>
+                                }
+                                else if (device.IsBlocked)
+                                {
+                                    <span class="badge bg-danger">Engelli</span>
+                                    <div class="text-muted small">@device.DeviceStatus</div>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Aktif</span>
+                                }
+                                @if (isPrimaryDevice)
+                                {
+                                    <div><span class="badge bg-primary">Ana cihaz</span></div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(device.BlockReason))
+                                {
+                                    <div class="text-muted small">@device.BlockReason</div>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="nsx-admin-table-actions">
+                                    @if (!isPrimaryDevice)
+                                    {
+                                        <form method="post" action="/Admin/LicenseMakePrimaryDevice/@device.Id" onsubmit="return confirm('Bu cihaz ana cihaz yapılsın mı?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">Ana Cihaz Yap</button>
+                                        </form>
+                                    }
+                                    @if (device.IsBlocked)
+                                    {
+                                        <form method="post" action="/Admin/LicenseDeviceUnblock/@device.Id">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Engeli Kaldır</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" action="/Admin/LicenseDeviceBlock/@device.Id" onsubmit="return confirm('Bu cihaz engellensin mi?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="reason" value="Admin panelden engellendi" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Engelle</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="text-muted text-center py-4">Henüz cihaz kaydı yok.</div>
+            }
+        </div>
+    </div>
+</div>

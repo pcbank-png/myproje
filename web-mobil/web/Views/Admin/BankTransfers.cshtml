@@ -1,0 +1,109 @@
+@model List<NSYazilim.Web.Models.BankTransferNotification>
+
+@{
+    ViewData["Title"] = "Havale Bildirimleri";
+}
+
+<section class="nsx-admin-page">
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX Admin</span>
+            <h1>Havale Bildirimleri</h1>
+            <p>Müşterilerin gönderdiği havale/EFT bildirimlerini kontrol edin ve onaylayın.</p>
+        </div>
+        <a class="nsx-admin-btn" href="/Admin">Admin Panel</a>
+    </div>
+
+    <div class="nsx-admin-card">
+        <div class="nsx-admin-card-head">
+            <div>
+                <strong>Havale Bildirimi Listesi</strong>
+                <small>@(Model?.Count ?? 0) kayıt</small>
+            </div>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="nsx-admin-empty">Henüz havale bildirimi yok.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table nsx-admin-table nsx-bank-transfer-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Müşteri</th>
+                            <th>Ürün</th>
+                            <th>Lisans</th>
+                            <th>Tutar</th>
+                            <th>Gönderen</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var statusClass = item.Status == "Approved" ? "ok" : item.Status == "Rejected" ? "bad" : "warn";
+
+                        <tr>
+                            <td>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                <strong>@item.FullName</strong>
+                                <small>@item.Email</small>
+                            </td>
+                            <td>
+                                @(item.Product?.Name ?? "Ürün")
+                                @if (item.Order != null)
+                                {
+                                    <small>@item.Order.OrderNumber</small>
+                                }
+                            </td>
+                            <td>@(item.LicenseType == "Lifetime" ? "Sınırsız" : "Yıllık")</td>
+                            <td><strong>@item.Amount.ToString("N2") ₺</strong></td>
+                            <td>
+                                <strong>@item.SenderName</strong>
+                                <small>@(item.SenderBank ?? "-") · @(item.ReceiptNumber ?? "-")</small>
+                            </td>
+                            <td><span class="nsx-admin-pill @statusClass">@StatusTextHelper.BankTransferStatus(item.Status)</span></td>
+                            <td class="text-end">
+                                <div class="nsx-admin-row-actions">
+                                    <form asp-action="BankTransferStatus" method="post" class="nsx-admin-inline-form">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input name="adminNote" class="form-control form-control-sm" placeholder="Admin notu" />
+                                        <button type="submit" name="status" value="Approved" class="nsx-admin-btn success sm">Onayla</button>
+                                        <button type="submit" name="status" value="Rejected" class="nsx-admin-btn danger-soft sm">Reddet</button>
+                                    </form>
+                                    <form method="post" action="/Admin/BankTransferDelete" class="d-inline" onsubmit="return confirm('Bu havale bildirimi silinsin mi?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="nsx-admin-btn danger sm">Sil</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @if (!string.IsNullOrWhiteSpace(item.Note) || !string.IsNullOrWhiteSpace(item.AdminNote))
+                        {
+                            <tr class="nsx-admin-note-row">
+                                <td></td>
+                                <td colspan="7">
+                                    @if (!string.IsNullOrWhiteSpace(item.Note))
+                                    {
+                                        <div><strong>Müşteri notu:</strong> @item.Note</div>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(item.AdminNote))
+                                    {
+                                        <div><strong>Admin notu:</strong> @item.AdminNote</div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

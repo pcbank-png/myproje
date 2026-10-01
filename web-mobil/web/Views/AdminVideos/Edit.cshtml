@@ -1,0 +1,20 @@
+@model NSYazilim.Web.ViewModels.ProductVideoFormViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Video Düzenle";
+}
+
+<section class="nsx-video-admin-head compact">
+    <div>
+        <span class="nsx-video-kicker">Video Yönetimi</span>
+        <h1>Videoyu Düzenle</h1>
+        <p>Program bağlantısını, YouTube adresini ve yayın durumunu güncelleyin.</p>
+    </div>
+    <a class="nsx-admin-btn" href="/Admin/Videos">Videolara Dön</a>
+</section>
+
+@await Html.PartialAsync("_VideoForm", Model)
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

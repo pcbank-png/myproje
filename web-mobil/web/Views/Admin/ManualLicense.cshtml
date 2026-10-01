@@ -1,0 +1,88 @@
+@model NSYazilim.Web.ViewModels.ManualLicenseViewModel
+
+@{
+    ViewData["Title"] = "Manuel Lisans Oluştur";
+    var products = ViewBag.Products as List<NSYazilim.Web.Models.Product> ?? new List<NSYazilim.Web.Models.Product>();
+    var users = ViewBag.Users as List<NSYazilim.Web.Models.User> ?? new List<NSYazilim.Web.Models.User>();
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Manuel Lisans Oluştur</h1>
+            <div class="text-muted">Seçili ürün ve üyeye gerçek lisans anahtarı oluşturun.</div>
+        </div>
+        <a class="btn btn-outline-dark rounded-3" href="/Admin/Licenses">Lisanslara Dön</a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger rounded-4">
+            <div class="fw-semibold mb-1">Lisans oluşturulamadı.</div>
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+
+    <form method="post" action="/Admin/ManualLicense" class="card border-0 shadow-sm rounded-4 nsx-standard-form">
+        @Html.AntiForgeryToken()
+
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Ürün</label>
+                    <select asp-for="ProductId" class="form-select" required>
+                        <option value="0">Ürün seç</option>
+                        @foreach (var product in products)
+                        {
+                            <option value="@product.Id">@product.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="ProductId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Üye</label>
+                    <select asp-for="UserId" class="form-select" required>
+                        <option value="0">Üye seç</option>
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.Id">@user.FullName - @user.Email</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UserId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Lisans Tipi</label>
+                    <select asp-for="LicenseType" class="form-select">
+                        <option value="Yearly">1 Yıllık</option>
+                        <option value="Lifetime">Sınırsız</option>
+                    </select>
+                    <span asp-validation-for="LicenseType" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Başlangıç Tarihi</label>
+                    <input asp-for="StartDate" type="date" class="form-control" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Durum</label>
+                    <select asp-for="IsActive" class="form-select">
+                        <option value="true">Aktif</option>
+                        <option value="false">Pasif</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="alert alert-info rounded-4 mt-4 mb-0">
+                Lisans anahtarı sistem tarafından otomatik üretilir. 1 yıllık lisansın bitiş tarihi başlangıç tarihinden 1 yıl sonrası olur; sınırsız lisansta bitiş tarihi boş kalır.
+            </div>
+        </div>
+
+        <div class="card-footer bg-white border-0 d-flex justify-content-end gap-2 p-3">
+            <a href="/Admin/Licenses" class="btn btn-outline-secondary">Vazgeç</a>
+            <button type="submit" class="btn btn-primary">Manuel Lisans Oluştur</button>
+        </div>
+    </form>
+</div>

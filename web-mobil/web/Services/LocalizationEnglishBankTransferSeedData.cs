@@ -1,0 +1,73 @@
+﻿namespace NSYazilim.Web.Services
+{
+    public static class LocalizationEnglishBankTransferSeedData
+    {
+        private static LocalizationSeedItem E(string source, string english, string area)
+            => new(source, english, area);
+
+        public static readonly IReadOnlyList<LocalizationSeedItem> Items = new LocalizationSeedItem[]
+        {
+            E("Havale tarihi", "Transfer date", "/Public/BankTransfer"),
+            E("· Dijital teslimat", "· Digital delivery", "/Public/BankTransfer"),
+            E("Bildirim No", "Notification No.", "/Public/BankTransfer/Success"),
+            E("Onay bekliyor", "Awaiting approval", "/Public/BankTransfer/Success"),
+            E("Bildirim durumu", "Notification status", "/Public/BankTransfer/Success"),
+            E("Ad soyad", "Full name", "/Public/BankTransfer"),
+            E("BANKA BİLGİLERİ", "BANK DETAILS", "/Public/BankTransfer"),
+            E("Banka bilgileri henüz tanımlanmamış. Lütfen destek ekibiyle iletişime geçin.", "Bank details have not been configured yet. Please contact our support team.", "/Public/BankTransfer"),
+            E("BİLDİRİM BİLGİLERİ", "NOTIFICATION DETAILS", "/Public/BankTransfer"),
+            E("Dekont / işlem numarası", "Receipt / transaction number", "/Public/BankTransfer"),
+            E("Eklemek istediğiniz bir not varsa yazın", "Add a note if needed", "/Public/BankTransfer"),
+            E("Gönderen ad soyad", "Sender's full name", "/Public/BankTransfer"),
+            E("Gönderen banka", "Sender's bank", "/Public/BankTransfer"),
+            E("Havale veya EFT işleminizden sonra bilgileri gönderin. Ödemeniz kontrol edildiğinde lisansınız hesabınıza tanımlanır.", "Submit the details after your bank transfer. Once your payment is verified, the license is assigned to your account.", "/Public/BankTransfer"),
+            E("Hesabınızdaki bilgiler otomatik alınmıştır. Havalenin kim tarafından gönderildiğini belirtin.", "Your account details have been filled in automatically. Please specify who sent the transfer.", "/Public/BankTransfer"),
+            E("Kampanya indirimi", "Campaign discount", "/Public/BankTransfer"),
+            E("Lisans türünü seçin", "Choose license type", "/Public/BankTransfer"),
+            E("Lisansı alın", "Get your license", "/Public/BankTransfer"),
+            E("Lütfen Havale/EFT yaparken açıklama kısmını boş bırakınız.", "Please leave the description/reference field blank when making the bank transfer.", "/Public/BankTransfer"),
+            E("LİSANS SEÇİMİ", "LICENSE SELECTION", "/Public/BankTransfer"),
+            E("Onay sonrası", "After approval", "/Public/BankTransfer"),
+            E("SATIN ALMA BİLDİRİMİ", "PURCHASE NOTIFICATION", "/Public/BankTransfer"),
+            E("SINIRSIZ LİSANS", "LIFETIME LICENSE", "/Public/BankTransfer"),
+            E("Satın Alma Bildirimini Gönder", "Submit Purchase Notification", "/Public/BankTransfer"),
+            E("Satın alma adımları", "Purchase steps", "/Public/BankTransfer"),
+            E("SİPARİŞ ÖZETİ", "ORDER SUMMARY", "/Public/BankTransfer"),
+            E("Tamamlandı", "Completed", "/Public/BankTransfer"),
+            E("Varsa yazın", "Enter if available", "/Public/BankTransfer"),
+            E("WhatsApp destek →", "WhatsApp support →", "/Public/BankTransfer"),
+            E("YILLIK LİSANS", "ANNUAL LICENSE", "/Public/BankTransfer"),
+            E("Yardıma mı ihtiyacınız var?", "Need help?", "/Public/BankTransfer"),
+            E("lisansınızı hazırlayalım.", "we'll prepare your license.", "/Public/BankTransfer"),
+            E("Ödeme bilgilerini girin", "Enter payment details", "/Public/BankTransfer"),
+            E("Ödeme yöntemi", "Payment method", "/Public/BankTransfer"),
+            E("Ödemenizi bildirin,", "Notify us of your payment,", "/Public/BankTransfer"),
+            E("Ödemeyi aşağıdaki hesaba yaptıktan sonra formu gönderin.", "Send the form after making the payment to the account below.", "/Public/BankTransfer"),
+            E("Ödemeyi bildirin", "Report payment", "/Public/BankTransfer"),
+            E("Ödenecek toplam", "Total due", "/Public/BankTransfer"),
+            E("Ödenecek tutar", "Amount due", "/Public/BankTransfer"),
+            E("Önemli ödeme bilgisi", "Important payment information", "/Public/BankTransfer"),
+            E("Örnek: Ziraat Bankası", "Example: Ziraat Bank", "/Public/BankTransfer"),
+            E("Ürün tutarı", "Product amount", "/Public/BankTransfer"),
+            E("Ürünü seçin", "Choose product", "/Public/BankTransfer"),
+            E("İhtiyacınıza uygun lisans seçeneğini belirleyin. Ödenecek tutar otomatik güncellenir.", "Choose the license option that fits your needs. The amount due updates automatically.", "/Public/BankTransfer"),
+            E("Şu anki adım", "Current step", "/Public/BankTransfer"),
+            E("Şube", "Branch", "/Public/BankTransfer"),
+            E("Bildirim alındı", "Notification received", "/Public/BankTransfer/Success"),
+            E("Bilgileriniz güvenli şekilde kaydedildi. Onay süreci tamamlandığında lisansınız hesabınızda görünecektir.", "Your information has been saved securely. Your license will appear in your account when the approval process is complete.", "/Public/BankTransfer/Success"),
+            E("BİLDİRİMİNİZ ALINDI", "YOUR NOTIFICATION WAS RECEIVED", "/Public/BankTransfer/Success"),
+            E("Kontrol sırasına alındı", "Queued for verification", "/Public/BankTransfer/Success"),
+            E("Lisans hesabınıza tanımlanacak", "The license will be assigned to your account", "/Public/BankTransfer/Success"),
+            E("NSX Güvenli Satın Alma", "NSX Secure Purchase", "/Public/BankTransfer/Success"),
+            E("SONRAKİ ADIM", "NEXT STEP", "/Public/BankTransfer/Success"),
+            E("Satın alma bildiriminiz işleme alındı.", "Your purchase notification is being processed.", "/Public/BankTransfer/Success"),
+            E("Sipariş No", "Order No.", "/Public/BankTransfer/Success"),
+            E("Siparişlerime Git", "Go to My Orders", "/Public/BankTransfer/Success"),
+            E("Yazılımlara Dön", "Back to Software", "/Public/BankTransfer/Success"),
+            E("başarıyla kaydedildi.", "was saved successfully.", "/Public/BankTransfer/Success"),
+            E("Ödeme bildiriminiz", "Your payment notification", "/Public/BankTransfer/Success"),
+            E("Ödeme onaylandığında lisansınız hazırlanır ve hesabınızdaki Lisanslarım ile İndirmelerim bölümleri aktif olur.", "Once payment is approved, your license is prepared and the My Licenses and My Downloads sections in your account become available.", "/Public/BankTransfer/Success"),
+            E("Ödemeniz kontrol edildikten sonra lisansınız ve indirme erişiminiz NSX hesabınıza tanımlanacaktır.", "After your payment is verified, your license and download access will be assigned to your NSX account.", "/Public/BankTransfer/Success")
+        };
+    }
+}

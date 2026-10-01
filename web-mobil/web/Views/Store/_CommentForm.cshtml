@@ -1,0 +1,43 @@
+@model NSYazilim.Web.Models.Product
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@{
+    var commentLanguage = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    var localizedStarWord = await SiteLocalization.TranslateAsync("yıldız", commentLanguage.Code, Context.RequestAborted);
+}
+
+<div class="nsx-comment-section">
+    <h3>Deneyiminizi paylaşın</h3>
+    <p>Ürünü puanlayın ve dilerseniz kısa bir yorum bırakın.</p>
+
+    @if (TempData["Success"] is string successMessage)
+    {
+        <div class="nsx-comment-message is-success">@successMessage</div>
+    }
+    @if (TempData["Error"] is string errorMessage)
+    {
+        <div class="nsx-comment-message is-error">@errorMessage</div>
+    }
+
+    <form method="post" action="/Comment/Add">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="productId" value="@Model.Id" />
+
+        <input type="hidden" id="ratingInput" name="rating" value="5" />
+        <span class="nsx-comment-label">Puanınız</span>
+        <div class="rating-picker" id="ratingPicker" role="radiogroup" aria-label="Ürün puanı">
+            @for (var star = 1; star <= 5; star++)
+            {
+                <button type="button" class="active selected" data-rating="@star" aria-label="@star @localizedStarWord" aria-pressed="true">★</button>
+            }
+        </div>
+
+        <label class="nsx-comment-label" for="commentText">Yorumunuz <small>isteğe bağlı</small></label>
+        <textarea id="commentText" name="comment" maxlength="2000" placeholder="Ürünle ilgili deneyiminizi yazın..."></textarea>
+
+        <button type="submit" class="nsx-review-submit">
+            <span class="nsx-review-submit-icon" aria-hidden="true">★</span>
+            <span>Değerlendirmeyi Gönder</span>
+            <span class="nsx-review-submit-arrow" aria-hidden="true">→</span>
+        </button>
+    </form>
+</div>

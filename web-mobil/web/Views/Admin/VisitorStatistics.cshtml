@@ -1,0 +1,190 @@
+@model NSYazilim.Web.ViewModels.AdminVisitorStatisticsViewModel
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Ziyaretçi İstatistikleri";
+    var dailyLabels = JsonSerializer.Serialize(Model.DailyTrend.Select(x => x.Label));
+    var dailyViews = JsonSerializer.Serialize(Model.DailyTrend.Select(x => x.PageViews));
+    var dailyUnique = JsonSerializer.Serialize(Model.DailyTrend.Select(x => x.UniqueVisitors));
+    var monthlyLabels = JsonSerializer.Serialize(Model.MonthlyTrend.Select(x => x.Label));
+    var monthlyViews = JsonSerializer.Serialize(Model.MonthlyTrend.Select(x => x.PageViews));
+    var monthlyUnique = JsonSerializer.Serialize(Model.MonthlyTrend.Select(x => x.UniqueVisitors));
+    var locationBackfillStatus = Model.LocationBackfillPendingIpCount > 0
+        ? $"{Model.LocationBackfillPendingIpCount:N0} geçmiş IP sırada"
+        : Model.LocationBackfillUnresolvedIpCount > 0
+            ? $"tarama tamamlandı · {Model.LocationBackfillUnresolvedIpCount:N0} IP çözümlenemedi"
+            : "geçmiş tarama tamamlandı";
+}
+
+<style>
+.nsx-vs{display:grid;gap:22px}.nsx-vs-hero{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:28px;border-radius:24px;background:linear-gradient(135deg,#5f0f1d,#8f1d35);color:#fff}.nsx-vs-kicker{display:block;font-size:.78rem;font-weight:800;letter-spacing:.13em;opacity:.78}.nsx-vs-hero h1{margin:6px 0 8px;font-size:2rem;color:#fff}.nsx-vs-hero p{margin:0;max-width:760px;opacity:.86}.nsx-vs-filter{display:flex;gap:8px;flex-wrap:wrap}.nsx-vs-filter a{padding:9px 13px;border-radius:11px;background:rgba(255,255,255,.14);color:#fff;text-decoration:none;font-weight:700}.nsx-vs-filter a.active{background:#fff;color:#6d1324}.nsx-vs-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.nsx-vs-card,.nsx-vs-panel{background:#fff;border:1px solid #eadde0;border-radius:20px;box-shadow:0 10px 28px rgba(53,17,25,.06)}.nsx-vs-card{padding:20px}.nsx-vs-card small{display:block;color:#796b6f;font-weight:700}.nsx-vs-card strong{display:block;margin:7px 0 3px;font-size:1.85rem;color:#5f0f1d}.nsx-vs-card span{font-size:.82rem;color:#9b8b90}.nsx-vs-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px}.nsx-vs-panel{min-width:0;padding:22px;overflow:hidden}.nsx-vs-panel h2{font-size:1.05rem;margin:0 0 4px;color:#3e2027}.nsx-vs-panel .sub{color:#8d7e82;font-size:.85rem;margin-bottom:18px}.nsx-vs-chart-frame{position:relative;width:100%;height:300px;min-height:300px;max-height:300px;contain:layout size}.nsx-vs-chart-frame canvas{display:block;width:100%!important;height:100%!important;max-width:100%;max-height:100%}.nsx-vs-list{display:grid;gap:12px}.nsx-vs-list-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}.nsx-vs-list-row strong{font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nsx-vs-list-row span{font-size:.84rem;color:#7c6e72}.nsx-vs-bar{grid-column:1/-1;height:8px;border-radius:99px;background:#f1e7e9;overflow:hidden}.nsx-vs-bar i{display:block;height:100%;background:#7f1830;border-radius:inherit}.nsx-vs-table-wrap{overflow:auto}.nsx-vs-table{width:100%;border-collapse:collapse}.nsx-vs-table th,.nsx-vs-table td{padding:12px 10px;border-bottom:1px solid #efe5e7;text-align:left;white-space:nowrap}.nsx-vs-table th{font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;color:#8c7a7f}.nsx-vs-table td{font-size:.88rem}.nsx-vs-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#6d1324}.nsx-vs-empty{padding:28px;text-align:center;color:#8d7e82}.nsx-vs-note{padding:14px 16px;border-radius:14px;background:#fff8e9;border:1px solid #f0dca6;color:#6e5724;font-size:.88rem}@@media(max-width:1000px){.nsx-vs-metrics{grid-template-columns:repeat(2,1fr)}.nsx-vs-grid{grid-template-columns:1fr}}@@media(max-width:640px){.nsx-vs-hero{align-items:flex-start;flex-direction:column;padding:22px}.nsx-vs-metrics{grid-template-columns:1fr}.nsx-vs-card strong{font-size:1.55rem}.nsx-vs-panel{padding:18px}.nsx-vs-chart-frame{height:240px;min-height:240px;max-height:240px}}
+.nsx-vs-location-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.nsx-vs-location-list{display:grid;gap:3px}.nsx-vs-location-head,.nsx-vs-location-row{display:grid;grid-template-columns:minmax(0,1fr) 88px 88px;gap:10px;align-items:center}.nsx-vs-location-head{padding:0 12px 9px;color:#99888d;font-size:.69rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase}.nsx-vs-location-head span:not(:first-child){text-align:right}.nsx-vs-location-row{padding:11px 12px;border-radius:13px}.nsx-vs-location-row:nth-child(even){background:#fbf7f8}.nsx-vs-location-name{display:flex;align-items:center;min-width:0;gap:10px}.nsx-vs-location-icon{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:11px;background:#f7e9ec;font-size:1rem}.nsx-vs-location-name strong,.nsx-vs-location-name small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nsx-vs-location-name strong{font-size:.89rem;color:#3e2027}.nsx-vs-location-name small{margin-top:2px;color:#99888d;font-size:.72rem}.nsx-vs-location-stat{text-align:right}.nsx-vs-location-stat strong{display:block;color:#5f0f1d;font-size:.92rem}.nsx-vs-location-stat small{display:block;margin-top:2px;color:#a08e93;font-size:.68rem}.nsx-vs-location-coverage{display:inline-flex;align-items:center;gap:7px;margin:0 0 16px;padding:7px 10px;border-radius:999px;background:#f8eff1;color:#7f1830;font-size:.75rem;font-weight:750}@@media(max-width:1000px){.nsx-vs-location-grid{grid-template-columns:1fr}}@@media(max-width:640px){.nsx-vs-location-head,.nsx-vs-location-row{grid-template-columns:minmax(0,1fr) 64px 64px}.nsx-vs-location-icon{display:none}}
+
+.nsx-vs-robot-panel{border-color:#dfe6ef;background:linear-gradient(180deg,#fff,#fbfcfe)}
+.nsx-vs-robot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}.nsx-vs-robot-head .sub{margin-bottom:0}.nsx-vs-robot-share{display:inline-flex;align-items:center;white-space:nowrap;padding:7px 10px;border-radius:999px;background:#eef3f8;color:#3a536d;font-size:.74rem;font-weight:800}
+.nsx-vs-robot-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.nsx-vs-robot-card{padding:16px;border:1px solid #e3e9ef;border-radius:16px;background:#fff}.nsx-vs-robot-card small{display:flex;align-items:center;gap:7px;color:#66788a;font-weight:800}.nsx-vs-robot-card strong{display:block;margin:7px 0 4px;font-size:1.55rem;color:#243b53}.nsx-vs-robot-card span{font-size:.76rem;color:#8291a1}.nsx-vs-robot-card.google{border-color:#d5e6dc;background:#fbfefc}.nsx-vs-robot-card.google strong{color:#24563b}.nsx-vs-robot-card.total{border-color:#e2dbea;background:#fdfbff}.nsx-vs-robot-card.total strong{color:#57396f}
+.nsx-vs-robot-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.nsx-vs-robot-list{display:grid;gap:9px}.nsx-vs-robot-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid #edf0f4;border-radius:12px;background:#fff}.nsx-vs-robot-row strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.84rem;color:#334e68}.nsx-vs-robot-row small{display:block;margin-top:2px;color:#94a0ad;font-size:.7rem}.nsx-vs-robot-count{text-align:right;font-weight:800;color:#425d75;font-size:.84rem}.nsx-vs-robot-badge{display:inline-block;margin-right:6px;padding:2px 6px;border-radius:999px;background:#eef3f8;color:#52697f;font-size:.62rem;font-weight:850;vertical-align:1px}.nsx-vs-robot-badge.google{background:#eaf6ef;color:#2d6a48}
+@@media(max-width:900px){.nsx-vs-robot-metrics,.nsx-vs-robot-grid{grid-template-columns:1fr}.nsx-vs-robot-head{display:block}.nsx-vs-robot-share{margin-top:10px}}
+</style>
+
+<section class="nsx-vs">
+    <header class="nsx-vs-hero">
+        <div>
+            <span class="nsx-vs-kicker">KALICI TRAFİK ANALİZİ</span>
+            <h1>Ziyaretçi İstatistikleri</h1>
+            <p>Gerçek kullanıcı trafiğini Google ve diğer robot ziyaretlerinden ayırarak; günlük ve aylık ziyaretleri, konumları, popüler sayfaları ve cihazları tek ekrandan takip edin.</p>
+        </div>
+        <nav class="nsx-vs-filter" aria-label="Tarih aralığı">
+            @foreach (var d in new[] { 7, 30, 90, 365 })
+            {
+                <a class="@(Model.SelectedDays == d ? "active" : "")" href="/Admin/VisitorStatistics?days=@d">@(d == 365 ? "1 Yıl" : $"{d} Gün")</a>
+            }
+        </nav>
+    </header>
+
+    <div class="nsx-vs-metrics">
+        <article class="nsx-vs-card"><small>Bugünkü Gerçek Tekil Ziyaretçi</small><strong>@Model.TodayUniqueVisitors.ToString("N0")</strong><span>@Model.TodayPageViews.ToString("N0") sayfa görüntüleme</span></article>
+        <article class="nsx-vs-card"><small>Bu Ay Gerçek Tekil Ziyaretçi</small><strong>@Model.MonthUniqueVisitors.ToString("N0")</strong><span>@Model.MonthPageViews.ToString("N0") sayfa görüntüleme</span></article>
+        <article class="nsx-vs-card"><small>Seçili Dönem Gerçek Trafik</small><strong>@Model.PeriodUniqueVisitors.ToString("N0")</strong><span>@Model.PeriodPageViews.ToString("N0") toplam görüntüleme</span></article>
+        <article class="nsx-vs-card"><small>Ziyaretçi Başına Sayfa</small><strong>@Model.PagesPerVisitor.ToString("N2")</strong><span>@Model.PeriodStart.ToString("dd.MM.yyyy") – @Model.PeriodEnd.ToString("dd.MM.yyyy")</span></article>
+    </div>
+
+    <section class="nsx-vs-panel nsx-vs-robot-panel">
+        <div class="nsx-vs-robot-head">
+            <div>
+                <h2>Robot Trafiği</h2>
+                <div class="sub">Robot istekleri kaydedilir ancak gerçek ziyaretçi, konum, cihaz, popüler sayfa ve trafik grafiklerine dahil edilmez. Robot geçmişi bu güncellemeden itibaren birikir.</div>
+            </div>
+            <span class="nsx-vs-robot-share">Seçili dönemde trafik payı: %@Model.RobotTrafficSharePercent.ToString("0.0")</span>
+        </div>
+        <div class="nsx-vs-robot-metrics">
+            <article class="nsx-vs-robot-card google">
+                <small>● Google Robotları</small>
+                <strong>@Model.PeriodGoogleRobotVisits.ToString("N0")</strong>
+                <span>Bugün @Model.TodayGoogleRobotVisits.ToString("N0") · Bu ay @Model.MonthGoogleRobotVisits.ToString("N0")</span>
+            </article>
+            <article class="nsx-vs-robot-card">
+                <small>● Diğer Robotlar</small>
+                <strong>@Model.PeriodOtherRobotVisits.ToString("N0")</strong>
+                <span>Bugün @Model.TodayOtherRobotVisits.ToString("N0") · Bu ay @Model.MonthOtherRobotVisits.ToString("N0")</span>
+            </article>
+            <article class="nsx-vs-robot-card total">
+                <small>● Tüm Robot Ziyaretleri</small>
+                <strong>@Model.PeriodRobotVisits.ToString("N0")</strong>
+                <span>Bugün @Model.TodayRobotVisits.ToString("N0") · Bu ay @Model.MonthRobotVisits.ToString("N0")</span>
+            </article>
+        </div>
+        <div class="nsx-vs-robot-grid">
+            <div>
+                <h2>Robotlar / Otomasyonlar</h2>
+                <div class="sub">Seçili dönemde tespit edilen tarayıcı ve otomasyon ajanları</div>
+                <div class="nsx-vs-robot-list">
+                    @if (Model.RobotAgents.Count == 0)
+                    {
+                        <div class="nsx-vs-empty">Bu dönemde robot ziyareti kaydedilmedi.</div>
+                    }
+                    @foreach (var item in Model.RobotAgents)
+                    {
+                        <div class="nsx-vs-robot-row">
+                            <div>
+                                <strong><span class="nsx-vs-robot-badge @(item.Category == "Google" ? "google" : "")">@item.Category</span>@item.Name</strong>
+                                <small>%@item.Percentage.ToString("0.0") robot trafik payı</small>
+                            </div>
+                            <span class="nsx-vs-robot-count">@item.Count.ToString("N0")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div>
+                <h2>Robotların En Çok Taradığı Sayfalar</h2>
+                <div class="sub">Robot trafiği gerçek popüler sayfa sıralamasından ayrı tutulur</div>
+                <div class="nsx-vs-robot-list">
+                    @if (Model.RobotTopPages.Count == 0)
+                    {
+                        <div class="nsx-vs-empty">Henüz robot sayfa verisi oluşmadı.</div>
+                    }
+                    @foreach (var item in Model.RobotTopPages.Take(10))
+                    {
+                        <div class="nsx-vs-robot-row">
+                            <div><strong title="@item.Label">@item.Label</strong><small>%@item.Percentage.ToString("0.0") robot trafik payı</small></div>
+                            <span class="nsx-vs-robot-count">@item.Count.ToString("N0")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="nsx-vs-location-grid">
+        <section class="nsx-vs-panel">
+            <h2>Ülkelere Göre Ziyaretçiler</h2>
+            <div class="sub">Seçili dönemde ziyaretlerin geldiği ülkeler</div>
+            <div class="nsx-vs-location-coverage">🌐 @Model.LocatedPageViews.ToString("N0") konumlu ziyaret · %@Model.LocationCoveragePercent.ToString("0.0") kapsama · @locationBackfillStatus</div>
+            <div class="nsx-vs-location-list">
+                <div class="nsx-vs-location-head"><span>Ülke</span><span>Tekil</span><span>Toplam</span></div>
+                @if (Model.Countries.Count == 0) { <div class="nsx-vs-empty">Henüz ülke bilgisi oluşmadı.</div> }
+                @foreach (var item in Model.Countries)
+                {
+                    <div class="nsx-vs-location-row">
+                        <div class="nsx-vs-location-name"><span class="nsx-vs-location-icon" aria-hidden="true">🌐</span><div><strong>@item.Name</strong><small>%@item.Percentage trafik payı</small></div></div>
+                        <div class="nsx-vs-location-stat"><strong>@item.UniqueVisitors.ToString("N0")</strong><small>ziyaretçi</small></div>
+                        <div class="nsx-vs-location-stat"><strong>@item.TotalVisits.ToString("N0")</strong><small>ziyaret</small></div>
+                    </div>
+                }
+            </div>
+        </section>
+        <section class="nsx-vs-panel">
+            <h2>Şehirlere Göre Ziyaretçiler</h2>
+            <div class="sub">Ülke bilgisiyle birlikte en yoğun şehirler</div>
+            <div class="nsx-vs-location-list">
+                <div class="nsx-vs-location-head"><span>Şehir</span><span>Tekil</span><span>Toplam</span></div>
+                @if (Model.Cities.Count == 0) { <div class="nsx-vs-empty">Henüz şehir bilgisi oluşmadı.</div> }
+                @foreach (var item in Model.Cities)
+                {
+                    <div class="nsx-vs-location-row">
+                        <div class="nsx-vs-location-name"><span class="nsx-vs-location-icon" aria-hidden="true">📍</span><div><strong>@item.Name</strong><small>@item.Country · %@item.Percentage trafik payı</small></div></div>
+                        <div class="nsx-vs-location-stat"><strong>@item.UniqueVisitors.ToString("N0")</strong><small>ziyaretçi</small></div>
+                        <div class="nsx-vs-location-stat"><strong>@item.TotalVisits.ToString("N0")</strong><small>ziyaret</small></div>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+
+    <div class="nsx-vs-grid">
+        <section class="nsx-vs-panel"><h2>Günlük Trafik</h2><div class="sub">Sayfa görüntüleme ve tekil ziyaretçi karşılaştırması</div><div class="nsx-vs-chart-frame"><canvas id="dailyChart" aria-label="Günlük trafik grafiği" role="img"></canvas></div></section>
+        <section class="nsx-vs-panel"><h2>En Çok Ziyaret Edilen Sayfalar</h2><div class="sub">Seçili tarih aralığı</div><div class="nsx-vs-list">
+            @if (Model.TopPages.Count == 0) { <div class="nsx-vs-empty">Henüz ziyaret verisi oluşmadı.</div> }
+            @foreach (var item in Model.TopPages) { <div class="nsx-vs-list-row"><strong title="@item.Label">@item.Label</strong><span>@item.Count.ToString("N0") · %@item.Percentage</span><div class="nsx-vs-bar"><i style="width:@item.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></i></div></div> }
+        </div></section>
+    </div>
+
+    <div class="nsx-vs-grid">
+        <section class="nsx-vs-panel"><h2>Aylık Gelişim</h2><div class="sub">Son 12 ayın trafik eğilimi</div><div class="nsx-vs-chart-frame"><canvas id="monthlyChart" aria-label="Aylık trafik grafiği" role="img"></canvas></div></section>
+        <section class="nsx-vs-panel"><h2>Cihaz Dağılımı</h2><div class="sub">Mobil, tablet ve masaüstü kullanım oranları</div><div class="nsx-vs-list">
+            @foreach (var item in Model.Devices) { <div class="nsx-vs-list-row"><strong>@item.Label</strong><span>@item.Count.ToString("N0") · %@item.Percentage</span><div class="nsx-vs-bar"><i style="width:@item.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></i></div></div> }
+        </div><h2 style="margin-top:26px">Tarayıcılar</h2><div class="nsx-vs-list">
+            @foreach (var item in Model.Browsers.Take(6)) { <div class="nsx-vs-list-row"><strong>@item.Label</strong><span>@item.Count.ToString("N0") · %@item.Percentage</span><div class="nsx-vs-bar"><i style="width:@item.Percentage.ToString(System.Globalization.CultureInfo.InvariantCulture)%"></i></div></div> }
+        </div></section>
+    </div>
+
+    <section class="nsx-vs-panel"><h2>Son Ziyaretler</h2><div class="sub">En son 50 gerçek ziyaret kaydı</div><div class="nsx-vs-table-wrap"><table class="nsx-vs-table"><thead><tr><th>Ziyaretçi</th><th>Sayfa</th><th>Konum</th><th>Cihaz</th><th>Tarayıcı</th><th>IP</th><th>Tarih</th></tr></thead><tbody>
+        @if (Model.RecentVisits.Count == 0) { <tr><td colspan="7" class="nsx-vs-empty">Yeni ziyaretler geldikçe burada görünecek.</td></tr> }
+        @foreach (var item in Model.RecentVisits) { <tr><td><span class="nsx-vs-code">#@item.VisitorCode</span></td><td><a href="@item.Path" target="_blank" rel="noopener">@item.Path</a></td><td>@item.Location</td><td>@item.Device</td><td>@item.Browser</td><td><span class="nsx-vs-code">@item.IpAddress</span></td><td class="nsx-visit-time" data-utc="@item.VisitedAtUtc.ToString("O")"></td></tr> }
+    </tbody></table></div></section>
+
+    <p class="nsx-vs-note">Ülke ve şehir bilgisi yalnız gerçek ziyaretçiler için kaydedilir; robotlar GeoIP servisine gönderilmez. Google ve diğer robot ziyaretleri bu sayfada ayrı izlenir ve gerçek kullanıcı istatistiklerine karıştırılmaz. API çağrıları, admin paneli ve bulut uygulama sayfaları trafik istatistiğine dahil edilmez.</p>
+</section>
+
+@section Scripts {
+<script src="~/lib/chart.js/chart.umd.min.js" asp-append-version="true"></script>
+<script>
+(() => {
+    const dailyLabels = @Html.Raw(dailyLabels), dailyViews = @Html.Raw(dailyViews), dailyUnique = @Html.Raw(dailyUnique);
+    const monthlyLabels = @Html.Raw(monthlyLabels), monthlyViews = @Html.Raw(monthlyViews), monthlyUnique = @Html.Raw(monthlyUnique);
+    const options = { responsive:true, maintainAspectRatio:false, resizeDelay:180, animation:false, interaction:{mode:'index',intersect:false}, plugins:{legend:{position:'bottom'},tooltip:{animation:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{grid:{display:false}}} };
+    const make = (id, labels, views, unique) => new Chart(document.getElementById(id), { type:'line', data:{labels,datasets:[{label:'Sayfa Görüntüleme',data:views,borderColor:'#7f1830',backgroundColor:'rgba(127,24,48,.12)',fill:true,tension:.25,pointRadius:2,pointHoverRadius:4},{label:'Tekil Ziyaretçi',data:unique,borderColor:'#c48b32',backgroundColor:'rgba(196,139,50,.08)',fill:false,tension:.25,pointRadius:2,pointHoverRadius:4}]}, options });
+    make('dailyChart', dailyLabels, dailyViews, dailyUnique); make('monthlyChart', monthlyLabels, monthlyViews, monthlyUnique);
+    document.querySelectorAll('.nsx-visit-time').forEach(el => { const d = new Date(el.dataset.utc); el.textContent = Number.isNaN(d.getTime()) ? '-' : d.toLocaleString('tr-TR'); });
+})();
+</script>
+}

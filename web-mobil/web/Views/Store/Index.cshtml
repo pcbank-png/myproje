@@ -1,0 +1,369 @@
+@model IEnumerable<NSYazilim.Web.Models.Product>
+@using System.Globalization
+@using System.Text.Json
+@using System.Text.Encodings.Web
+@using NSYazilim.Web.Services
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@inject NSYazilim.Web.Services.SeoLanguageUrlService SeoLanguageUrls
+@{
+    Layout = null;
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync();
+    var products = Model?.ToList() ?? new List<NSYazilim.Web.Models.Product>();
+    var q = ViewBag.Query?.ToString() ?? "";
+    var stock = ViewBag.Stock?.ToString() ?? "all";
+    var sort = ViewBag.Sort?.ToString() ?? "recommended";
+    var ratingAverage = ViewBag.RatingAverage as Dictionary<int, double> ?? new();
+    var ratingCount = ViewBag.RatingCount as Dictionary<int, int> ?? new();
+    var productCampaigns = ViewBag.ProductCampaigns as Dictionary<int, NSYazilim.Web.Models.Campaign> ?? new();
+    var requestedCategory = ViewBag.Category?.ToString() ?? Context.Request.Query["category"].ToString().Trim();
+    var storeSeoLinks = await SeoLanguageUrls.BuildAsync("/store", currentLanguage, Context.RequestAborted);
+    var canonical = storeSeoLinks.CurrentUrl;
+    var socialImage = SeoTextHelper.AbsoluteUrl("/nsx-assets/logo-brand.webp");
+    var robots = ViewData["Robots"]?.ToString() ?? "index, follow, max-image-preview:large, max-snippet:-1";
+    var pageTitle = SeoTextHelper.BuildTitle(ViewData["MetaTitle"]?.ToString() ?? "Yazılımlar");
+    var pageDescription = SeoTextHelper.BuildDescription(ViewData["MetaDescription"]?.ToString());
+    var pageKeywords = ViewData["MetaKeywords"]?.ToString() ?? SeoTextHelper.Keywords;
+    string ProductUrl(NSYazilim.Web.Models.Product product) => !string.IsNullOrWhiteSpace(product.Slug) ? $"/urun/{product.Slug.Trim().ToLowerInvariant()}" : $"/store/detail/{product.Id}";
+    string LocalizedProductUrl(NSYazilim.Web.Models.Product product) => SeoTextHelper.AbsoluteUrl(
+        SeoLanguageUrlService.BuildLocalizedPath(ProductUrl(product), currentLanguage, storeSeoLinks.DefaultLanguage));
+    var localizedProductNames = new Dictionary<int, string>();
+    var localizedProductDescriptions = new Dictionary<int, string>();
+    foreach (var product in products)
+    {
+        var localizedName = await SiteLocalization.TranslateAsync(product.Name, currentLanguage.Code, Context.RequestAborted);
+        var seoProfile = ProductSeoCatalog.Find(product);
+        // Kart özeti kısa olabilir; ancak yabancı dilde genel bir cümleye düşürülmez.
+        // Önce ürünün gerçek meta açıklaması, yoksa ürünün kendi açıklamasından özet kullanılır.
+        var sourceDescription = !string.IsNullOrWhiteSpace(product.MetaDescription)
+            ? product.MetaDescription
+            : (seoProfile?.MetaDescription ?? ProductContentSanitizer.ToPlainText(product.Description, 260));
+        var localizedDescription = await SiteLocalization.TranslateAsync(sourceDescription, currentLanguage.Code, Context.RequestAborted);
+        localizedProductNames[product.Id] = localizedName;
+        localizedProductDescriptions[product.Id] = localizedDescription;
+    }
+    var localizedStoreSchemaName = await SiteLocalization.TranslateAsync("NSX Yazılımları", currentLanguage.Code, Context.RequestAborted);
+    var localizedProductWord = await SiteLocalization.TranslateAsync("Ürün", currentLanguage.Code, Context.RequestAborted);
+    var localizedDiscountWord = await SiteLocalization.TranslateAsync("İNDİRİM", currentLanguage.Code, Context.RequestAborted);
+    var storeJsonLd = JsonSerializer.Serialize(new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "ItemList",
+        ["name"] = localizedStoreSchemaName,
+        ["url"] = canonical,
+        ["inLanguage"] = currentLanguage.Code,
+        ["itemListElement"] = products.Select((product, index) => new Dictionary<string, object?>
+        {
+            ["@type"] = "ListItem",
+            ["position"] = index + 1,
+            ["name"] = localizedProductNames[product.Id],
+            ["url"] = LocalizedProductUrl(product),
+            ["item"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "SoftwareApplication",
+                ["name"] = localizedProductNames[product.Id],
+                ["url"] = LocalizedProductUrl(product),
+                ["description"] = localizedProductDescriptions[product.Id],
+                ["applicationCategory"] = "BusinessApplication",
+                ["operatingSystem"] = "Windows"
+            }
+        }).ToList()
+    }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+}
+<!DOCTYPE html>
+<html lang="@currentLanguage.UrlCode" dir="@(currentLanguage.IsRtl ? "rtl" : "ltr")"><head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KYN9MQQ51T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KYN9MQQ51T');
+    </script>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@pageTitle</title>
+    <meta name="description" content="@pageDescription" />
+    <meta name="keywords" content="@pageKeywords" />
+    <meta name="robots" content="@robots" />
+    <meta name="author" content="Nevzat SÜRÜCÜ" /><meta name="publisher" content="NSX Yazılım" />
+    <link rel="canonical" href="@canonical" />
+    @await Html.PartialAsync("_SeoLanguageAlternates", storeSeoLinks)
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="@SeoTextHelper.AbsoluteUrl("/sitemap.xml")" />
+    <meta property="og:locale" content="@currentLanguage.Code.Replace('-', '_')" /><meta property="og:type" content="website" /><meta property="og:site_name" content="NSX Yazılım" />
+    <meta property="og:title" content="@pageTitle" /><meta property="og:description" content="@pageDescription" /><meta property="og:url" content="@canonical" /><meta property="og:image" content="@socialImage" /><meta property="og:image:secure_url" content="@socialImage" /><meta property="og:image:alt" content="NSX işletme yazılımları" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="@pageTitle" /><meta name="twitter:description" content="@pageDescription" /><meta name="twitter:image" content="@socialImage" /><meta name="twitter:image:alt" content="NSX işletme yazılımları" />
+    <script type="application/ld+json">@Html.Raw(storeJsonLd)</script>
+    <link rel="icon" href="/favicon.ico" asp-append-version="true" /><link rel="stylesheet" href="/css/site.css" asp-append-version="true" /><link rel="stylesheet" href="/css/public-hero-fixes.css" asp-append-version="true" /><link rel="stylesheet" href="/css/nsx-hero-effects.css" asp-append-version="true" /><link rel="stylesheet" href="/css/nsx-pro-v2.css" asp-append-version="true" />
+    <style id="nsx-store-home-match-pro">
+    /* Yazılımlar: Ana Sayfa ile aynı 1505px grid, header ritmi ve Pro tasarım. */
+    .software-list-page{--nsx-subpage-hero-height:286px;}
+    .software-list-page *{box-sizing:border-box;}
+    .software-list-page .detail-footer-section > .container{width:100%!important;max-width:none!important;margin:0!important;padding-left:0!important;padding-right:0!important;}
+    .software-list-page .public-site-header .service-ribbon > .container,
+    .software-list-page .public-site-header .detail-nav.container,
+    .software-list-page .software-list-hero > .container,
+    .software-list-page .solutions-section > .container{
+      width:min(1505px,calc(100% - 48px))!important;
+      max-width:1505px!important;
+      margin-left:auto!important;
+      margin-right:auto!important;
+    }
+    .software-list-page .public-site-header .detail-nav.container,
+    .software-list-page .public-site-header .brand-logo,
+    .software-list-page .public-site-header .nav-links{
+      transition:gap .22s ease,width .22s ease,max-width .22s ease,padding .22s ease;
+    }
+    @@media (min-width:981px){
+      .software-list-page .public-site-header .detail-nav.container{display:flex!important;align-items:center!important;min-height:78px;gap:8px!important;}
+      .software-list-page .public-site-header .brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;margin:0 auto 0 0!important;padding:0!important;}
+      .software-list-page .public-site-header .brand-logo{display:block!important;width:clamp(142px,10.8vw,184px)!important;max-width:184px!important;height:auto!important;object-fit:contain!important;}
+      .software-list-page .public-site-header .nav-links{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex:0 1 auto!important;width:auto!important;margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+      .software-list-page .public-site-header .nav-links > a{white-space:nowrap!important;}
+      .software-list-page .public-site-header .nav-cta{flex:0 0 auto!important;margin-left:0!important;}
+      .software-list-page .public-site-header .menu-toggle{display:none!important;}
+    }
+
+    .software-list-page,.software-list-page .store-hero-shell{background:#fff!important;background-image:none!important;}
+    .software-list-page .store-hero-shell > .public-site-header{background:#fff!important;}
+    .software-list-page .software-list-hero{
+      position:relative!important;
+      height:var(--nsx-subpage-hero-height)!important;
+      min-height:var(--nsx-subpage-hero-height)!important;
+      max-height:var(--nsx-subpage-hero-height)!important;
+      overflow:hidden!important;
+      padding:0!important;
+      border:0!important;
+      color:#fff!important;
+      background:
+        radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),
+        linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%)!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22)!important;
+      border-top:1px solid rgba(255,255,255,.04)!important;
+      border-bottom:1px solid rgba(255,255,255,.06)!important;
+    }
+    .software-list-page .software-list-hero:before{
+      content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;opacity:.10!important;
+      background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)!important;
+      background-size:72px 72px!important;
+      -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%)!important;
+      mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%)!important;
+    }
+    .software-list-page .software-list-hero > .container{position:relative;z-index:2;height:100%;min-height:0!important;display:flex;align-items:flex-start;padding-top:24px;padding-bottom:24px;}
+    .nsx-store-kicker{display:inline-flex;align-items:center;gap:10px;width:fit-content;max-width:100%;min-height:38px;margin:0 0 16px;padding:0 16px;border:1px solid rgba(255,110,4,.22);border-radius:999px;background:rgba(255,110,4,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 10px 24px rgba(255,110,4,.12);color:#ff8a33;font-size:12px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-store-kicker:before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#ff6e04;box-shadow:0 0 0 6px rgba(255,110,4,.12);}
+    .software-list-page .software-list-hero h1{max-width:860px!important;margin:0!important;color:#fff!important;font-size:42px!important;font-weight:900!important;line-height:1.06!important;letter-spacing:-.04em!important;}
+    .software-list-page .software-list-hero h1 em{display:block;color:#ff6e04!important;font-style:normal!important;}
+    .software-list-page .software-list-hero p{max-width:900px!important;margin:12px 0 0!important;color:#d3d8df!important;font-size:14px!important;line-height:1.7!important;font-weight:520!important;}
+    .nsx-store-hero-points{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+    .nsx-store-hero-points span{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 11px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.045);color:#d9dee4;font-size:10px;font-weight:800;}
+    .nsx-store-hero-points b{color:#39d98a;font-size:11px;}
+    .nsx-store-hero-copy{max-width:980px!important;}
+    .nsx-store-showcase{display:none!important;}
+
+    .nsx-store-showcase{position:relative;border:1px solid rgba(255,255,255,.17);border-radius:22px;padding:16px;background:linear-gradient(145deg,rgba(19,22,27,.94),rgba(5,7,10,.94));box-shadow:0 28px 60px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.05);}
+    .nsx-store-showcase:before{content:"";position:absolute;right:-25px;top:-35px;width:130px;height:130px;border-radius:50%;background:rgba(255,110,4,.08);filter:blur(12px);}
+    .nsx-store-showcase-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:2px 2px 14px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .nsx-store-showcase-brand{display:flex;align-items:center;gap:10px;}
+    .nsx-store-showcase-brand img{width:92px;height:30px;object-fit:contain;padding:4px 7px;border-radius:8px;background:#fff;filter:drop-shadow(0 4px 12px rgba(0,0,0,.25));}
+    .nsx-store-showcase-brand span{display:flex;flex-direction:column;gap:2px;color:#fff;font-size:10px;font-weight:900;}
+    .nsx-store-showcase-brand small{color:#8f9aa8;font-size:8px;font-weight:700;}
+    .nsx-store-live{display:flex;align-items:center;gap:7px;color:#9ba6b2;font-size:9px;font-weight:800;}
+    .nsx-store-live i{width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 5px rgba(57,217,138,.10);}
+    .nsx-store-showcase-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-top:12px;}
+    .nsx-store-showcase-card{position:relative;overflow:hidden;min-height:96px;border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));}
+    .nsx-store-showcase-card svg{position:absolute;right:12px;bottom:12px;width:32px;height:32px;color:#ff6e04;opacity:.92;}
+    .nsx-store-showcase-card small{display:block;color:#8e99a6;font-size:8px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;}
+    .nsx-store-showcase-card strong{display:block;margin-top:6px;color:#fff;font-size:19px;line-height:1.05;font-weight:900;letter-spacing:-.025em;}
+    .nsx-store-showcase-card span{display:block;margin-top:6px;color:#39d98a;font-size:9px;font-weight:800;}
+
+    .software-list-page .solutions-section{position:relative!important;padding:40px 0 64px!important;background:#fff!important;}
+    .software-list-page .solutions-section:before{content:""!important;position:absolute!important;top:0!important;left:50%!important;width:min(1505px,calc(100% - 48px))!important;height:1px!important;background:#e5e9ed!important;transform:translateX(-50%)!important;}
+    .nsx-store-section-head{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:50px;align-items:end;margin-bottom:24px;}
+    .nsx-store-section-head span{display:block;color:#ff6e04;font-size:11px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;margin-bottom:9px;}
+    .nsx-store-section-head h2{margin:0;color:#0c121a;font-size:36px;line-height:1.08;font-weight:900;letter-spacing:-.04em;}
+    .nsx-store-section-head p{margin:0!important;color:#687486!important;font-size:13px!important;line-height:1.7!important;}
+
+    .software-list-page .software-toolbar{margin:0 0 24px!important;}
+
+    .software-list-page .software-search{display:grid!important;grid-template-columns:minmax(0,1fr) 220px 110px!important;gap:8px!important;margin:10px 0 0!important;padding:8px!important;background:#f5f6f7!important;border:1px solid rgba(20,24,29,.10)!important;border-radius:18px!important;box-shadow:inset 0 1px 0 #fff,0 10px 26px rgba(12,16,22,.045)!important;}
+    .software-list-page .software-search input,.software-list-page .software-search select{min-width:0!important;min-height:46px!important;border:1px solid #e0e4e8!important;border-radius:12px!important;background:#fff!important;color:#171b20!important;padding:0 13px!important;font-size:12px!important;font-weight:750!important;outline:0!important;}
+    .software-list-page .software-search input:focus,.software-list-page .software-search select:focus{border-color:rgba(255,110,4,.58)!important;box-shadow:0 0 0 3px rgba(255,110,4,.10)!important;}
+    .software-list-page .software-search button{min-height:46px!important;border-radius:12px!important;color:#fff!important;background:#ff6e04!important;font-size:12px!important;font-weight:900!important;box-shadow:0 9px 22px rgba(255,110,4,.22)!important;transition:transform .18s ease,background .18s ease,box-shadow .18s ease!important;}
+    .software-list-page .software-search button:hover{background:#171b20!important;transform:translateY(-1px)!important;box-shadow:0 12px 25px rgba(12,16,22,.18)!important;}
+
+    .software-list-page .products-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;align-items:stretch!important;}
+    .software-list-page .product-card{position:relative!important;display:flex!important;flex-direction:column!important;height:100%!important;border:1px solid rgba(255,110,4,.24)!important;border-radius:20px!important;background:#fff!important;box-shadow:0 14px 34px rgba(255,110,4,.10),0 9px 26px rgba(12,16,22,.055)!important;overflow:hidden!important;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease!important;}
+    .software-list-page .product-card:before{content:"";position:absolute;z-index:4;left:0;right:0;top:0;height:3px;background:#ff6e04;opacity:.9;}
+    .software-list-page .product-card:hover{transform:translateY(-5px)!important;border-color:#ff6e04!important;box-shadow:0 22px 50px rgba(255,110,4,.17),0 12px 30px rgba(12,16,22,.08)!important;}
+    .software-list-page .product-visual{height:210px!important;padding:14px!important;background:#fff!important;background-image:none!important;border-bottom:1px solid rgba(255,110,4,.14)!important;box-shadow:none!important;}
+    .software-list-page .product-visual:before,.software-list-page .product-visual:after{display:none!important;content:none!important;}
+    .software-list-page .product-visual > img{object-fit:contain!important;object-position:center!important;width:100%!important;height:100%!important;}
+    .software-list-page .product-tag,.software-list-page .product-number{background:rgba(20,24,29,.91)!important;border:1px solid rgba(255,255,255,.20)!important;color:#fff!important;box-shadow:none!important;}
+    .software-list-page .product-campaign-badge{border-radius:999px!important;}
+    .software-list-page .product-body{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;padding:18px!important;}
+    .software-list-page .product-meta{font-size:9px!important;gap:8px!important;}
+    .software-list-page .product-body h2{margin:12px 0 8px!important;color:#0c121a!important;font-size:17px!important;line-height:1.2!important;font-weight:900!important;letter-spacing:-.025em!important;}
+    .software-list-page .product-body > p{min-height:63px!important;margin:0!important;color:#606c7c!important;font-size:12px!important;line-height:1.6!important;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;}
+    .software-list-page .product-body ul{min-height:41px!important;margin:11px 0 13px!important;gap:5px 10px!important;}
+    .software-list-page .product-body li{font-size:10px!important;}
+    .software-list-page .product-footer{margin-top:auto!important;padding-top:15px!important;gap:10px!important;}
+    .software-list-page .product-price strong{font-size:17px!important;}
+    .software-list-page .product-card .product-footer>.product-cta{position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;min-width:142px!important;min-height:46px!important;padding:0 8px 0 15px!important;border:1px solid #ff6e04!important;border-radius:14px!important;color:#fff!important;background:#ff6e04!important;box-shadow:0 9px 22px rgba(255,110,4,.22),inset 0 1px 0 rgba(255,255,255,.24)!important;}
+    .software-list-page .product-card .product-footer>.product-cta>span{color:#fff!important;font-weight:900!important;}
+    .software-list-page .product-card .product-footer>.product-cta>b{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:30px!important;height:30px!important;border-radius:10px!important;background:#fff!important;color:#ff6e04!important;box-shadow:0 4px 12px rgba(92,36,0,.14)!important;}
+    .software-list-page .product-card .product-footer>.product-cta:hover,.software-list-page .product-card .product-footer>.product-cta:focus-visible{background:#171b20!important;border-color:#171b20!important;transform:translateY(-2px)!important;box-shadow:0 14px 30px rgba(12,16,22,.20),0 8px 20px rgba(255,110,4,.18)!important;}
+    .software-list-page .product-card .product-footer>.product-cta:hover>b,.software-list-page .product-card .product-footer>.product-cta:focus-visible>b{background:#ff6e04!important;color:#fff!important;transform:translateX(2px)!important;}
+    .software-list-page .software-empty{border:1px dashed rgba(255,110,4,.45)!important;background:#fffaf6!important;}
+
+    @@media (max-width:1180px){
+      .software-list-page .public-site-header .service-ribbon > .container,.software-list-page .public-site-header .detail-nav.container,.software-list-page .software-list-hero > .container,.software-list-page .solutions-section > .container,.software-list-page .solutions-section:before{width:calc(100% - 32px)!important;}
+      .software-list-page .public-site-header .nav-links{gap:7px!important;margin-right:7px!important;}
+      .software-list-page .software-list-hero > .container{height:100%;min-height:0!important;padding-top:24px;padding-bottom:24px;}
+      .software-list-page .software-list-hero h1{font-size:38px!important;}
+      .software-list-page .products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+      .nsx-store-section-head{grid-template-columns:1fr 360px;gap:30px;}
+    }
+    @@media (max-width:980px){
+      .software-list-page .public-site-header .service-ribbon > .container,.software-list-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+      .software-list-page .software-list-hero > .container{height:100%;min-height:0!important;padding-top:24px;padding-bottom:24px;}
+      .nsx-store-section-head{grid-template-columns:1fr;gap:10px;}
+      .software-list-page .software-search{grid-template-columns:1fr 190px 100px!important;}
+    }
+    @@media (max-width:680px){
+      .software-list-page .software-list-hero > .container,.software-list-page .solutions-section > .container,.software-list-page .solutions-section:before{width:calc(100% - 18px)!important;}
+      .software-list-page .software-list-hero > .container{height:100%;min-height:0!important;padding-top:20px;padding-bottom:20px;}
+      .software-list-page .software-list-hero h1{font-size:30px!important;}
+      .software-list-page .software-list-hero p{font-size:13px!important;}
+      .nsx-store-section-head h2{font-size:29px;}
+      .software-list-page .software-search{grid-template-columns:1fr!important;}
+      .software-list-page .software-search button{width:100%!important;}
+      .software-list-page .products-grid{grid-template-columns:1fr!important;gap:14px!important;}
+      .software-list-page .product-visual{height:220px!important;}
+    }
+    @@media (max-width:430px){
+      .nsx-store-showcase-grid{grid-template-columns:1fr;}
+      .nsx-store-hero-points{gap:7px;}
+      .nsx-store-hero-points span{width:100%;justify-content:center;}
+    }
+    </style>
+<link rel="stylesheet" href="/css/nsx-home-light.css" asp-append-version="true">
+<link rel="stylesheet" href="/css/nsx-home-products-pro.css" asp-append-version="true">
+<link rel="stylesheet" href="/css/nsx-global-type.css" asp-append-version="true">
+</head><body class="home-light-theme public-light-theme">
+<main class="software-list-page">
+    <section class="store-hero-shell">
+        @await Html.PartialAsync("_PublicHeader")
+        <section class="software-list-hero">
+            <div class="container">
+                <div class="nsx-store-hero-copy">
+                    <span class="nsx-store-kicker">NSX Yazılım Kütüphanesi</span>
+                    <h1>İşinize uygun yazılımı <em>kolayca keşfedin.</em></h1>
+                    <p>Cari hesaptan teknik servise, otomotivden klinik ve organizasyona kadar işletmeniz için geliştirilen NSX çözümlerini tek ekranda karşılaştırın.</p>
+                    <div class="nsx-store-hero-points" aria-label="NSX yazılım avantajları">
+                        <span><b>✓</b> Windows uyumlu</span>
+                        <span><b>✓</b> Kolay kurulum</span>
+                        <span><b>✓</b> Yerli destek</span>
+                    </div>
+                </div>
+                <div class="nsx-store-showcase" aria-hidden="true">
+                    <div class="nsx-store-showcase-head">
+                        <div class="nsx-store-showcase-brand"><img src="/nsx-assets/logo-brand.webp" asp-append-version="true" alt="" width="1511" height="397" decoding="async" /><span>İşletme Yazılımları<small>Profesyonel NSX çözümleri</small></span></div>
+                        <div class="nsx-store-live"><i></i> Kullanıma hazır</div>
+                    </div>
+                    <div class="nsx-store-showcase-grid">
+                        <div class="nsx-store-showcase-card"><small>Yazılım Kütüphanesi</small><strong>@products.Count @localizedProductWord</strong><span>Tek noktadan keşfet</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="15" width="7" height="6" rx="1.5"/><rect x="14" y="15" width="7" height="6" rx="1.5"/></svg></div>
+                        <div class="nsx-store-showcase-card"><small>Kurulum</small><strong>Hızlı</strong><span>Kolay başlangıç</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg></div>
+                        <div class="nsx-store-showcase-card"><small>Destek</small><strong>Yerli</strong><span>NSX desteği</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M4 13v4a2 2 0 0 0 2 2h2v-6H4Zm16 0v4a2 2 0 0 1-2 2h-2v-6h4Z"/></svg></div>
+                        <div class="nsx-store-showcase-card"><small>Lisans</small><strong>Güvenli</strong><span>Profesyonel kullanım</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m12 3 8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <section class="solutions-section"><div class="container">
+        <div class="nsx-store-section-head">
+            <div><span>Tüm Yazılımlar</span><h2>İşletmeniz için doğru çözümü seçin.</h2></div>
+            <p>Kategoriye göre filtreleyin, ürünleri karşılaştırın ve ihtiyacınıza en uygun NSX yazılımının detaylarını inceleyin.</p>
+        </div>
+        <div class="software-toolbar is-search-only">
+            <form class="software-search" method="get" action="@($"{Context.Request.PathBase}/store")"><input type="hidden" name="category" value="@requestedCategory" /><input name="q" value="@q" placeholder="Yazılımlarda ara" aria-label="Yazılımlarda ara" /><select name="sort"><option value="recommended" selected="@(sort == "recommended")">Önerilen</option><option value="new" selected="@(sort == "new")">En yeni</option><option value="price_asc" selected="@(sort == "price_asc")">Fiyat: düşükten yükseğe</option><option value="price_desc" selected="@(sort == "price_desc")">Fiyat: yüksekten düşüğe</option></select><button type="submit">Ara</button></form>
+        </div>
+        @if (products.Any())
+        {
+            <div class="products-grid home-products-grid" id="softwareGrid">
+            @for (var index = 0; index < products.Count; index++)
+            {
+                var product = products[index];
+                var localizedProductName = localizedProductNames[product.Id];
+                var localizedProductDescription = localizedProductDescriptions[product.Id];
+                var detailsOpenLabel = await SiteLocalization.TranslateAsync("detay sayfasını aç", currentLanguage.Code, Context.RequestAborted);
+                var productImageLabel = await SiteLocalization.TranslateAsync("ürün görseli", currentLanguage.Code, Context.RequestAborted);
+                var productDetailsOpenAria = $"{localizedProductName} {detailsOpenLabel}";
+                var localizedProductImageAlt = $"{localizedProductName} {productImageLabel}";
+                var imageRecord = product.Images?.OrderByDescending(x => x.IsMain).ThenBy(x => x.SortOrder).FirstOrDefault();
+                var originalImage = imageRecord?.ImagePath ?? "/nsx-assets/logo-brand.webp";
+                var image = ProductThumb(originalImage, 960, imageRecord?.Id);
+                var imageSrcSet = ProductThumbSrcSet(originalImage, imageRecord?.Id);
+                var isFree = product.YearlyPrice <= 0 && product.LifetimePrice <= 0;
+                var price = product.YearlyPrice > 0 ? product.YearlyPrice : product.LifetimePrice;
+                var category = ProductCategoryHelper.GetKey(product);
+                var cardAccent = string.Equals(product.Slug, "nsx-security-auditor-pro-2", StringComparison.OrdinalIgnoreCase)
+                    ? "#2563eb"
+                    : Accent(category);
+                var features = ProductFeatures(product.Name);
+                var localizedFeatures = new List<string>(features.Count);
+                foreach (var feature in features)
+                    localizedFeatures.Add(await SiteLocalization.TranslateAsync(feature, currentLanguage.Code, Context.RequestAborted));
+                var avg = ratingAverage.TryGetValue(product.Id, out var rating) ? rating : 0;
+                var count = ratingCount.TryGetValue(product.Id, out var votes) ? votes : 0;
+                productCampaigns.TryGetValue(product.Id, out var campaign);
+                var discountAmount = campaign == null ? 0 : CampaignDiscount(price, campaign);
+                var campaignPrice = Math.Max(0, price - discountAmount);
+                var localizedCategoryLabel = await SiteLocalization.TranslateAsync(ProductCategoryHelper.GetLabel(category), currentLanguage.Code, Context.RequestAborted);
+                var localizedNewLabel = await SiteLocalization.TranslateAsync("Yeni", currentLanguage.Code, Context.RequestAborted);
+                var localizedFreeLabel = await SiteLocalization.TranslateAsync("Ücretsiz", currentLanguage.Code, Context.RequestAborted);
+                var localizedDigitalLicense = await SiteLocalization.TranslateAsync("Dijital lisans", currentLanguage.Code, Context.RequestAborted);
+                var localizedOutOfStock = await SiteLocalization.TranslateAsync("Stokta yok", currentLanguage.Code, Context.RequestAborted);
+                var localizedCampaignPrice = await SiteLocalization.TranslateAsync("Kampanyalı fiyat", currentLanguage.Code, Context.RequestAborted);
+                var localizedStarting = await SiteLocalization.TranslateAsync("Başlangıç", currentLanguage.Code, Context.RequestAborted);
+                var localizedViewProduct = await SiteLocalization.TranslateAsync("Ürünü İncele", currentLanguage.Code, Context.RequestAborted);
+                <article class="product-card home-product-card" data-category="@category" style="--accent:@cardAccent">
+                    <a class="product-visual" href="@ProductUrl(product)" aria-label="@productDetailsOpenAria"><img src="@image" srcset="@imageSrcSet" sizes="(max-width:680px) calc(100vw - 36px), (max-width:1180px) 46vw, 470px" alt="@localizedProductImageAlt" width="1581" height="995" loading="@(index == 0 ? "eager" : "lazy")" decoding="async" fetchpriority="@(index == 0 ? "high" : "low")" /><span class="product-tag">@(product.StockQuantity > 0 ? (isFree ? localizedFreeLabel : localizedDigitalLicense) : localizedOutOfStock)</span>@if(discountAmount > 0){<span class="product-campaign-badge home-product-campaign-badge">@CampaignLabel(campaign!, localizedDiscountWord)</span>}<span class="product-number">@((index + 1).ToString("00"))</span></a>
+                    <div class="product-body"><div class="product-meta"><span>@localizedCategoryLabel</span><span class="rating">★★★★★ <b>@(count > 0 ? avg.ToString("0.0") : localizedNewLabel)</b></span></div><h3>@localizedProductName</h3><p>@localizedProductDescription</p><ul>@foreach (var feature in localizedFeatures.Take(3)) { <li><b class="nsx-public-check" aria-hidden="true">✓</b> @feature</li> }</ul><div class="product-footer"><div class="product-price @(discountAmount > 0 ? "has-campaign" : "")"><small>@(discountAmount > 0 ? localizedCampaignPrice : localizedStarting)</small><strong>@(isFree ? localizedFreeLabel : campaignPrice.ToString("C0", CultureInfo.GetCultureInfo("tr-TR")))</strong>@if(discountAmount > 0){<del>@price.ToString("C0", CultureInfo.GetCultureInfo("tr-TR"))</del>}</div><a class="product-cta" href="@ProductUrl(product)"><span>@localizedViewProduct</span><b class="nsx-dir-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5.5 6.5 6.5L9 18.5"></path></svg></b></a></div></div>
+                </article>
+            }
+            </div>
+        }
+        else
+        {
+            <div class="software-empty"><h2>Ürün bulunamadı</h2><p>Arama kriterlerinizi değiştirerek tekrar deneyin.</p><a href="/store">Tüm yazılımları göster</a></div>
+        }
+    </div></section>
+    @await Html.PartialAsync("_ModernDetailFooter")
+</main>
+<link rel="stylesheet" href="/css/nsx-public-light-parity.css" asp-append-version="true" />
+<script src="/js/online-presence.js" asp-append-version="true" defer></script>
+<script src="/js/nsx-pro-v2.js" asp-append-version="true" defer></script>
+</body></html>
+@functions {
+    private static string ProductThumb(string imagePath, int width, int? version)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath) || !imagePath.StartsWith("/uploads/products/images/", StringComparison.OrdinalIgnoreCase)) return imagePath;
+        var fileName = System.IO.Path.GetFileName(imagePath);
+        if (string.IsNullOrWhiteSpace(fileName)) return imagePath;
+        return $"{NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, width)}?v={version ?? 0}";
+    }
+    private static string? ProductThumbSrcSet(string imagePath, int? version)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath) || !imagePath.StartsWith("/uploads/products/images/", StringComparison.OrdinalIgnoreCase)) return null;
+        var fileName = System.IO.Path.GetFileName(imagePath);
+        if (string.IsNullOrWhiteSpace(fileName)) return null;
+        var v = version ?? 0;
+        return $"{NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, 480)}?v={v} 480w, {NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, 720)}?v={v} 720w, {NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, 960)}?v={v} 960w";
+    }
+    private static string Accent(string c) => c switch { "organizasyon"=>"#f97316", "klinik"=>"#059669", "otomotiv"=>"#dc2626", "servis"=>"#0891b2", "cari"=>"#7c3aed", "performans"=>"#ca8a04", "gelistirici-araclari"=>"#2563eb", _=>"#ff7417" };
+    private static decimal CampaignDiscount(decimal amount, NSYazilim.Web.Models.Campaign campaign) { if(amount<=0||campaign.DiscountValue<=0||(campaign.MinimumCartTotal>0&&amount<campaign.MinimumCartTotal))return 0; var fixedDiscount=string.Equals(campaign.DiscountType,"Fixed",StringComparison.OrdinalIgnoreCase)||string.Equals(campaign.DiscountType,"FixedAmount",StringComparison.OrdinalIgnoreCase)||string.Equals(campaign.DiscountType,"Amount",StringComparison.OrdinalIgnoreCase); return Math.Round(Math.Clamp(fixedDiscount?campaign.DiscountValue:amount*campaign.DiscountValue/100m,0,amount),2,MidpointRounding.AwayFromZero); }
+    private static string CampaignLabel(NSYazilim.Web.Models.Campaign campaign, string discountLabel) { var fixedDiscount=string.Equals(campaign.DiscountType,"Fixed",StringComparison.OrdinalIgnoreCase)||string.Equals(campaign.DiscountType,"FixedAmount",StringComparison.OrdinalIgnoreCase)||string.Equals(campaign.DiscountType,"Amount",StringComparison.OrdinalIgnoreCase); return fixedDiscount?$"{campaign.DiscountValue:N0} TL {discountLabel}":$"%{campaign.DiscountValue:N0} {discountLabel}"; }
+    private static List<string> ProductFeatures(string name) { var n=(name??"").ToLowerInvariant(); if(n.Contains("düğün"))return new(){"Rezervasyon","Salon planlama","Cari takip"}; if(n.Contains("klinik"))return new(){"Hasta monitörü","Kapı üstü sıra","Randevu takibi"}; if(n.Contains("oto tamir"))return new(){"Servis kabul","Parça ve işçilik","Araç geçmişi"}; if(n.Contains("oto galeri"))return new(){"Araç stok","Kapora takibi","Kâr-zarar"}; if(n.Contains("servispro"))return new(){"QR canlı takip","SMS bildirim","Müşteri onayı"}; if(n.Contains("teknik servis"))return new(){"Servis fişi","Müşteri geçmişi","Teslim takibi"}; if(n.Contains("veresiye")||n.Contains("cari"))return new(){"Cari kartlar","Tahsilat takibi","Raporlar"}; return new(){"Hızlı kullanım","Güvenli işlem","Teknik destek"}; }
+}

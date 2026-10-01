@@ -1,0 +1,46 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Hakkımızda";
+    ViewData["MetaDescription"] = "NSX Yazılım'ın işletmelere yönelik masaüstü yazılım çözümlerini, çalışma yaklaşımını ve destek anlayışını tanıyın.";
+}
+
+<section class="nsx-info-page">
+    <header class="nsx-info-hero">
+        <div class="container nsx-info-hero-inner">
+            <div class="nsx-info-hero-copy">
+                <span class="nsx-info-kicker">NSX YAZILIM</span>
+                <h1>İşletmeler için anlaşılır, <em>güçlü yazılım çözümleri.</em></h1>
+                <p>Günlük iş süreçlerini sadeleştiren, kurulumu ve kullanımı kolay Windows yazılımları geliştiriyoruz.</p>
+                <div class="nsx-info-hero-points" aria-label="NSX Yazılım yaklaşımı">
+                    <span><b>✓</b> İşletme odaklı</span>
+                    <span><b>✓</b> Kolay kullanım</span>
+                    <span><b>✓</b> Yerli destek</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="nsx-info-divider" aria-hidden="true"></div>
+
+    <div class="container nsx-info-layout">
+        <article class="nsx-info-content">
+            <section>
+                <span class="nsx-info-section-no">01</span>
+                <div><h2>Gerçek iş ihtiyaçlarına odaklanıyoruz</h2><p>NSX Yazılım; veresiye ve cari takipten teknik servise, oto tamir ve galeri yönetiminden klinik, randevu ve düğün salonu süreçlerine kadar farklı sektörlerin günlük çalışma düzenine uygun çözümler sunar.</p></div>
+            </section>
+            <section>
+                <span class="nsx-info-section-no">02</span>
+                <div><h2>Sade kullanım, net sonuç</h2><p>Bir yazılımın yalnızca çok özellikli olması yetmez. Ekranların anlaşılır, işlemlerin hızlı ve temel iş akışlarının kolay öğrenilebilir olması gerektiğine inanıyoruz.</p></div>
+            </section>
+            <section>
+                <span class="nsx-info-section-no">03</span>
+                <div><h2>Satış sonrasında da yanınızdayız</h2><p>Kurulum, lisanslama ve kullanım sorularında destek kanallarımız üzerinden yardımcı oluyor; ürün videoları ve rehberlerle kullanıcılarımızın doğru bilgiye kolayca ulaşmasını sağlıyoruz.</p></div>
+            </section>
+            <div class="nsx-info-values">
+                <div><strong>İşletme odaklı</strong><span>Her ürün gerçek kullanım senaryolarına göre şekillenir.</span></div>
+                <div><strong>Şeffaf süreç</strong><span>Ürün, lisans ve destek bilgileri açık biçimde sunulur.</span></div>
+                <div><strong>Ulaşılabilir destek</strong><span>Sorularınız için iletişim kanallarımız her zaman görünürdür.</span></div>
+            </div>
+        </article>
+        @await Html.PartialAsync("_CorporateAside")
+    </div>
+</section>

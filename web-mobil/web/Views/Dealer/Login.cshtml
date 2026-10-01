@@ -1,0 +1,20 @@
+@model NSYazilim.Web.ViewModels.DealerLoginViewModel
+@{
+    ViewData["Title"] = "Bayi Giri\u015fi";
+}
+<div style="max-width:520px;margin:45px auto">
+    <div class="dealer-card" style="padding:28px">
+        <div class="dealer-kicker">NSX BAYI KANALI</div>
+        <h1 style="margin:8px 0 8px">Bayi Giri&#351;i</h1>
+        <p style="margin:0 0 22px;color:#60767d">Bayi hesab&#305;n&#305;zla sat&#305;&#351;lar&#305;n&#305;z&#305;, m&#252;&#351;teriye ba&#287;l&#305; lisanslar&#305; ve onaylanm&#305;&#351; alacaklar&#305;n&#305;z&#305; kontrol edin.</p>
+        <form method="post" action="/Bayi/Giris">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="dealer-field" style="margin-bottom:15px"><label>E-posta</label><input asp-for="Email" type="email" autocomplete="username" /><span asp-validation-for="Email"></span></div>
+            <div class="dealer-field" style="margin-bottom:15px"><label>&#350;ifre</label><input asp-for="Password" type="password" autocomplete="current-password" /><span asp-validation-for="Password"></span></div>
+            <label style="display:flex;align-items:center;gap:8px;margin-bottom:18px"><input asp-for="RememberMe" type="checkbox" style="width:auto" /> Bu cihazda beni hat&#305;rla</label>
+            <button class="dealer-btn primary" style="width:100%" type="submit">Bayi Paneline Giri&#351;</button>
+        </form>
+        <div class="dealer-note" style="margin-top:18px">Bayi hesab&#305; admin taraf&#305;ndan olu&#351;turulur. M&#252;&#351;teri hesab&#305; i&#231;in <a href="/Account/Login">Kullan&#305;c&#305; Giri&#351;i</a> sayfas&#305;n&#305; kullan&#305;n.</div>
+    </div>
+</div>

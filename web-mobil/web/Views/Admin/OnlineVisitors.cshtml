@@ -1,0 +1,232 @@
+@{
+    ViewData["Title"] = "Sitede Kim Var?";
+}
+
+<section class="nsx-online-admin" id="nsxOnlineAdmin">
+    <header class="nsx-online-hero">
+        <div>
+            <span class="nsx-online-kicker"><i></i> CANLI ZİYARETÇİ TAKİBİ</span>
+            <h1>Sitede Kim Var?</h1>
+            <p>NSX Yazılım sitesinde şu anda aktif olan ziyaretçileri, gezdikleri sayfaları ve kullandıkları cihazları canlı olarak izleyin.</p>
+        </div>
+        <div class="nsx-online-live-card">
+            <span>Şu an çevrim içi</span>
+            <strong id="nsxOnlineHeroCount">0</strong>
+            <small>5 saniyede bir yenilenir</small>
+        </div>
+    </header>
+
+    <div class="nsx-online-stats" aria-label="Canlı ziyaretçi özeti">
+        <article>
+            <span class="nsx-online-stat-icon live">●</span>
+            <div><small>Çevrim İçi</small><strong id="nsxOnlineCount">0</strong></div>
+        </article>
+        <article>
+            <span class="nsx-online-stat-icon">G</span>
+            <div><small>Misafir</small><strong id="nsxGuestCount">0</strong></div>
+        </article>
+        <article>
+            <span class="nsx-online-stat-icon">Ü</span>
+            <div><small>Giriş Yapan</small><strong id="nsxMemberCount">0</strong></div>
+        </article>
+        <article>
+            <span class="nsx-online-stat-icon">S</span>
+            <div><small>Aktif Sayfa</small><strong id="nsxPageCount">0</strong></div>
+        </article>
+    </div>
+
+    <section class="nsx-online-panel">
+        <div class="nsx-online-panel-head">
+            <div>
+                <span class="nsx-online-status-dot"></span>
+                <div>
+                    <h2>Canlı Ziyaretçiler</h2>
+                    <p id="nsxOnlineUpdated">Veriler yükleniyor…</p>
+                </div>
+            </div>
+            <div class="nsx-online-tools">
+                <label>
+                    <span>Ara</span>
+                    <input id="nsxOnlineSearch" type="search" placeholder="Sayfa, IP, şehir, kullanıcı veya cihaz" autocomplete="off" />
+                </label>
+                <button id="nsxOnlineRefresh" type="button">Şimdi Yenile</button>
+            </div>
+        </div>
+
+        <div class="nsx-online-loading" id="nsxOnlineLoading">
+            <span></span>
+            Canlı ziyaretçiler getiriliyor…
+        </div>
+
+        <div class="nsx-online-empty" id="nsxOnlineEmpty" hidden>
+            <strong>Şu anda aktif ziyaretçi yok</strong>
+            <p>Yeni bir ziyaretçi siteyi açtığında burada otomatik olarak görünecek.</p>
+        </div>
+
+        <div class="nsx-online-table-wrap" id="nsxOnlineTableWrap" hidden>
+            <table class="nsx-online-table">
+                <thead>
+                    <tr>
+                        <th>Ziyaretçi</th>
+                        <th>Bulunduğu Sayfa</th>
+                        <th>Cihaz / Tarayıcı</th>
+                        <th>IP / Şehir</th>
+                        <th>İlk Giriş</th>
+                        <th>Son Sinyal</th>
+                    </tr>
+                </thead>
+                <tbody id="nsxOnlineRows"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <p class="nsx-online-note">Ziyaretçi, tarayıcısı açıkken düzenli sinyal gönderir. Yaklaşık 90 saniye sinyal gelmeyen ziyaretçi çevrim dışı kabul edilir. Canlı durum ortak veritabanında tutulduğu için Plesk yeniden başlatmalarında ve birden fazla sunucu işleminde kesintisiz izlenir.</p>
+</section>
+
+
+<style>
+    .nsx-online-ip-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+    .nsx-online-ip-cell small { color: #64748b; font-size: 12px; font-weight: 600; }
+    .nsx-online-ip-cell code { white-space: nowrap; }
+</style>
+
+@section Scripts {
+<script>
+(() => {
+    const endpoint = '/Admin/OnlineVisitors/data';
+    const state = { visitors: [], timer: null, loading: false };
+    const els = {
+        heroCount: document.getElementById('nsxOnlineHeroCount'),
+        onlineCount: document.getElementById('nsxOnlineCount'),
+        guestCount: document.getElementById('nsxGuestCount'),
+        memberCount: document.getElementById('nsxMemberCount'),
+        pageCount: document.getElementById('nsxPageCount'),
+        updated: document.getElementById('nsxOnlineUpdated'),
+        loading: document.getElementById('nsxOnlineLoading'),
+        empty: document.getElementById('nsxOnlineEmpty'),
+        tableWrap: document.getElementById('nsxOnlineTableWrap'),
+        rows: document.getElementById('nsxOnlineRows'),
+        search: document.getElementById('nsxOnlineSearch'),
+        refresh: document.getElementById('nsxOnlineRefresh')
+    };
+
+    const encode = value => String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+
+    const formatTime = value => {
+        if (!value) return '-';
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? '-' : date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    };
+
+    const secondsAgo = value => {
+        if (!value) return '-';
+        const seconds = Math.max(0, Math.round((Date.now() - new Date(value).getTime()) / 1000));
+        if (seconds < 5) return 'Şimdi';
+        if (seconds < 60) return `${seconds} sn önce`;
+        return `${Math.floor(seconds / 60)} dk önce`;
+    };
+
+    const getVisitorName = item => {
+        if (item.isAuthenticated && item.userName) return item.userName;
+        return `Misafir #${item.visitorCode || '-'}`;
+    };
+
+    const rowSearchText = item => [
+        getVisitorName(item), item.userEmail, item.ipAddress, item.city, item.pagePath, item.pageTitle,
+        item.browser, item.operatingSystem, item.deviceType, item.referrer
+    ].join(' ').toLocaleLowerCase('tr-TR');
+
+    const renderRows = () => {
+        const query = (els.search.value || '').trim().toLocaleLowerCase('tr-TR');
+        const rows = state.visitors.filter(item => !query || rowSearchText(item).includes(query));
+
+        els.loading.hidden = true;
+        els.empty.hidden = state.visitors.length !== 0;
+        els.tableWrap.hidden = state.visitors.length === 0;
+
+        if (!state.visitors.length) {
+            els.rows.innerHTML = '';
+            return;
+        }
+
+        if (!rows.length) {
+            els.rows.innerHTML = '<tr><td colspan="6" class="nsx-online-no-result">Aramanızla eşleşen aktif ziyaretçi bulunamadı.</td></tr>';
+            return;
+        }
+
+        els.rows.innerHTML = rows.map(item => {
+            const name = encode(getVisitorName(item));
+            const email = item.isAuthenticated && item.userEmail ? `<small>${encode(item.userEmail)}</small>` : '<small>Üye girişi yapılmamış</small>';
+            const authClass = item.isAuthenticated ? 'member' : 'guest';
+            const authText = item.isAuthenticated ? 'Üye' : 'Misafir';
+            const pageTitle = encode(item.pageTitle || 'Başlıksız sayfa');
+            const pagePath = encode(item.pagePath || '/');
+            const referrer = item.referrer ? `<small title="${encode(item.referrer)}">Geliş: ${encode(item.referrer)}</small>` : '<small>Doğrudan ziyaret</small>';
+            const device = encode(`${item.deviceType || 'Bilinmiyor'} · ${item.operatingSystem || 'Bilinmiyor'}`);
+            const browser = encode(item.browser || 'Bilinmiyor');
+            const ip = encode(item.ipAddress || '-');
+            const city = encode(item.city || 'Şehir bilgisi alınamadı');
+
+            return `<tr>
+                <td>
+                    <div class="nsx-online-visitor-cell">
+                        <span class="nsx-online-avatar ${authClass}">${item.isAuthenticated ? 'Ü' : 'M'}</span>
+                        <div><strong>${name}</strong>${email}<em class="${authClass}">${authText}</em></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="nsx-online-page-cell">
+                        <a href="${pagePath}" target="_blank" rel="noopener">${pageTitle}</a>
+                        <code>${pagePath}</code>
+                        ${referrer}
+                    </div>
+                </td>
+                <td><div class="nsx-online-device-cell"><strong>${device}</strong><small>${browser}</small></div></td>
+                <td><div class="nsx-online-ip-cell"><code class="nsx-online-ip">${ip}</code><small>${city}</small></div></td>
+                <td><span class="nsx-online-time">${formatTime(item.firstSeenAtUtc)}</span></td>
+                <td><span class="nsx-online-last"><i></i>${secondsAgo(item.lastSeenAtUtc)}</span></td>
+            </tr>`;
+        }).join('');
+    };
+
+    const applySnapshot = data => {
+        state.visitors = Array.isArray(data.visitors) ? data.visitors : [];
+        els.heroCount.textContent = data.onlineCount ?? 0;
+        els.onlineCount.textContent = data.onlineCount ?? 0;
+        els.guestCount.textContent = data.guestCount ?? 0;
+        els.memberCount.textContent = data.authenticatedCount ?? 0;
+        els.pageCount.textContent = data.activePageCount ?? 0;
+        els.updated.textContent = `Son güncelleme: ${formatTime(data.generatedAtUtc)} · Otomatik yenileme açık`;
+        renderRows();
+    };
+
+    const load = async (showLoading = false) => {
+        if (state.loading) return;
+        state.loading = true;
+        if (showLoading && !state.visitors.length) els.loading.hidden = false;
+        els.refresh.disabled = true;
+        try {
+            const response = await fetch(endpoint, { credentials: 'same-origin', cache: 'no-store', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!response.ok) throw new Error('Veri alınamadı');
+            applySnapshot(await response.json());
+        } catch {
+            els.loading.hidden = true;
+            els.updated.textContent = 'Canlı veriler alınamadı. Bağlantı tekrar denenecek.';
+        } finally {
+            state.loading = false;
+            els.refresh.disabled = false;
+        }
+    };
+
+    els.search.addEventListener('input', renderRows);
+    els.refresh.addEventListener('click', () => load(false));
+    load(true);
+    state.timer = window.setInterval(() => load(false), 5000);
+})();
+</script>
+}

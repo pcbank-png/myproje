@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1580" height="996" viewBox="0 0 1580 996">
+  <defs>
+    <linearGradient id="front" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.62" stop-color="#f7fbff"/>
+      <stop offset="1" stop-color="#eaf5ff"/>
+    </linearGradient>
+    <linearGradient id="side" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c62bd"/>
+      <stop offset="0.52" stop-color="#063d83"/>
+      <stop offset="1" stop-color="#021f49"/>
+    </linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d8ecff"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0046a8"/>
+      <stop offset="0.52" stop-color="#0079df"/>
+      <stop offset="1" stop-color="#00c8f4"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#051a35"/>
+      <stop offset="0.55" stop-color="#073f76"/>
+      <stop offset="1" stop-color="#087bb8"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop offset="0" stop-color="#19ddff" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#0687e9" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#082b55" flood-opacity=".25"/>
+    </filter>
+    <filter id="softShadow" x="-30%" y="-30%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#00366d" flood-opacity=".28"/>
+    </filter>
+    <filter id="cyanGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="frontClip">
+      <path d="M505 79 L1177 112 Q1194 114 1194 133 L1194 889 Q1194 908 1175 909 L505 924 Z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1580" height="996" fill="#ffffff"/>
+  <ellipse cx="786" cy="917" rx="470" ry="42" fill="#163e66" opacity=".14"/>
+
+  <g filter="url(#shadow)">
+    <path d="M350 151 L505 79 L505 924 L350 851 Z" fill="url(#side)" stroke="#082d61" stroke-width="2"/>
+    <path d="M350 151 L505 79 L1177 112 L1029 177 Z" fill="url(#top)" stroke="#b9d4ed" stroke-width="2"/>
+    <path d="M505 79 L1177 112 Q1194 114 1194 133 L1194 889 Q1194 908 1175 909 L505 924 Z" fill="url(#front)" stroke="#b7cee4" stroke-width="2"/>
+  </g>
+
+  <g clip-path="url(#frontClip)">
+    <path d="M485 676 C690 545 963 559 1223 372 L1223 937 L485 937 Z" fill="#e2f5ff"/>
+    <path d="M486 742 C738 570 947 661 1225 474 L1225 938 L486 938 Z" fill="url(#blue)" opacity=".93"/>
+    <path d="M486 813 C738 633 967 731 1223 587" fill="none" stroke="#52e4ff" stroke-width="18" opacity=".85"/>
+    <path d="M487 842 C736 666 973 768 1223 625" fill="none" stroke="#ffffff" stroke-width="4" opacity=".7"/>
+    <circle cx="1047" cy="598" r="160" fill="url(#glow)" opacity=".55"/>
+  </g>
+
+  <g transform="translate(372 176) skewY(25)">
+    <text x="15" y="0" fill="#ffffff" font-family="Segoe UI,Arial" font-size="31" font-weight="800">NSX</text>
+    <text x="57" y="55" fill="#ffffff" font-family="Segoe UI,Arial" font-size="24" font-weight="700" text-anchor="middle">CARİ TAKİP</text>
+    <text x="57" y="87" fill="#32dcff" font-family="Segoe UI,Arial" font-size="25" font-weight="800" text-anchor="middle">PRO BULUT</text>
+    <g transform="translate(23 160)">
+      <circle cx="34" cy="0" r="25" fill="none" stroke="#5ee9ff" stroke-width="2"/>
+      <path d="M21 5 h26 M26 5 c0-18 18-18 18 0 M28 5 v10 h14 V5" fill="none" stroke="#fff" stroke-width="3"/>
+      <text x="34" y="45" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="14" font-weight="700">CANLI</text>
+      <circle cx="34" cy="105" r="25" fill="none" stroke="#5ee9ff" stroke-width="2"/>
+      <path d="M20 105 h28 M34 91 v28 M24 96 l20 18 M44 96 l-20 18" stroke="#fff" stroke-width="2.5"/>
+      <text x="34" y="150" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="14" font-weight="700">ÇOKLU PC</text>
+      <circle cx="34" cy="210" r="25" fill="none" stroke="#5ee9ff" stroke-width="2"/>
+      <path d="M21 210 l8 8 18-19" fill="none" stroke="#fff" stroke-width="4"/>
+      <text x="34" y="255" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="14" font-weight="700">GÜVENLİ</text>
+    </g>
+  </g>
+
+  <image x="610" y="102" width="480" height="198" xlink:href="nsx-cari-takip-pro-bulut-logo.png" preserveAspectRatio="xMidYMid meet"/>
+  <text x="851" y="337" text-anchor="middle" fill="#052b57" font-family="Segoe UI,Arial" font-size="34" font-weight="800">NSX Cari Takip Pro Bulut</text>
+  <text x="851" y="369" text-anchor="middle" fill="#17669e" font-family="Segoe UI,Arial" font-size="19" font-weight="600">Cari hesaplarınız her yerde, her zaman güncel.</text>
+
+  <g filter="url(#softShadow)">
+    <rect x="573" y="394" width="555" height="294" rx="22" fill="#d8e7f5" stroke="#75bff1" stroke-width="3"/>
+    <rect x="587" y="407" width="527" height="263" rx="13" fill="url(#screen)"/>
+    <rect x="775" y="688" width="155" height="18" rx="8" fill="#103d6d"/>
+    <path d="M816 670 L801 688 H904 L888 670 Z" fill="#7792aa"/>
+  </g>
+
+  <g transform="translate(613 434)">
+    <rect width="475" height="48" rx="11" fill="#ffffff" opacity=".12"/>
+    <circle cx="24" cy="24" r="10" fill="#1fe0ff"/>
+    <text x="44" y="30" fill="#ffffff" font-family="Segoe UI,Arial" font-size="18" font-weight="700">Canlı Cari Hesap Paneli</text>
+    <circle cx="443" cy="24" r="6" fill="#4bf09b"/>
+    <text x="430" y="29" text-anchor="end" fill="#bbf9dd" font-family="Segoe UI,Arial" font-size="12">Senkron</text>
+
+    <g transform="translate(0 67)">
+      <rect width="145" height="82" rx="13" fill="#ffffff" opacity=".13"/>
+      <text x="16" y="24" fill="#a9d9ff" font-family="Segoe UI,Arial" font-size="12">TOPLAM BORÇ</text>
+      <text x="16" y="57" fill="#ffffff" font-family="Segoe UI,Arial" font-size="24" font-weight="800">₺128.450</text>
+    </g>
+    <g transform="translate(165 67)">
+      <rect width="145" height="82" rx="13" fill="#ffffff" opacity=".13"/>
+      <text x="16" y="24" fill="#a9d9ff" font-family="Segoe UI,Arial" font-size="12">TAHSİLAT</text>
+      <text x="16" y="57" fill="#5bf4b4" font-family="Segoe UI,Arial" font-size="24" font-weight="800">₺94.700</text>
+    </g>
+    <g transform="translate(330 67)">
+      <rect width="145" height="82" rx="13" fill="#ffffff" opacity=".13"/>
+      <text x="16" y="24" fill="#a9d9ff" font-family="Segoe UI,Arial" font-size="12">BAKİYE</text>
+      <text x="16" y="57" fill="#56dfff" font-family="Segoe UI,Arial" font-size="24" font-weight="800">₺33.750</text>
+    </g>
+    <g transform="translate(0 168)">
+      <rect width="475" height="55" rx="12" fill="#ffffff" opacity=".1"/>
+      <circle cx="29" cy="27" r="15" fill="#079de2"/>
+      <path d="M22 28 l5 5 10-12" fill="none" stroke="#fff" stroke-width="3"/>
+      <text x="55" y="23" fill="#ffffff" font-family="Segoe UI,Arial" font-size="14" font-weight="700">Merkez ve terminaller eşitlendi</text>
+      <text x="55" y="42" fill="#a9d9ff" font-family="Segoe UI,Arial" font-size="11">Son işlem tüm cihazlara anında ulaştı</text>
+      <rect x="376" y="17" width="78" height="23" rx="11" fill="#15c982"/>
+      <text x="415" y="33" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial" font-size="11" font-weight="700">ÇEVRİMİÇİ</text>
+    </g>
+  </g>
+
+  <g transform="translate(540 722)">
+    <g>
+      <rect width="280" height="67" rx="15" fill="#ffffff" opacity=".94" filter="url(#softShadow)"/>
+      <rect width="58" height="67" rx="15" fill="#087bd7"/>
+      <path d="M18 38 h22 M20 38 v-15 h18 v15 M25 23 v-6 h8 v6" fill="none" stroke="#fff" stroke-width="3"/>
+      <text x="75" y="27" fill="#082b52" font-family="Segoe UI,Arial" font-size="15" font-weight="800">BORÇ &amp; TAHSİLAT</text>
+      <text x="75" y="48" fill="#55708c" font-family="Segoe UI,Arial" font-size="12">Hızlı ve kolay cari işlemler</text>
+    </g>
+    <g transform="translate(300 0)">
+      <rect width="280" height="67" rx="15" fill="#ffffff" opacity=".94" filter="url(#softShadow)"/>
+      <rect width="58" height="67" rx="15" fill="#087bd7"/>
+      <path d="M17 38 c0-9 7-15 15-15 7 0 12 4 14 10 7 0 10 10 3 14 H20 c-8-2-8-9-3-9" fill="none" stroke="#fff" stroke-width="3"/>
+      <text x="75" y="27" fill="#082b52" font-family="Segoe UI,Arial" font-size="15" font-weight="800">CANLI BULUT</text>
+      <text x="75" y="48" fill="#55708c" font-family="Segoe UI,Arial" font-size="12">Anlık ve otomatik senkron</text>
+    </g>
+    <g transform="translate(0 82)">
+      <rect width="280" height="67" rx="15" fill="#ffffff" opacity=".94" filter="url(#softShadow)"/>
+      <rect width="58" height="67" rx="15" fill="#07599e"/>
+      <rect x="18" y="20" width="24" height="28" rx="3" fill="none" stroke="#fff" stroke-width="3"/>
+      <path d="M23 30 h14 M23 36 h14 M23 42 h9" stroke="#fff" stroke-width="2"/>
+      <text x="75" y="27" fill="#082b52" font-family="Segoe UI,Arial" font-size="15" font-weight="800">PRO RAPORLAMA</text>
+      <text x="75" y="48" fill="#55708c" font-family="Segoe UI,Arial" font-size="12">Detaylı finansal analiz</text>
+    </g>
+    <g transform="translate(300 82)">
+      <rect width="280" height="67" rx="15" fill="#ffffff" opacity=".94" filter="url(#softShadow)"/>
+      <rect width="58" height="67" rx="15" fill="#07599e"/>
+      <path d="M29 17 l15 6 v10 c0 10-6 16-15 20-9-4-15-10-15-20V23z" fill="none" stroke="#fff" stroke-width="3"/>
+      <path d="M22 34 l5 5 10-11" fill="none" stroke="#fff" stroke-width="3"/>
+      <text x="75" y="27" fill="#082b52" font-family="Segoe UI,Arial" font-size="15" font-weight="800">GÜVENLİ VERİ</text>
+      <text x="75" y="48" fill="#55708c" font-family="Segoe UI,Arial" font-size="12">Yerel kopya ve bulut yedek</text>
+    </g>
+  </g>
+
+  <g transform="translate(1030 348)">
+    <circle cx="73" cy="54" r="52" fill="#eef9ff" stroke="#27c9ef" stroke-width="3"/>
+    <path d="M40 62 c0-13 10-23 23-23 9 0 17 5 21 13 15-2 25 8 25 20 0 12-9 21-22 21H48c-24 0-28-31-8-31z" fill="url(#blue)"/>
+    <path d="M60 68 l10 10 22-27" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <text x="852" y="902" text-anchor="middle" fill="#ffffff" font-family="Segoe UI,Arial" font-size="20" font-weight="800">NSX Yazılım</text>
+  <text x="1148" y="888" text-anchor="end" fill="#ffffff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">Windows Uyumlu</text>
+</svg>

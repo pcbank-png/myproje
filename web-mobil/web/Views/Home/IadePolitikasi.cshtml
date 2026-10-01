@@ -1,0 +1,37 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "İade Politikası";
+    ViewData["MetaDescription"] = "NSX Yazılım dijital ürün ve lisans siparişleri için iade koşulları, başvuru adımları ve değerlendirme süreci.";
+}
+
+<section class="nsx-info-page">
+    <header class="nsx-info-hero">
+        <div class="container nsx-info-hero-inner">
+            <div class="nsx-info-hero-copy">
+                <span class="nsx-info-kicker">SATIŞ SONRASI SÜREÇ</span>
+                <h1>İade <em>Politikası</em></h1>
+                <p>Dijital ürün ve lisans siparişlerindeki iade koşullarını, başvuru adımlarını ve değerlendirme sürecini açıklıyoruz.</p>
+                <div class="nsx-info-hero-points" aria-label="İade politikası başlıkları">
+                    <span><b>✓</b> 14 gün başvuru</span>
+                    <span><b>✓</b> Dijital lisans</span>
+                    <span><b>✓</b> Şeffaf süreç</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="nsx-info-divider" aria-hidden="true"></div>
+    <div class="container nsx-info-layout">
+        <article class="nsx-legal-content">
+            <p class="nsx-legal-date">Son güncelleme: 17 Temmuz 2026</p>
+            <div class="nsx-legal-highlight"><strong>Kısa özet</strong><p>Kullanılmamış ve etkinleştirilmemiş dijital lisanslar için teslim tarihinden itibaren 14 gün içinde iade talebi oluşturabilirsiniz. Talep, ürünün ve lisansın durumuna göre değerlendirilir.</p></div>
+            <section><h2>1. Kapsam</h2><p>Bu politika, NSX Yazılım internet sitesi üzerinden satın alınan dijital yazılım, lisans anahtarı ve bunlarla bağlantılı dijital teslimatlar için geçerlidir.</p></section>
+            <section><h2>2. İade edilebilir siparişler</h2><p>Lisansın etkinleştirilmemiş, ürünün kullanılmamış ve talebin teslim tarihinden itibaren 14 gün içinde iletilmiş olması hâlinde iade başvurusu değerlendirilebilir.</p></section>
+            <section><h2>3. İade kapsamı dışındaki durumlar</h2><p>Etkinleştirilmiş veya kullanılmış lisanslar, kullanıcıya özel hazırlanmış çözümler, teslimi ve kullanımı başlamış dijital hizmetler ile kötüye kullanım şüphesi bulunan talepler iade kapsamı dışında değerlendirilebilir.</p></section>
+            <section><h2>4. Teknik sorunlar</h2><p>Ürünle ilgili teknik bir sorun yaşandığında öncelikle destek ekibimiz çözüm sunar. Sorunun giderilememesi ve ürünün vaat edilen temel işlevleri yerine getirmemesi durumunda talep ayrıca incelenir.</p></section>
+            <section><h2>5. Başvuru adımları</h2><ol><li>Siparişte kullandığınız e-posta adresini ve sipariş bilginizi belirtin.</li><li>İade etmek istediğiniz ürünü ve talep nedeninizi açıklayın.</li><li>Talebinizi <a href="mailto:destek@@nsxyazilim.com">destek@nsxyazilim.com</a> adresine veya <a href="/iletisim">iletişim kanallarımıza</a> iletin.</li></ol></section>
+            <section><h2>6. Değerlendirme ve ödeme</h2><p>Başvurunuz lisans ve sipariş kayıtları kontrol edilerek değerlendirilir. Onaylanan iadeler, teknik ve bankacılık süreçlerine bağlı olarak mümkün olan en kısa sürede ödeme yapılan kanala yönlendirilir.</p></section>
+            <section><h2>7. İletişim</h2><p>İade süreciyle ilgili sorularınız için destek ekibimize ulaşabilirsiniz. Başvurunuzda sipariş bilgilerini eksiksiz paylaşmanız değerlendirme süresini kısaltır.</p></section>
+        </article>
+        @await Html.PartialAsync("_CorporateAside")
+    </div>
+</section>

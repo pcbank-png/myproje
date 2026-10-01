@@ -1,0 +1,34 @@
+{
+  "id": "/salontakip/panel",
+  "name": "NSX Düğün Salonu Pro",
+  "short_name": "NSX Salon",
+  "description": "Rezervasyon, müşteri ve finans yönetimi için güvenli mobil bulut paneli.",
+  "lang": "tr-TR",
+  "start_url": "/salontakip/panel",
+  "scope": "/salontakip/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#faf7f2",
+  "theme_color": "#3b2032",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/salontakip/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/salontakip/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/salontakip/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

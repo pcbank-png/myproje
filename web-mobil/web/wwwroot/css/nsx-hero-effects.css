@@ -1,0 +1,138 @@
+/* Public hero surfaces: ortak, hafif ve hareket tercihlerine saygili premium derinlik. */
+@property --nsx-hero-glow-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 82%;
+}
+
+@property --nsx-hero-glow-y {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 24%;
+}
+
+:is(
+  .nsx-video-hero,
+  .nsx-video-detail-head,
+  .nsx-blog-redesign-hero,
+  .nsx-blog-detail-hero,
+  .nsx-auth-pro-hero,
+  .nsx-account-page > .nsx-account-hero.container,
+  .nsx-info-page .nsx-info-hero,
+  .nsx-support-hero,
+  .nsx-status-hero,
+  .nsx-purchase-page .nsx-purchase-hero,
+  .nsx-purchase-success-hero,
+  .software-list-hero,
+  .nsx-product-short-hero
+) {
+  --nsx-hero-glow-x: 82%;
+  --nsx-hero-glow-y: 24%;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at var(--nsx-hero-glow-x) var(--nsx-hero-glow-y), rgba(255, 110, 4, .27) 0%, rgba(255, 110, 4, .10) 20%, transparent 47%),
+    radial-gradient(ellipse at 8% 116%, rgba(57, 217, 138, .115) 0%, rgba(57, 217, 138, .025) 28%, transparent 44%),
+    linear-gradient(112deg, transparent 12%, rgba(255, 255, 255, .045) 30%, transparent 46%),
+    repeating-linear-gradient(90deg, transparent 0 82px, rgba(255, 255, 255, .018) 83px, transparent 84px),
+    linear-gradient(118deg, #010203 0%, #06090d 43%, #0b1721 100%) !important;
+  background-size: 120% 145%, 115% 150%, 175% 100%, auto, auto !important;
+  background-position: 76% 38%, 0 100%, 32% 0, 0 0, 0 0 !important;
+  border-color: rgba(255, 255, 255, .075) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .055),
+    inset 0 -70px 110px rgba(0, 0, 0, .24),
+    0 18px 45px rgba(4, 9, 14, .08) !important;
+  animation: nsx-hero-ambient 16s cubic-bezier(.45, 0, .55, 1) infinite alternate;
+}
+
+/* Metin ve kartlar arka plan katmanlarinin daima ustunde kalir. */
+:is(
+  .nsx-video-hero,
+  .nsx-video-detail-head,
+  .nsx-blog-redesign-hero,
+  .nsx-blog-detail-hero,
+  .nsx-auth-pro-hero,
+  .nsx-account-page > .nsx-account-hero.container,
+  .nsx-info-page .nsx-info-hero,
+  .nsx-support-hero,
+  .nsx-status-hero,
+  .nsx-purchase-page .nsx-purchase-hero,
+  .nsx-purchase-success-hero,
+  .software-list-hero,
+  .nsx-product-short-hero
+) > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Ana sayfa kendi zengin sahnesini korur; ambient isik ona ayrica derinlik verir. */
+body .nsx-vh-stage {
+  --nsx-hero-glow-x: 78%;
+  --nsx-hero-glow-y: 22%;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at var(--nsx-hero-glow-x) var(--nsx-hero-glow-y), rgba(255, 110, 4, .22), transparent 42%),
+    radial-gradient(ellipse at 8% 110%, rgba(57, 217, 138, .08), transparent 36%),
+    linear-gradient(118deg, #020304 0%, #070a0e 46%, #0b151e 100%);
+  animation: nsx-home-hero-ambient 18s ease-in-out infinite alternate;
+}
+
+@keyframes nsx-hero-ambient {
+  from {
+    --nsx-hero-glow-x: 74%;
+    --nsx-hero-glow-y: 19%;
+    background-position: 74% 34%, 0 100%, 28% 0, 0 0, 0 0;
+  }
+  to {
+    --nsx-hero-glow-x: 94%;
+    --nsx-hero-glow-y: 43%;
+    background-position: 94% 46%, 4% 96%, 56% 0, 12px 0, 0 0;
+  }
+}
+
+@keyframes nsx-home-hero-ambient {
+  from { --nsx-hero-glow-x: 72%; --nsx-hero-glow-y: 18%; }
+  to { --nsx-hero-glow-x: 92%; --nsx-hero-glow-y: 42%; }
+}
+
+@media (max-width: 680px) {
+  :is(
+    .nsx-video-hero,
+    .nsx-video-detail-head,
+    .nsx-blog-redesign-hero,
+    .nsx-blog-detail-hero,
+    .nsx-auth-pro-hero,
+    .nsx-account-page > .nsx-account-hero.container,
+    .nsx-info-page .nsx-info-hero,
+    .nsx-support-hero,
+    .nsx-status-hero,
+    .nsx-purchase-page .nsx-purchase-hero,
+    .nsx-purchase-success-hero,
+    .software-list-hero,
+    .nsx-product-short-hero
+  ) {
+    background-size: 145% 150%, 140% 150%, 220% 100%, auto, auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .nsx-video-hero,
+    .nsx-video-detail-head,
+    .nsx-blog-redesign-hero,
+    .nsx-blog-detail-hero,
+    .nsx-auth-pro-hero,
+    .nsx-account-page > .nsx-account-hero.container,
+    .nsx-info-page .nsx-info-hero,
+    .nsx-support-hero,
+    .nsx-status-hero,
+    .nsx-purchase-page .nsx-purchase-hero,
+    .nsx-purchase-success-hero,
+    .software-list-hero,
+    .nsx-product-short-hero,
+    .nsx-vh-stage
+  ) {
+    animation: none !important;
+  }
+}

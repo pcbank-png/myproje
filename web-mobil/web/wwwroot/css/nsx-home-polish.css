@@ -1,0 +1,238 @@
+/* Ana sayfa son profesyonel denge ve mobil iyilestirmeler */
+.home-light-theme .nsx-vh-desc-mobile{display:none}
+
+/* Adim kartlari: aciklama ve alt bilgi asla ust uste binmez. */
+.home-light-theme .journey-grid article{
+  display:flex!important;
+  flex-direction:column!important;
+  min-height:282px!important;
+  padding:28px!important;
+}
+.home-light-theme .journey-grid article>p{margin-bottom:18px!important}
+.home-light-theme .journey-grid article>small{
+  position:static!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  min-height:25px!important;
+  margin-top:auto!important;
+  padding:0 9px!important;
+  border:1px solid #e2e7eb!important;
+  border-radius:999px!important;
+  color:#65727d!important;
+  background:#f8fafb!important;
+  font-size:9px!important;
+  font-weight:650!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+.home-light-theme .journey-grid article>small::before{flex:0 0 6px!important;width:6px!important;height:6px!important;margin:0!important}
+.home-light-theme .step-icon-discover{--icon-a:#49d6cc!important;--icon-b:#15978f!important}
+.home-light-theme .step-icon-try{--icon-a:#ffb13b!important;--icon-b:#e98200!important}
+.home-light-theme .step-icon-license{--icon-a:#bd7540!important;--icon-b:#79401f!important}
+.home-light-theme .step-icon-support{--icon-a:#007eff!important;--icon-b:#007eff!important}
+
+/* Mobil urun akisi: ilk dort karttan sonra kontrollu devam. */
+.home-products-more-wrap{display:none}
+.home-products-more{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;min-height:58px;padding:6px 7px 6px 17px;
+  border:1px solid #f0c3a3;border-radius:16px;color:#d65300;background:linear-gradient(180deg,#fff,#fff1e6);
+  box-shadow:0 12px 26px rgba(24,33,43,.08),0 6px 16px rgba(255,110,4,.10),inset 0 1px 0 #fff;cursor:pointer
+}
+.home-products-more>span{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.home-products-more small{color:#8a6a55;font-size:9px;font-weight:550}
+.home-products-more strong{color:#d65300;font-size:13px;font-weight:750}
+.home-products-more .nsx-dir-icon{color:#fff!important;background:linear-gradient(145deg,#ff8121,#ed5900)!important;border-color:#ff6e04!important}
+@media(max-width:680px){
+  .home-light-theme .nsx-vh-desc-desktop{display:none}
+  .home-light-theme .nsx-vh-desc-mobile{display:inline}
+  .home-light-theme .nsx-vh-desc{max-width:340px!important;margin:14px auto 0!important;font-size:13px!important;line-height:1.58!important}
+  .home-light-theme .home-products-grid.is-mobile-collapsed .home-product-card:nth-child(n+5){display:none!important}
+  .home-products-more-wrap{display:block;margin-top:16px}
+  .home-products-more-wrap:has(.home-products-more[hidden]){display:none}
+  .home-light-theme .journey-grid article{min-height:238px!important;padding:25px!important}
+}
+
+/* Mobil footer: uzun kolonlari erisilebilir akordiyona cevir. */
+@media(max-width:600px){
+  .home-light-theme .nsx-footer-v2__main{gap:10px!important}
+  .home-light-theme .nsx-footer-v2__column{
+    grid-column:1/-1!important;
+    overflow:hidden!important;
+    border:1px solid #e0e6ea!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    box-shadow:0 8px 20px rgba(24,33,43,.045)!important;
+  }
+  .home-light-theme .nsx-footer-v2__column h3{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;min-height:52px!important;
+    margin:0!important;padding:0 46px 0 15px!important;cursor:pointer!important;outline-offset:-3px!important
+  }
+  .home-light-theme .nsx-footer-v2__column h3::before{
+    content:"";position:absolute;right:18px;top:19px;width:8px;height:8px;border:solid #e45b00;border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .2s ease
+  }
+  .home-light-theme .nsx-footer-v2__column h3::after{left:15px!important;bottom:8px!important;width:27px!important}
+  .home-light-theme .nsx-footer-v2__column.is-open h3::before{top:23px;transform:rotate(225deg)}
+  .home-light-theme .nsx-footer-v2__column:not(.is-open)>a{display:none!important}
+  .home-light-theme .nsx-footer-v2__column.is-open{padding-bottom:10px!important}
+  .home-light-theme .nsx-footer-v2__column.is-open>a{width:auto!important;margin:0 14px!important;padding:7px 2px!important;border-bottom:1px solid #edf0f2!important}
+  .home-light-theme .nsx-footer-v2__column.is-open>a:last-child{border-bottom:0!important}
+}
+
+/* Hero ucretsiz kullanim vurgusu: ana sayfanin turuncu-antrasit kimligiyle uyumlu. */
+.home-light-theme .nsx-vh-stage .nsx-vh-kicker{color:#c9550a!important}
+.home-light-theme .nsx-vh-stage .nsx-vh-kicker::before{
+  background:#d65a08!important;
+  box-shadow:0 0 0 5px rgba(214,90,8,.13)!important;
+}
+/* Ana sayfa guven/istatistik seridi: profesyonel ikonlu dortlu sistem. */
+.home-light-theme .trust-strip{
+  min-height:92px!important;
+  padding:15px 12px!important;
+}
+.home-light-theme .trust-strip>.trust-stat{
+  justify-content:center!important;
+  gap:14px!important;
+  min-width:0!important;
+  padding:0 22px!important;
+}
+.home-light-theme .trust-strip .trust-icon{
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 46px!important;
+  width:46px!important;
+  height:46px!important;
+  max-width:none!important;
+  color:#e85b00!important;
+  background:linear-gradient(145deg,#fffaf6 0%,#fff0e4 100%)!important;
+  border:1px solid #f1c9ab!important;
+  border-radius:14px!important;
+  box-shadow:0 9px 20px rgba(225,86,0,.12),inset 0 1px 0 #fff!important;
+  transition:transform .22s ease,box-shadow .22s ease!important;
+}
+.home-light-theme .trust-strip .trust-icon svg{
+  display:block!important;
+  width:23px!important;
+  height:23px!important;
+}
+.home-light-theme .trust-strip>.trust-stat:hover .trust-icon{
+  transform:translateY(-2px)!important;
+  box-shadow:0 12px 24px rgba(225,86,0,.17),inset 0 1px 0 #fff!important;
+}
+.home-light-theme .trust-strip .trust-stat-copy{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:3px!important;
+  min-width:0!important;
+}
+.home-light-theme .trust-strip .trust-stat-copy strong{
+  margin:0!important;
+  color:#1b2530!important;
+  font-size:25px!important;
+  font-weight:850!important;
+  line-height:1!important;
+}
+.home-light-theme .trust-strip .trust-stat-copy span{
+  max-width:none!important;
+  margin:0!important;
+  color:#687581!important;
+  font-size:10px!important;
+  font-weight:750!important;
+  line-height:1.35!important;
+  letter-spacing:.045em!important;
+  white-space:nowrap!important;
+}
+@media(max-width:760px){
+  .home-light-theme .trust-strip{
+    min-height:0!important;
+    padding:14px 8px!important;
+  }
+  .home-light-theme .trust-strip>.trust-stat{
+    justify-content:flex-start!important;
+    min-height:66px!important;
+    padding:0 14px!important;
+  }
+}
+@media(max-width:430px){
+  .home-light-theme .trust-strip>.trust-stat{gap:10px!important;padding:0 8px!important}
+  .home-light-theme .trust-strip .trust-icon{flex-basis:40px!important;width:40px!important;height:40px!important;border-radius:12px!important}
+  .home-light-theme .trust-strip .trust-icon svg{width:20px!important;height:20px!important}
+  .home-light-theme .trust-strip .trust-stat-copy strong{font-size:22px!important}
+  .home-light-theme .trust-strip .trust-stat-copy span{font-size:8.5px!important}
+}
+
+/* Ana sayfa: sayfa basina donus kontrolu. */
+.nsx-home-scroll-top{
+  position:fixed;
+  z-index:80;
+  left:24px;
+  bottom:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-width:52px;
+  height:52px;
+  padding:0 16px;
+  border:1px solid #efb487;
+  border-radius:16px;
+  color:#de5900;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 14px 34px rgba(27,37,48,.13),0 7px 18px rgba(255,110,4,.10),inset 0 1px 0 #fff;
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+  cursor:pointer;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(14px) scale(.94);
+  transition:opacity .22s ease,visibility .22s ease,transform .22s ease,color .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.nsx-home-scroll-top.is-visible{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateY(0) scale(1);
+}
+.nsx-home-scroll-top svg{width:20px;height:20px;flex:none}
+.nsx-home-scroll-top span{font:750 10px/1 var(--nsx-font,inherit);letter-spacing:.025em}
+.nsx-home-scroll-top:hover{
+  color:#fff;
+  border-color:#ff6e04;
+  background:linear-gradient(145deg,#ff8121,#ed5900);
+  box-shadow:0 16px 36px rgba(222,89,0,.25),inset 0 1px 0 rgba(255,255,255,.3);
+  transform:translateY(-3px) scale(1);
+}
+.nsx-home-scroll-top:focus-visible{outline:3px solid rgba(255,110,4,.25);outline-offset:3px}
+@media(max-width:680px){
+  .nsx-home-scroll-top{left:14px;bottom:14px;width:46px;min-width:46px;height:46px;padding:0;border-radius:14px}
+  .nsx-home-scroll-top span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .nsx-home-scroll-top svg{width:19px;height:19px}
+}
+@media(prefers-reduced-motion:reduce){.nsx-home-scroll-top{transition:none}}
+/* Ana sayfa ve ortak alt bölümde tikler daima beyazdır. */
+.home-light-theme .nsx-public-check,
+.home-light-theme .cta-benefits span>b,
+.home-light-theme .public-site-header .service-ribbon span>b,
+.home-light-theme .nsx-footer-v2__trust span>b{
+  display:inline-grid!important;
+  place-items:center!important;
+  flex:0 0 16px!important;
+  width:16px!important;
+  min-width:16px!important;
+  height:16px!important;
+  margin:0 5px 0 0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:#ff6e04!important;
+  color:#fff!important;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:900!important;
+  box-shadow:none!important;
+}

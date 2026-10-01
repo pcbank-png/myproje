@@ -1,0 +1,414 @@
+@using Microsoft.AspNetCore.Http
+@using NSYazilim.Web.Services
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@{
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync();
+    var localizedBrandName = await SiteLocalization.TranslateAsync("NSX Yazılım", currentLanguage.Code, Context.RequestAborted);
+    var localizedBrandJson = System.Text.Json.JsonSerializer.Serialize(localizedBrandName);
+    var currentPath = (Context.Request.Path.Value ?? "/").ToLowerInvariant();
+    var isHome = currentPath == "/" || currentPath == "/home" || currentPath == "/home/index";
+    var isStore = currentPath.StartsWith("/store");
+    var isContact = currentPath.StartsWith("/iletisim");
+    var isBlog = currentPath.StartsWith("/blog");
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var isBlogPage = string.Equals(currentController, "Blog", StringComparison.OrdinalIgnoreCase);
+    var isVideos = currentPath.StartsWith("/videolar");
+    var isAccount = currentPath.StartsWith("/account");
+
+    var nsxSeoTitle = SeoTextHelper.BuildTitle(ViewData["MetaTitle"]?.ToString() ?? ViewData["Title"]?.ToString());
+    var nsxSeoDescription = SeoTextHelper.BuildDescription(ViewData["MetaDescription"]?.ToString());
+    var nsxCleanPath = string.IsNullOrWhiteSpace(Context.Request.Path.Value) ? "/" : Context.Request.Path.Value;
+    var nsxCanonical = ViewData["Canonical"]?.ToString() ?? SeoTextHelper.CanonicalUrl(nsxCleanPath);
+    var nsxSitemapUrl = SeoTextHelper.AbsoluteUrl("/sitemap.xml");
+    var nsxRobots = ViewData["Robots"]?.ToString();
+    if (string.IsNullOrWhiteSpace(nsxRobots))
+    {
+        var nsxNoIndex = currentPath.StartsWith("/account")
+            || currentPath.StartsWith("/havale-bildirimi")
+            || currentPath.StartsWith("/admin")
+            || currentPath.StartsWith("/customerdelivery")
+            || currentPath.StartsWith("/download")
+            || currentPath.StartsWith("/api");
+
+        nsxRobots = nsxNoIndex
+            ? "noindex, nofollow, noarchive"
+            : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
+    }
+    var nsxOgImage = ViewData["OgImage"]?.ToString() ?? SeoTextHelper.AbsoluteUrl("/nsx-assets/logo-brand.webp");
+    var nsxOgImageAlt = ViewData["OgImageAlt"]?.ToString() ?? nsxSeoTitle;
+    var nsxOgImageWidth = ViewData["OgImageWidth"]?.ToString();
+    var nsxOgImageHeight = ViewData["OgImageHeight"]?.ToString();
+    var nsxOgType = ViewData["OgType"]?.ToString() ?? "website";
+}
+<!DOCTYPE html>
+<html lang="@currentLanguage.UrlCode" dir="@(currentLanguage.IsRtl ? "rtl" : "ltr")">
+<head>
+    <link rel="stylesheet" href="~/css/nsx-design-tokens.css" asp-append-version="true" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KYN9MQQ51T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KYN9MQQ51T');
+    </script>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PDG25HQG');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@nsxSeoTitle</title>
+    <meta name="description" content="@nsxSeoDescription" />
+    @{
+        var nsxSeoKeywords = ViewData["MetaKeywords"]?.ToString();
+    }
+    @if (!string.IsNullOrWhiteSpace(nsxSeoKeywords))
+    {
+        <meta name="keywords" content="@nsxSeoKeywords" />
+    }
+    <meta name="robots" content="@nsxRobots" />
+    <!-- NSX Yazılım sahiplik bilgisi: Nevzat SÜRÜCÜ -->
+    <meta name="author" content="Nevzat SÜRÜCÜ" />
+    <meta name="owner" content="Nevzat SÜRÜCÜ" />
+    <meta name="designer" content="Nevzat SÜRÜCÜ" />
+    <meta name="publisher" content="@localizedBrandName" />
+    <meta name="copyright" content="Copyright © 2026 Nevzat SÜRÜCÜ - @localizedBrandName" />
+    <link rel="canonical" href="@nsxCanonical" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="@nsxSitemapUrl" />
+
+    <meta property="og:locale" content="@currentLanguage.Code.Replace('-', '_')" />
+    <meta property="og:type" content="@nsxOgType" />
+    <meta property="og:site_name" content="@localizedBrandName" />
+    <meta property="og:title" content="@nsxSeoTitle" />
+    <meta property="og:description" content="@nsxSeoDescription" />
+    <meta property="og:url" content="@nsxCanonical" />
+    <meta property="og:image" content="@nsxOgImage" />
+    <meta property="og:image:secure_url" content="@nsxOgImage" />
+    <meta property="og:image:alt" content="@nsxOgImageAlt" />
+    @if (!string.IsNullOrWhiteSpace(nsxOgImageWidth) && !string.IsNullOrWhiteSpace(nsxOgImageHeight))
+    {
+        <meta property="og:image:width" content="@nsxOgImageWidth" />
+        <meta property="og:image:height" content="@nsxOgImageHeight" />
+    }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@nsxSeoTitle" />
+    <meta name="twitter:description" content="@nsxSeoDescription" />
+    <meta name="twitter:image" content="@nsxOgImage" />
+    <meta name="twitter:image:alt" content="@nsxOgImageAlt" />
+
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@graph": [
+            {
+                "@@type": "Organization",
+                "@@id": "https://www.nsxyazilim.com/#organization",
+                "name": @Html.Raw(localizedBrandJson),
+                "url": "https://www.nsxyazilim.com",
+                "logo": "https://www.nsxyazilim.com/nsx-assets/logo-brand.webp",
+                "founder": {
+                    "@@type": "Person",
+                    "name": "Nevzat SÜRÜCÜ"
+                },
+                "sameAs": [
+                    "https://www.facebook.com/nsxyazilim",
+                    "https://www.instagram.com/nsxyazilim",
+                    "https://x.com/nsxyazilim",
+                    "https://www.tiktok.com/@@nsxyazilim",
+                    "https://www.youtube.com/@@nsxyazilim"
+                ],
+                "contactPoint": {
+                    "@@type": "ContactPoint",
+                    "telephone": "+90 543 462 42 26",
+                    "contactType": "customer support",
+                    "areaServed": "TR",
+                    "availableLanguage": "@currentLanguage.UrlCode"
+                }
+            },
+            {
+                "@@type": "WebSite",
+                "@@id": "https://www.nsxyazilim.com/#website",
+                "url": "https://www.nsxyazilim.com",
+                "name": @Html.Raw(localizedBrandJson),
+                "inLanguage": "@currentLanguage.Code",
+                "publisher": { "@@id": "https://www.nsxyazilim.com/#organization" },
+                "potentialAction": {
+                    "@@type": "SearchAction",
+                "target": "https://www.nsxyazilim.com/store?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                }
+            }
+        ]
+    }
+    </script>
+    @if (ViewData["JsonLd"] is string nsxExtraJsonLd && !string.IsNullOrWhiteSpace(nsxExtraJsonLd))
+    {
+        @Html.Raw(nsxExtraJsonLd)
+    }
+
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-client.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-client-pages.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-account.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-delivery.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-home-showcase.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-home-best-products.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-product-detail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-store-listing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-store-filter-pro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-rating.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-premium-compact.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/NSYazilim.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-mobile-fix.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/assets/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-visual-bridge.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-videos.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-blog-pro.css" asp-append-version="true" />
+
+    <meta name="google-site-verification" content="GMNVfsTnhF_xwltGXV8xXNBCzg8-81IJ8OAAmP_0CjM" />
+    <meta name="yandex-verification" content="19aab6a68eeb0e6c" />
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "wmj0btgk7j");
+    </script>
+    <link rel="stylesheet" href="~/css/nsx-no-blue.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nsx-hero-effects.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-global-type.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDG25HQG"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Menüyü Aç">
+        <span></span><span></span><span></span>
+    </button>
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="top-left">
+                <span>NSX Yazılım</span>
+                <span>Güvenli dijital teslimat</span>
+            </div>
+            <div class="top-right">
+                <a href="/iletisim">Destek</a>
+                <a href="/Account/Downloads">İndirmelerim</a>
+                <a href="/Account/Licenses">Lisanslarım</a>
+            </div>
+        </div>
+    </div>
+
+    <header class="main-header" id="mainHeader">
+        <div class="header-inner">
+            <a class="logo-area" href="/">
+                <img src="~/nsx-assets/logo-brand.webp" asp-append-version="true" alt="NSX Yazılım" />
+            </a>
+
+            <form class="search-area" method="get" action="/store">
+                <input name="q" type="search" placeholder="Ürün, lisans veya yazılım ara..." autocomplete="off" />
+                <button type="submit">Ara</button>
+            </form>
+
+            <div class="header-actions">
+                <div class="login-dropdown">
+                    <button class="header-pill login-toggle" type="button" aria-expanded="false">
+                        <span class="pill-icon">👤</span>
+                        <span>@(User?.Identity?.IsAuthenticated == true ? "Hesabım" : "Üye Girişi")</span>
+                    </button>
+                    <div class="login-dropdown-menu">
+                        @if (User?.Identity?.IsAuthenticated == true)
+                        {
+                            <a href="/Account/MyAccount">Hesabım</a>
+                            <a href="/Account/Orders">Siparişlerim</a>
+                            <a href="/Account/Licenses">Lisanslarım</a>
+                            <a href="/Account/Downloads">İndirmelerim</a>
+                            <a class="logout-link" href="/Account/Logout">Çıkış Yap</a>
+                        }
+                        else
+                        {
+                            <a href="/Account/Login">Giriş Yap</a>
+                            <a href="/Account/Register">Kayıt Ol</a>
+                            <a href="/Account/ForgotPassword">Şifremi Unuttum</a>
+                        }
+                    </div>
+                </div>
+
+                <a class="offer-btn" href="/iletisim">Teklif Al</a>
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-menu" id="mainMenu">
+        <div class="menu-inner">
+            <a class="category-button @(isStore ? "active-menu" : "")" href="/store">☰ KATEGORİLER</a>
+            <a class="@(isHome ? "active-menu" : "")" href="/">ANA SAYFA</a>
+            <a class="@(isStore ? "active-menu" : "")" href="/store">Yazılımlar</a>
+            <a href="/store?sort=rating">Çok Satanlar</a>
+            <a href="/store?sort=new">Yeni Ürünler</a>
+            <a class="@(isBlog ? "active-menu" : "")" href="/blog">Blog / Rehberler</a>
+            <a class="@(isVideos ? "active-menu" : "")" href="/videolar">Videolar</a>
+            <a href="/store?stock=in">Lisanslar</a>
+            <a class="@(isContact ? "active-menu" : "")" href="/iletisim">İletişim</a>
+        </div>
+    </nav>
+
+    <main class="@(isVideos ? "nsx-video-main" : (isBlogPage ? "nsx-blog-main" : null))">
+        <div class="main-page-alerts">
+            @await Html.PartialAsync("_Alerts")
+        </div>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div>
+                <img src="~/nsx-assets/logo-brand.webp" asp-append-version="true" alt="NSX Yazılım">
+                <p>NSX Yazılım; işletmelerin satış, servis ve performans süreçleri için modern, güvenilir ve kullanıcı dostu dijital çözümler geliştirir.</p>
+            </div>
+            <div>
+                <h4>Kategoriler</h4>
+                <a href="/store">Yazılımlar</a>
+                <a href="/ucretsiz-veresiye-programi">Ücretsiz Veresiye Programı</a>
+                <a href="/ucretsiz-teknik-servis-programi">Ücretsiz Teknik Servis Programı</a>
+                <a href="/oto-tamir-programi">Oto Tamir Programı</a>
+                <a href="/oto-galeri-programi">Oto Galeri Programı</a>
+                <a href="/servis-live-programi">Servis Live Programı</a>
+                <a href="/ucretsiz-bilgisayar-hizlandirma-programi">Ücretsiz PC Hızlandırma</a>
+                <a href="/klinik-programi">Klinik Programı</a>
+                <a href="/randevu-programi">Randevu Programı</a>
+            </div>
+            <div>
+                <h4>Bilgiler</h4>
+                <a href="/iletisim">Hakkımızda</a>
+                <a href="/iletisim">Sıkça Sorulan Sorular</a>
+                <a href="/blog">Blog / Rehberler</a>
+                <a href="/iade-politikasi">İade Politikası</a>
+                <a href="/videolar">Videolar</a>
+                <a href="/gizlilik-politikasi">Gizlilik Politikası</a>
+                <a href="/kvkk">KVKK Aydınlatma Metni</a>
+            </div>
+            <div>
+                <h4>Müşteri Hizmetleri</h4>
+                <a href="tel:05434624226">0543 462 42 26</a>
+                <a href="https://wa.me/905434624226" target="_blank" rel="noopener noreferrer">WhatsApp Destek</a>
+                <a href="/iletisim">Destek Talebi Oluştur</a>
+                <a href="mailto:destek@nsxyazilim.com">destek@nsxyazilim.com</a>
+            </div>
+        </div>
+
+        <div class="footer-proline credit-redesign">
+            <div class="payment-area payment-area-wide">
+                <div class="payment-title-row">
+                    <div>
+                        <h4>Havale/EFT ile Satın Alma</h4>
+                        <p>Bildirim gönderin, ödeme onayından sonra lisansınız hesabınıza tanımlansın</p>
+                    </div>
+                </div>
+                <div class="payment-logos">
+                    <img src="~/assets/img/credit.png" asp-append-version="true" alt="Banka Havalesi ve EFT ile dijital lisans satın alma" width="520" height="96" loading="lazy">
+                </div>
+            </div>
+
+            <div class="social-area">
+                <div class="social-heading">
+                    <span class="social-heading-icon" aria-hidden="true"><i class="bi bi-share-fill"></i></span>
+                    <div>
+                        <h4>Bizi Takip Edin</h4>
+                        <p>Yenilikler, ürün ipuçları ve duyurular için sosyal hesaplarımızdayız.</p>
+                    </div>
+                </div>
+                <div class="social-boxes">
+                    <a class="social-facebook" href="https://www.facebook.com/nsxyazilim" target="_blank" rel="noopener noreferrer" aria-label="NSX Yazılım Facebook hesabı" title="Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+                    <a class="social-instagram" href="https://www.instagram.com/nsxyazilim" target="_blank" rel="noopener noreferrer" aria-label="NSX Yazılım Instagram hesabı" title="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+                    <a class="social-x" href="https://x.com/nsxyazilim" target="_blank" rel="noopener noreferrer" aria-label="NSX Yazılım X hesabı" title="X"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"></path></svg></a>
+                    <a class="social-tiktok" href="https://www.tiktok.com/@@nsxyazilim" target="_blank" rel="noopener noreferrer" aria-label="NSX Yazılım TikTok hesabı" title="TikTok"><i class="bi bi-tiktok" aria-hidden="true"></i></a>
+                    <a class="social-youtube" href="https://www.youtube.com/@@nsxyazilim" target="_blank" rel="noopener noreferrer" aria-label="NSX Yazılım YouTube kanalı" title="YouTube"><i class="bi bi-youtube" aria-hidden="true"></i></a>
+                    <a class="social-whatsapp" href="https://wa.me/905434624226" target="_blank" rel="noopener noreferrer" aria-label="NSX Yazılım WhatsApp destek hattı" title="WhatsApp"><i class="bi bi-whatsapp" aria-hidden="true"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="copyright">© @DateTime.Now.Year NSX Yazılım. Tüm hakları saklıdır.</div>
+    </footer>
+
+    <div class="nsx-live-support-widget" id="nsxLiveSupportWidget">
+        <div class="nsx-live-support-window" id="nsxLiveSupportWindow" aria-hidden="true">
+            <div class="nsx-live-support-head">
+                <div class="nsx-live-support-avatar">NSX</div>
+                <div>
+                    <strong>Canlı Destek</strong>
+                    <span>NSX Yazılım Destek Merkezi</span>
+                </div>
+                <button type="button" class="nsx-live-support-close" id="nsxLiveSupportClose" aria-label="Canlı destek penceresini kapat">×</button>
+            </div>
+
+            <div class="nsx-live-support-body nsx-realtime-support-body">
+                <div id="nsxLiveChatMessages" class="nsx-realtime-chat-messages">
+                    <div class="nsx-live-support-bubble">
+                        NSX'e Hoş Geldiniz...<br />Size nasıl yardımcı olabiliriz?
+                    </div>
+                </div>
+
+                <div class="nsx-live-support-compose">
+                    <label for="nsxLiveSupportContact">Mail / Telefon</label>
+                    <input id="nsxLiveSupportContact" class="nsx-live-support-input" type="text" maxlength="120" autocomplete="email" placeholder="Size nasıl ulaşalım?" />
+                </div>
+
+                <form class="nsx-live-support-form" id="nsxLiveSupportForm">
+                    <div class="nsx-live-support-compose">
+                        <label for="nsxLiveSupportMessage">Mesajınız</label>
+                        <textarea id="nsxLiveSupportMessage" class="nsx-live-support-message" rows="3" maxlength="700" placeholder="Mesajınızı yazın..." required></textarea>
+                    </div>
+
+                    <div class="nsx-live-support-actions">
+                        <button type="submit" class="nsx-live-direct-send">Gönder</button>
+                        <button type="button" class="nsx-wp-app-link nsx-wp-secondary" data-phone="905434624226">WhatsApp Destek</button>
+                        <small class="nsx-live-support-status" id="nsxLiveSupportStatus">Canlı destek bağlantısı hazırlanıyor...</small>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <button type="button" class="nsx-live-support-button" id="nsxLiveSupportButton" aria-label="Canlı destek penceresini aç">
+            <span class="nsx-live-support-icon">💬</span>
+            <span class="nsx-live-support-text">Canlı Destek</span>
+        </button>
+    </div>
+
+    <button class="nsx-scroll-top-pro" id="nsxScrollTop" type="button" aria-label="Yukarı Çık">↑</button>
+
+    <div class="modal fade nsx-modal" id="nsxAlertModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content nsx-modal-content">
+                <div class="nsx-modal-icon" id="nsxAlertIcon">✓</div>
+                <h5 id="nsxAlertTitle">Bilgilendirme</h5>
+                <div class="nsx-modal-message" id="nsxAlertMessage">İşlem tamamlandı.</div>
+                <button type="button" class="nsx-btn nsx-btn-primary w-100 mt-3" data-bs-dismiss="modal">Tamam</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/signalr/signalr.min.js" asp-append-version="true"></script>
+    <script src="~/assets/js/main.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/nsx-product-detail.js" asp-append-version="true"></script>
+    <script src="~/js/online-presence.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,1442 @@
+
+/* NSX Home Product Showcase */
+.nsx-home-showcase {
+    padding: 34px 0 20px;
+}
+
+.nsx-hero-slider {
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(124,45,18,.25);
+}
+
+.nsx-hero-slide,
+.nsx-empty-hero {
+    min-height: 520px;
+    padding: 48px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 18% 18%, rgba(245,104,0,.45), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(168,85,247,.35), transparent 28%),
+        linear-gradient(135deg, #0f172a 0%, #3a3d46 58%, #24262d 100%);
+}
+
+.nsx-empty-hero {
+    border-radius: 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.nsx-hero-slide h1,
+.nsx-empty-hero h1 {
+    margin: 20px 0 14px;
+    font-size: clamp(2.1rem, 5vw, 4.2rem);
+    line-height: .98;
+    font-weight: 950;
+    letter-spacing: -1.7px;
+}
+
+.nsx-hero-slide p,
+.nsx-empty-hero p {
+    color: rgba(255,255,255,.82);
+    font-size: 1.08rem;
+    line-height: 1.75;
+    max-width: 720px;
+}
+
+.nsx-hero-product-box {
+    height: 390px;
+    border-radius: 32px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    box-shadow: 0 24px 70px rgba(0,0,0,.20);
+    overflow: hidden;
+    position: relative;
+    backdrop-filter: blur(14px);
+}
+
+.nsx-hero-product-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nsx-hero-price-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    max-width: 690px;
+    margin-top: 24px;
+}
+
+.nsx-hero-price-row > div {
+    border-radius: 20px;
+    padding: 14px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.16);
+}
+
+.nsx-hero-price-row small {
+    display: block;
+    color: rgba(255,255,255,.66);
+    font-weight: 850;
+    margin-bottom: 4px;
+}
+
+.nsx-hero-price-row strong {
+    font-size: 1.2rem;
+    font-weight: 950;
+}
+
+.nsx-home-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 14px;
+}
+
+.nsx-home-stats > div {
+    border-radius: 26px;
+    padding: 22px;
+    background: rgba(255,255,255,.94);
+    border: 1px solid rgba(226,232,240,.96);
+    box-shadow: 0 14px 38px rgba(15,23,42,.07);
+}
+
+.nsx-home-stats span {
+    display: block;
+    color: #6b7280;
+    font-weight: 850;
+    margin-bottom: 8px;
+}
+
+.nsx-home-stats strong {
+    font-size: 2rem;
+    font-weight: 950;
+}
+
+.carousel-indicators {
+    margin-bottom: 22px;
+}
+
+.carousel-indicators [data-bs-target] {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    border: 0;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 7%;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 18px;
+    background-color: rgba(15,23,42,.36);
+    background-size: 55%;
+}
+
+@media (max-width: 991px) {
+    .nsx-hero-slide,
+    .nsx-empty-hero {
+        padding: 32px;
+    }
+
+    .nsx-hero-product-box {
+        height: 300px;
+    }
+
+    .nsx-home-stats {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+}
+
+@media (max-width: 575px) {
+    .nsx-hero-slide,
+    .nsx-empty-hero {
+        padding: 24px;
+        min-height: auto;
+    }
+
+    .nsx-hero-price-row,
+    .nsx-home-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        display: none;
+    }
+}
+
+/* NSX Home - Store style top 3 product hero */
+.nsx-home-triple-hero {
+    border-radius: 34px;
+    padding: 34px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 12% 18%, rgba(245,104,0,.42), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(168,85,247,.34), transparent 28%),
+        linear-gradient(135deg,#0f172a,#3a3d46 62%,#24262d);
+    box-shadow: 0 26px 70px rgba(124,45,18,.22);
+}
+
+.nsx-home-triple-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.nsx-home-triple-head h1 {
+    font-size: clamp(2.1rem, 4vw, 3.6rem);
+    font-weight: 950;
+    letter-spacing: -1.2px;
+    margin: 4px 0 8px;
+}
+
+.nsx-home-triple-head p {
+    color: rgba(255,255,255,.78);
+    max-width: 700px;
+    margin: 0;
+    line-height: 1.75;
+}
+
+.nsx-home-triple-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.nsx-home-hero-product {
+    display: grid;
+    text-decoration: none;
+    color: #fff;
+    overflow: hidden;
+    border-radius: 28px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    box-shadow: 0 18px 48px rgba(0,0,0,.16);
+    transition: .18s ease;
+}
+
+.nsx-home-hero-product:hover {
+    color: #fff;
+    transform: translateY(-3px);
+    background: rgba(255,255,255,.16);
+}
+
+.nsx-home-hero-img {
+    height: 230px;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
+}
+
+.nsx-home-hero-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 16px;
+    transition: .22s ease;
+}
+
+.nsx-home-hero-product:hover .nsx-home-hero-img img {
+    transform: scale(1.035);
+}
+
+.nsx-home-hero-info {
+    display: grid;
+    gap: 5px;
+    padding: 18px;
+}
+
+.nsx-home-hero-info small {
+    color: rgba(255,255,255,.7);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.nsx-home-hero-info strong {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 950;
+    line-height: 1.25;
+}
+
+.nsx-home-hero-info em {
+    color: rgba(255,255,255,.78);
+    font-style: normal;
+    font-weight: 850;
+}
+
+@media (max-width: 991px) {
+    .nsx-home-triple-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nsx-home-hero-img {
+        height: 280px;
+    }
+}
+
+@media (max-width: 575px) {
+    .nsx-home-triple-hero {
+        padding: 24px;
+        border-radius: 26px;
+    }
+
+    .nsx-home-hero-img {
+        height: 220px;
+    }
+}
+
+/* NSX Home Campaign Announcement */
+.nsx-campaign-announcement {
+    margin-bottom: 18px;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 18px 44px rgba(220,38,38,.16);
+}
+
+.nsx-campaign-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 22px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(254,202,202,.34), transparent 30%),
+        linear-gradient(135deg, #991b1b, #dc2626 48%, #7f1d1d);
+}
+
+.nsx-campaign-banner span {
+    display: block;
+    color: rgba(255,255,255,.72);
+    font-size: .78rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin-bottom: 4px;
+}
+
+.nsx-campaign-banner strong {
+    display: block;
+    font-size: 1.18rem;
+    font-weight: 950;
+    letter-spacing: -.2px;
+}
+
+.nsx-campaign-banner small {
+    display: block;
+    color: rgba(255,255,255,.84);
+    font-weight: 850;
+    margin-top: 3px;
+}
+
+.nsx-campaign-link {
+    flex: 0 0 auto;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: 11px 16px;
+    color: #991b1b;
+    background: #fff;
+    font-weight: 950;
+    box-shadow: 0 10px 26px rgba(0,0,0,.14);
+}
+
+.nsx-campaign-link:hover {
+    color: #7f1d1d;
+}
+
+.nsx-campaign-code-pill {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    border-radius: 999px;
+    margin-top: 9px;
+    padding: 8px 12px;
+    color: #991b1b;
+    background: #fff;
+    border: 1px solid rgba(255,255,255,.72);
+    box-shadow: 0 10px 22px rgba(0,0,0,.13);
+    font-style: normal;
+    font-size: .88rem;
+    font-weight: 950;
+    letter-spacing: .2px;
+}
+
+.nsx-hero-campaign-pill {
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nsx-hero-campaign-pill b {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 10px;
+    padding: 5px 9px;
+    color: #991b1b;
+    background: #fff;
+    font-size: .78rem;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.nsx-campaign-image-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.nsx-campaign-image-badge small {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 3px 7px;
+    color: #991b1b;
+    background: #fff;
+    font-size: .68rem;
+    font-weight: 950;
+}
+
+
+.nsx-hero-campaign-pill {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    border-radius: 14px;
+    padding: 9px 13px;
+    margin-top: 12px;
+    color: #fff;
+    background: rgba(220,38,38,.92);
+    border: 1px solid rgba(255,255,255,.22);
+    box-shadow: 0 12px 30px rgba(0,0,0,.16);
+    font-size: .88rem;
+    font-weight: 950;
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0) scale(1);
+    transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease, filter .28s ease;
+}
+
+.nsx-hero-campaign-pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(120deg, rgba(255,255,255,.22), transparent 42%, rgba(255,255,255,.10));
+    opacity: .55;
+    transform: translateX(-38%);
+    transition: transform .45s ease, opacity .28s ease;
+}
+
+.nsx-hero-campaign-pill:hover {
+    transform: translateY(-2px) scale(1.018);
+    box-shadow: 0 18px 42px rgba(0,0,0,.20), 0 0 24px rgba(220,38,38,.26);
+    border-color: rgba(255,255,255,.34);
+    filter: saturate(1.04);
+}
+
+.nsx-hero-campaign-pill:hover::before {
+    opacity: .82;
+    transform: translateX(28%);
+}
+
+.nsx-hero-campaign-pill > span,
+.nsx-hero-campaign-pill > b {
+    position: relative;
+    z-index: 1;
+}
+
+.nsx-hero-campaign-pill b {
+    transition: transform .24s ease, box-shadow .24s ease;
+}
+
+.nsx-hero-campaign-pill:hover b {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0,0,0,.14);
+}
+
+.nsx-campaign-image-badge,
+.nsx-campaign-card-badge {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 3;
+    border-radius: 999px;
+    padding: 9px 13px;
+    color: #fff;
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    box-shadow: 0 12px 28px rgba(220,38,38,.30);
+    font-size: .8rem;
+    font-weight: 950;
+}
+
+.nsx-campaign-card-badge {
+    left: 16px;
+    bottom: 16px;
+}
+
+.nsx-campaign-card-line {
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    border-radius: 12px;
+    padding: 7px 10px;
+    color: #991b1b;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    font-size: .78rem;
+    font-weight: 950;
+    margin-top: 7px;
+}
+
+.nsx-store-pro-image .nsx-last-stock {
+    bottom: 58px;
+}
+
+@media (max-width: 575px) {
+    .nsx-campaign-banner {
+        display: grid;
+        padding: 16px;
+    }
+
+    .nsx-campaign-link {
+        text-align: center;
+    }
+}
+
+/* Ana sayfa alt ürün kartları: 3 seviyeli stok sistemi */
+.nsx-store-pro-image .nsx-stock-badge {
+    top: 16px;
+    left: 16px;
+    bottom: auto;
+}
+
+.nsx-store-pro-image .nsx-stock-badge.in {
+    background: #16a34a;
+}
+
+.nsx-store-pro-image .nsx-stock-badge.low {
+    background: #f97316;
+}
+
+.nsx-store-pro-image .nsx-stock-badge.out {
+    background: #dc2626;
+}
+
+.nsx-store-pro-image .nsx-last-stock {
+    top: 16px;
+    right: 16px;
+    bottom: auto;
+    left: auto;
+}
+
+.nsx-store-pro-image .nsx-last-stock.in {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    box-shadow: 0 10px 24px rgba(22, 163, 74, .28);
+}
+
+.nsx-store-pro-image .nsx-last-stock.low {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    box-shadow: 0 10px 24px rgba(249, 115, 22, .30);
+}
+
+.nsx-store-pro-image .nsx-last-stock.out {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    box-shadow: 0 10px 24px rgba(239, 68, 68, .30);
+}
+
+/* Ana sayfa alt ürün kartları: premium çoklu görsel galerisi */
+.nsx-store-pro-image.nsx-gallery-trigger {
+    width: 100%;
+    border: 0;
+    cursor: zoom-in;
+    display: block;
+    position: relative;
+    text-align: left;
+}
+
+.nsx-store-pro-image.nsx-gallery-trigger::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: radial-gradient(circle at center, rgba(15, 23, 42, .12), rgba(15, 23, 42, .02) 55%, transparent 72%);
+    transition: opacity .22s ease;
+    pointer-events: none;
+}
+
+.nsx-store-pro-card:hover .nsx-store-pro-image.nsx-gallery-trigger::after {
+    opacity: 1;
+}
+
+.nsx-gallery-open-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    z-index: 6;
+    transform: translateX(-50%) translateY(8px);
+    opacity: 0;
+    border-radius: 999px;
+    padding: 9px 14px;
+    color: #fff;
+    background: rgba(15, 23, 42, .88);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, .22);
+    font-size: .78rem;
+    font-weight: 900;
+    white-space: nowrap;
+    transition: opacity .22s ease, transform .22s ease;
+}
+
+.nsx-store-pro-card:hover .nsx-gallery-open-hint {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nsx-gallery-lock {
+    overflow: hidden;
+}
+
+.nsx-gallery-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+}
+
+.nsx-gallery-modal.open {
+    display: flex;
+}
+
+.nsx-gallery-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(2, 6, 23, .72);
+    backdrop-filter: blur(12px);
+    animation: nsxGalleryFade .18s ease both;
+}
+
+.nsx-gallery-window {
+    position: relative;
+    z-index: 2;
+    width: min(980px, 96vw);
+    max-height: 92vh;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .24);
+    border-radius: 30px;
+    background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(241,245,249,.96));
+    box-shadow: 0 34px 90px rgba(2, 6, 23, .44);
+    animation: nsxGalleryPop .22s ease both;
+}
+
+.nsx-gallery-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 5;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 999px;
+    color: #0f172a;
+    background: rgba(255, 255, 255, .88);
+    box-shadow: 0 14px 36px rgba(15, 23, 42, .18);
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 300;
+}
+
+.nsx-gallery-stage {
+    position: relative;
+    height: min(60vh, 560px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 34px 72px 18px;
+    background:
+        radial-gradient(circle at 18% 12%, rgba(245, 104, 0, .14), transparent 30%),
+        radial-gradient(circle at 82% 16%, rgba(249, 115, 22, .14), transparent 26%),
+        linear-gradient(135deg, #f8fafc, #fff4ec);
+}
+
+.nsx-gallery-stage img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transform: scale(.965) translateY(8px);
+    filter: drop-shadow(0 24px 42px rgba(15, 23, 42, .20));
+    transition: opacity .24s ease, transform .24s ease;
+}
+
+.nsx-gallery-stage img.is-active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.nsx-gallery-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 4;
+    width: 48px;
+    height: 48px;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, #9a3412, #0f172a);
+    box-shadow: 0 18px 42px rgba(124, 45, 18, .28);
+    font-size: 38px;
+    line-height: 1;
+}
+
+.nsx-gallery-prev { left: 18px; }
+.nsx-gallery-next { right: 18px; }
+
+.nsx-gallery-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 24px 10px;
+}
+
+.nsx-gallery-info span {
+    display: block;
+    color: #f56800;
+    font-size: .76rem;
+    font-weight: 950;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.nsx-gallery-info h3 {
+    margin: 3px 0 2px;
+    color: #0f172a;
+    font-size: 1.25rem;
+    font-weight: 950;
+}
+
+.nsx-gallery-info small {
+    color: #64748b;
+    font-weight: 800;
+}
+
+.nsx-gallery-thumbs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 12px 24px 22px;
+}
+
+.nsx-gallery-thumbs button {
+    flex: 0 0 84px;
+    height: 64px;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 6px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .10);
+    opacity: .72;
+    transition: opacity .18s ease, transform .18s ease, border-color .18s ease;
+}
+
+.nsx-gallery-thumbs button.active,
+.nsx-gallery-thumbs button:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    border-color: #f56800;
+}
+
+.nsx-gallery-thumbs img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+@keyframes nsxGalleryFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes nsxGalleryPop {
+    from { opacity: 0; transform: translateY(18px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 575px) {
+    .nsx-gallery-modal { padding: 10px; }
+    .nsx-gallery-window { border-radius: 22px; }
+    .nsx-gallery-stage { height: 48vh; padding: 60px 54px 14px; }
+    .nsx-gallery-nav { width: 40px; height: 40px; font-size: 30px; }
+    .nsx-gallery-info { display: grid; }
+    .nsx-gallery-info .nsx-btn { width: 100%; justify-content: center; }
+}
+
+
+/* NSX Ana sayfa ürün kartları: blur + zoom + spotlight + gradient mouse ışığı */
+.nsx-store-pro-card {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transform-style: preserve-3d;
+    --nsx-spot-x: 50%;
+    --nsx-spot-y: 50%;
+    transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease, filter .28s ease;
+}
+
+.nsx-store-pro-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(circle at var(--nsx-spot-x) var(--nsx-spot-y), rgba(255,255,255,.58), rgba(255,255,255,.18) 18%, rgba(245,104,0,.10) 34%, transparent 58%);
+    mix-blend-mode: screen;
+    transition: opacity .28s ease;
+}
+
+.nsx-store-pro-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.28), transparent 28%, rgba(255,255,255,.16) 52%, transparent 78%);
+    transform: translateX(-35%) skewX(-14deg);
+    transition: opacity .28s ease, transform .42s ease;
+}
+
+.nsx-store-pro-card:hover {
+    transform: translateY(-7px) scale(1.012);
+    box-shadow: 0 28px 70px rgba(15, 23, 42, .16), 0 0 0 1px rgba(245, 104, 0, .10);
+}
+
+.nsx-store-pro-card:hover::before {
+    opacity: 1;
+}
+
+.nsx-store-pro-card:hover::after {
+    opacity: 1;
+    transform: translateX(18%) skewX(-14deg);
+}
+
+.nsx-store-pro-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.nsx-store-pro-card:hover .nsx-store-pro-image img {
+    transform: scale(1.075);
+    filter: saturate(1.08) contrast(1.03);
+}
+
+.nsx-store-pro-card:hover .nsx-store-pro-body p {
+    filter: blur(.15px);
+}
+
+.nsx-store-pro-image {
+    overflow: hidden;
+}
+
+.nsx-store-pro-image img {
+    transition: transform .42s cubic-bezier(.2,.8,.2,1), filter .32s ease;
+}
+
+.nsx-premium-product-actions .nsx-btn {
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    transition: transform .22s ease, box-shadow .22s ease, filter .22s ease, background .22s ease;
+}
+
+.nsx-premium-product-actions .nsx-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+}
+
+.nsx-btn-shine::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 52%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,.48), transparent);
+    transform: skewX(-24deg);
+    pointer-events: none;
+}
+
+.nsx-btn-shine:hover::after {
+    animation: nsxButtonShine .82s ease;
+}
+
+@keyframes nsxButtonShine {
+    100% { left: 128%; }
+}
+
+.nsx-btn-glow:hover {
+    color: #111827 !important;
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+    border-color: rgba(245,104,0,.22);
+    box-shadow: 0 0 0 1px rgba(245,104,0,.14), 0 12px 26px rgba(245,104,0,.18), 0 0 22px rgba(245,104,0,.16);
+    filter: brightness(1.02);
+}
+
+.nsx-btn-glow:hover i {
+    color: #f56800 !important;
+}
+
+.nsx-btn-glow i {
+    font-size: 1rem;
+    transition: transform .22s ease;
+}
+
+.nsx-btn-glow:hover i {
+    transform: translateY(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nsx-store-pro-card,
+    .nsx-store-pro-card::before,
+    .nsx-store-pro-card::after,
+    .nsx-store-pro-image img,
+    .nsx-premium-product-actions .nsx-btn,
+    .nsx-btn-glow i {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+
+/* NSX Hero Slider - dengeli vurucu ayar: genel boy korunur, sağ ürün alanı güçlenir */
+@media (min-width: 992px) {
+    .nsx-hero-slider .row.align-items-center {
+        min-height: 410px;
+    }
+
+    .nsx-hero-copy-col {
+        flex: 0 0 43%;
+        max-width: 43%;
+    }
+
+    .nsx-hero-visual-col {
+        flex: 0 0 57%;
+        max-width: 57%;
+    }
+
+    .nsx-hero-copy-col .nsx-eyebrow {
+        font-size: .78rem;
+        margin-bottom: 10px;
+    }
+
+    .nsx-hero-copy-col h1 {
+        font-size: clamp(2rem, 3.2vw, 3.15rem);
+        line-height: 1.04;
+        margin-bottom: 12px;
+    }
+
+    .nsx-hero-copy-col p {
+        font-size: .96rem;
+        line-height: 1.55;
+        margin-bottom: 16px;
+        max-width: 560px;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-campaign-pill {
+        transform: scale(.94);
+        transform-origin: left center;
+        margin-bottom: 12px;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-price-row {
+        gap: 8px;
+        margin-top: 14px;
+        margin-bottom: 16px;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-price-row > div {
+        padding: 10px 11px;
+        border-radius: 14px;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-price-row small {
+        font-size: .72rem;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-price-row strong {
+        font-size: .96rem;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-actions {
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-actions .nsx-btn {
+        padding: 10px 15px;
+        font-size: .9rem;
+    }
+
+    .nsx-hero-product-box-xl,
+    .nsx-hero-slider .nsx-hero-product-box {
+        width: min(100%, 560px);
+        height: 370px;
+        margin-left: auto;
+        border-radius: 28px;
+        padding: 20px;
+        transform: none;
+        background:
+            radial-gradient(circle at 50% 28%, rgba(255,255,255,.26), transparent 35%),
+            linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
+        box-shadow: 0 24px 64px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.18);
+    }
+
+    .nsx-hero-product-box-xl img,
+    .nsx-hero-slider .nsx-hero-product-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        padding: 8px;
+        transform: scale(1.04);
+        filter: drop-shadow(0 22px 30px rgba(0,0,0,.30));
+        transition: transform .4s ease, filter .4s ease;
+    }
+
+    .nsx-hero-slider .nsx-hero-product-box:hover img {
+        transform: scale(1.09) translateY(-4px);
+        filter: drop-shadow(0 28px 38px rgba(0,0,0,.36));
+    }
+}
+
+@media (max-width: 991px) {
+    .nsx-hero-copy-col,
+    .nsx-hero-visual-col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .nsx-hero-product-box-xl,
+    .nsx-hero-slider .nsx-hero-product-box {
+        height: 300px;
+        width: 100%;
+        margin: 0;
+    }
+}
+
+/* NSX Hero Slider - orijinal ölçü + landing page efektleri */
+@media (min-width: 992px) {
+    .nsx-hero-slider {
+        border-radius: 24px !important;
+        overflow: hidden !important;
+    }
+
+    .nsx-hero-slide,
+    .nsx-empty-hero {
+        min-height: 390px !important;
+        padding: 32px !important;
+    }
+
+    .nsx-hero-slider .row.align-items-center {
+        min-height: 0 !important;
+    }
+
+    .nsx-hero-copy-col,
+    .nsx-hero-visual-col {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    .nsx-hero-copy-col h1 {
+        font-size: clamp(1.9rem, 3.35vw, 3.05rem) !important;
+        line-height: 1.04 !important;
+        margin: 12px 0 9px !important;
+        letter-spacing: -1.15px !important;
+    }
+
+    .nsx-hero-copy-col p {
+        font-size: .96rem !important;
+        line-height: 1.55 !important;
+        max-width: 620px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-campaign-pill {
+        max-width: 430px !important;
+        border-radius: 12px !important;
+        padding: 10px 12px !important;
+        margin-bottom: 10px !important;
+        transform: none !important;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-price-row {
+        margin-top: 14px !important;
+        margin-bottom: 12px !important;
+        gap: 8px !important;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-price-row > div {
+        padding: 10px 11px !important;
+        border-radius: 14px !important;
+    }
+
+    .nsx-hero-copy-col .nsx-hero-actions .nsx-btn {
+        padding: 10px 15px !important;
+    }
+
+    .nsx-hero-product-box-xl,
+    .nsx-hero-slider .nsx-hero-product-box {
+        width: min(100%, 510px) !important;
+        height: 310px !important;
+        margin-left: auto !important;
+        border-radius: 22px !important;
+        padding: 16px !important;
+        overflow: hidden !important;
+        isolation: isolate !important;
+        transform: translateZ(0) !important;
+        transition: transform .42s cubic-bezier(.2,.8,.2,1), box-shadow .42s cubic-bezier(.2,.8,.2,1), border-color .42s ease !important;
+        background:
+            radial-gradient(circle at var(--nsx-light-x, 50%) var(--nsx-light-y, 35%), rgba(255,255,255,.26), transparent 36%),
+            linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.08)) !important;
+    }
+
+    .nsx-hero-product-box-xl::before,
+    .nsx-hero-slider .nsx-hero-product-box::before {
+        content: "";
+        position: absolute;
+        inset: -35%;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.34) 50%, transparent 62%);
+        transform: translateX(-72%) rotate(8deg);
+        opacity: 0;
+        transition: opacity .25s ease, transform .85s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .nsx-hero-product-box-xl::after,
+    .nsx-hero-slider .nsx-hero-product-box::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: radial-gradient(circle at var(--nsx-light-x, 50%) var(--nsx-light-y, 35%), rgba(255,255,255,.18), transparent 42%);
+        opacity: .65;
+        transition: opacity .28s ease;
+    }
+
+    .nsx-hero-product-box-xl:hover,
+    .nsx-hero-slider .nsx-hero-product-box:hover {
+        transform: translateY(-4px) scale(1.012) !important;
+        box-shadow: 0 28px 70px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.22) !important;
+        border-color: rgba(255,255,255,.28) !important;
+    }
+
+    .nsx-hero-product-box-xl:hover::before,
+    .nsx-hero-slider .nsx-hero-product-box:hover::before {
+        opacity: 1;
+        transform: translateX(58%) rotate(8deg);
+    }
+
+    .nsx-hero-product-box-xl img,
+    .nsx-hero-slider .nsx-hero-product-box img {
+        position: relative !important;
+        z-index: 2 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        object-position: center !important;
+        padding: 8px !important;
+        transform: none !important;
+        filter: drop-shadow(0 18px 26px rgba(0,0,0,.28)) !important;
+        transition: transform .34s cubic-bezier(.2,.8,.2,1), filter .34s ease !important;
+    }
+
+    .nsx-hero-slider .carousel-item {
+        transition: opacity .75s ease-in-out, transform .75s cubic-bezier(.2,.8,.2,1) !important;
+    }
+
+    .nsx-hero-slider.carousel-fade .carousel-item {
+        transform: scale(.985) translateY(8px) !important;
+    }
+
+    .nsx-hero-slider.carousel-fade .carousel-item.active,
+    .nsx-hero-slider.carousel-fade .carousel-item-next.carousel-item-start,
+    .nsx-hero-slider.carousel-fade .carousel-item-prev.carousel-item-end {
+        transform: scale(1) translateY(0) !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nsx-hero-slider .carousel-item,
+    .nsx-hero-slider .nsx-hero-product-box,
+    .nsx-hero-slider .nsx-hero-product-box img,
+    .nsx-hero-slider .nsx-hero-product-box::before,
+    .nsx-hero-slider .nsx-hero-product-box::after {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* NSX FINAL - Slider ürün görseli premium odak ayarı */
+.nsx-hero-slider .nsx-hero-product-box,
+.nsx-hero-product-box-xl {
+    overflow: visible !important;
+    box-shadow: 0 24px 62px rgba(15,23,42,.18), 0 12px 28px rgba(245,104,0,.12) !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box::after,
+.nsx-hero-product-box-xl::after {
+    inset: -18px !important;
+    border-radius: 28px !important;
+    background:
+        radial-gradient(circle at var(--nsx-light-x, 56%) var(--nsx-light-y, 38%), rgba(255,255,255,.26), transparent 36%),
+        radial-gradient(circle at 50% 74%, rgba(245,104,0,.18), transparent 48%) !important;
+    opacity: .9 !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box img,
+.nsx-hero-product-box-xl img {
+    width: 108% !important;
+    height: 108% !important;
+    max-width: 108% !important;
+    max-height: 112% !important;
+    margin: -10px -4% 0 -4% !important;
+    padding: 2px !important;
+    filter: drop-shadow(0 24px 28px rgba(0,0,0,.30)) drop-shadow(0 10px 18px rgba(245,104,0,.16)) !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box:hover,
+.nsx-hero-product-box-xl:hover {
+    box-shadow: 0 30px 78px rgba(15,23,42,.24), 0 18px 42px rgba(245,104,0,.18) !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box:hover img,
+.nsx-hero-product-box-xl:hover img {
+    filter: drop-shadow(0 30px 34px rgba(0,0,0,.34)) drop-shadow(0 14px 24px rgba(245,104,0,.22)) !important;
+}
+
+/* NSX FINAL - Üst kampanya tablosu slider köşe ve premium hareket */
+.nsx-campaign-announcement {
+    border-radius: 36px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    isolation: isolate;
+    transform: translateY(0);
+    transition: transform .28s ease, box-shadow .28s ease, filter .28s ease;
+}
+
+.nsx-campaign-announcement:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 24px 62px rgba(220,38,38,.22), 0 10px 28px rgba(15,23,42,.12) !important;
+    filter: saturate(1.04);
+}
+
+.nsx-campaign-banner {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.nsx-campaign-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.20) 42%, transparent 70%);
+    transform: translateX(-120%) skewX(-18deg);
+    transition: transform .65s ease;
+    z-index: 0;
+}
+
+.nsx-campaign-announcement:hover .nsx-campaign-banner::before {
+    transform: translateX(120%) skewX(-18deg);
+}
+
+.nsx-campaign-banner > * {
+    position: relative;
+    z-index: 1;
+}
+
+.nsx-campaign-link {
+    border-radius: 14px !important;
+    position: relative;
+    overflow: hidden;
+    transition: transform .24s ease, box-shadow .24s ease, background .24s ease, color .24s ease;
+}
+
+.nsx-campaign-link::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -70%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(220,38,38,.18), transparent);
+    transform: skewX(-22deg);
+    transition: left .55s ease;
+}
+
+.nsx-campaign-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(0,0,0,.18), 0 0 18px rgba(255,255,255,.22);
+}
+
+.nsx-campaign-link:hover::after {
+    left: 125%;
+}
+
+.nsx-campaign-code-pill {
+    border-radius: 14px !important;
+}
+
+/* NSX FIX - Slider ürün görsel kutusu sabit premium çerçeve */
+.nsx-hero-slider .nsx-hero-product-box,
+.nsx-hero-product-box-xl {
+    position: relative !important;
+    overflow: hidden !important;
+    border-radius: 28px !important;
+    border: 1px solid rgba(255,255,255,.34) !important;
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.07)) !important;
+    box-shadow:
+        0 24px 62px rgba(15,23,42,.22),
+        inset 0 1px 0 rgba(255,255,255,.30),
+        inset 0 0 0 1px rgba(255,255,255,.10) !important;
+    transform: none !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box::before,
+.nsx-hero-product-box-xl::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 10px !important;
+    z-index: 3 !important;
+    pointer-events: none !important;
+    border-radius: 22px !important;
+    border: 1px solid rgba(255,255,255,.42) !important;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.22), transparent 18%, transparent 82%, rgba(255,255,255,.14)),
+        linear-gradient(180deg, rgba(255,255,255,.18), transparent 34%, rgba(255,255,255,.08)) !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box::after,
+.nsx-hero-product-box-xl::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    border-radius: 28px !important;
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,.20), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,.12), transparent 45%, rgba(255,255,255,.10)) !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box:hover,
+.nsx-hero-product-box-xl:hover {
+    transform: none !important;
+    border-color: rgba(255,255,255,.34) !important;
+    box-shadow:
+        0 24px 62px rgba(15,23,42,.22),
+        inset 0 1px 0 rgba(255,255,255,.30),
+        inset 0 0 0 1px rgba(255,255,255,.10) !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box:hover::before,
+.nsx-hero-product-box-xl:hover::before,
+.nsx-hero-slider .nsx-hero-product-box:hover::after,
+.nsx-hero-product-box-xl:hover::after {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box img,
+.nsx-hero-product-box-xl img {
+    position: relative !important;
+    z-index: 2 !important;
+    object-fit: contain !important;
+}
+
+/* NSX FINAL REPAIR - Ana sayfa slider görsel alanı bozulmadan temiz çerçeve */
+.nsx-hero-slider .nsx-hero-product-box,
+.nsx-hero-product-box-xl {
+    position: relative !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.07)) !important;
+    border: 1px solid rgba(255,255,255,.34) !important;
+    box-shadow: 0 24px 62px rgba(15,23,42,.22), inset 0 1px 0 rgba(255,255,255,.28) !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box::before,
+.nsx-hero-product-box-xl::before {
+    content: none !important;
+    display: none !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box::after,
+.nsx-hero-product-box-xl::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 4 !important;
+    pointer-events: none !important;
+    border-radius: inherit !important;
+    background: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    box-shadow: inset 0 0 0 10px rgba(255,255,255,.10), inset 0 0 0 1px rgba(255,255,255,.30) !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box img,
+.nsx-hero-product-box-xl img {
+    display: block !important;
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    transform: none !important;
+    filter: drop-shadow(0 18px 26px rgba(0,0,0,.28)) !important;
+}
+
+.nsx-hero-slider .nsx-hero-product-box:hover,
+.nsx-hero-product-box-xl:hover,
+.nsx-hero-slider .nsx-hero-product-box:hover img,
+.nsx-hero-product-box-xl:hover img {
+    transform: none !important;
+}
+
+.nsx-hero-slider .nsx-stock-badge,
+.nsx-hero-slider .nsx-campaign-image-badge {
+    z-index: 5 !important;
+}

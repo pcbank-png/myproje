@@ -1,0 +1,131 @@
+@model NSYazilim.Web.Models.Product
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@{
+    ViewData["Title"] = ViewData["Title"] ?? "Ücretsiz İndirme Hazırlanıyor";
+    ViewData["Robots"] = "noindex, nofollow, noarchive";
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    var productName = (ViewBag.PublicProductName as string) ?? Model.Name;
+    var trackingToken = (ViewBag.DownloadTrackingToken as string) ?? string.Empty;
+    var registrationCompleted = ViewBag.RegistrationCompleted is bool completed && completed;
+    var downloadUrl = Url.Action("DownloadFree", "Store", new { productId = Model.Id, trackingToken })
+        ?? $"/store/downloadfree?productId={Model.Id}&trackingToken={trackingToken}";
+
+    async Task<string> T(string source)
+        => await SiteLocalization.TranslateAsync(source, currentLanguage.Code, Context.RequestAborted);
+
+    var downloadStartedText = await T("İndirme başladı. Dosyanız tarayıcınıza gönderildi.");
+}
+
+<section class="nsx-free-download-stage" aria-labelledby="freeDownloadTitle">
+    <div class="container nsx-free-download-shell">
+        <div class="nsx-free-download-card">
+            <span class="nsx-free-download-kicker">@(await T("ÜCRETSİZ İNDİRME"))</span>
+            <div class="nsx-free-download-icon" aria-hidden="true">↓</div>
+            <h1 id="freeDownloadTitle">@(await T("İndirmeniz hazırlanıyor."))</h1>
+            <p><strong>@productName</strong> @(await T("için güvenli indirme birkaç saniye içinde otomatik başlayacak."))</p>
+
+            <div class="nsx-free-download-trust" aria-label="@(await T("Ücretsiz indirme güvenceleri"))">
+                <span><b>✓</b>@(await T("Ödeme yok"))</span>
+                <span><b>✓</b>@(await T("Kart bilgisi yok"))</span>
+                <span><b>✓</b>@(await T("Ücretsiz lisans"))</span>
+            </div>
+
+            <div class="nsx-free-download-progress" id="downloadProgress" role="status" aria-live="polite">
+                <i></i><span>@(await T("Kurulum dosyası hazırlanıyor..."))</span>
+            </div>
+
+            <div class="nsx-free-download-actions">
+                <a class="nsx-free-download-retry" id="downloadRetry" href="@downloadUrl">@(await T("İndirmeyi yeniden başlat")) <span>→</span></a>
+                <a class="nsx-free-download-back" href="/urun/nsx-veresiye-takip-pro-free">@(await T("Ürün sayfasına dön"))</a>
+            </div>
+
+            <small class="nsx-free-download-note">@(await T("Tarayıcınız dosyayı engellerse yukarıdaki indirme düğmesine bir kez tıklayın. NSX ücretsiz lisansı hesabınıza otomatik tanımlanır."))</small>
+        </div>
+    </div>
+</section>
+
+<iframe id="freeDownloadFrame" title="@(await T("NSX ücretsiz indirme"))" hidden></iframe>
+
+<style>
+.nsx-free-download-stage{min-height:610px;padding:72px 0 86px;background:radial-gradient(circle at 50% 0,rgba(255,110,4,.08),transparent 38%),linear-gradient(180deg,#fff 0%,#f8fafb 100%)}
+.nsx-free-download-shell{display:grid;place-items:center}
+.nsx-free-download-card{width:min(690px,100%);box-sizing:border-box;padding:46px 48px;text-align:center;border:1px solid #e1e6ea;border-radius:24px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.09)}
+.nsx-free-download-kicker{display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;color:#ff6e04;font-size:11px;font-weight:950;letter-spacing:.12em}.nsx-free-download-kicker:before{content:"";width:8px;height:8px;border-radius:50%;background:#ff6e04;box-shadow:0 0 0 6px rgba(255,110,4,.10)}
+.nsx-free-download-icon{display:grid;place-items:center;width:74px;height:74px;margin:0 auto 20px;border-radius:22px;background:#fff3ea;color:#ff6e04;font-size:34px;font-weight:900;box-shadow:inset 0 0 0 1px #ffdbc0}
+.nsx-free-download-card h1{margin:0;color:#151a20;font-size:38px;line-height:1.08;font-weight:950;letter-spacing:-.04em}.nsx-free-download-card>p{max-width:570px;margin:15px auto 0;color:#67727e;font-size:14px;line-height:1.72}.nsx-free-download-card>p strong{color:#252b32}
+.nsx-free-download-trust{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:25px 0}.nsx-free-download-trust span{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 13px;border:1px solid #dbe8e1;border-radius:999px;background:#f7fbf9;color:#315a46;font-size:10px;font-weight:900}.nsx-free-download-trust b{color:#168650}
+.nsx-free-download-progress{display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 16px;border:1px solid #e6e9ec;border-radius:13px;background:#fafbfc;color:#66717d;font-size:11px;font-weight:800}.nsx-free-download-progress i{width:9px;height:9px;border-radius:50%;background:#ff6e04;box-shadow:0 0 0 0 rgba(255,110,4,.35);animation:nsxFreePulse 1.25s infinite}.nsx-free-download-progress.is-success{border-color:#cfe7d9;background:#f5fbf7;color:#216542}.nsx-free-download-progress.is-success i{background:#1aa360;animation:none}
+.nsx-free-download-actions{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:18px}.nsx-free-download-retry,.nsx-free-download-back{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:11px;font-size:10.5px;font-weight:900;text-decoration:none}.nsx-free-download-retry{border:1px solid #ff6e04;background:#ff6e04;color:#fff;box-shadow:0 10px 23px rgba(255,110,4,.18)}.nsx-free-download-retry span{margin-left:10px;font-size:16px}.nsx-free-download-back{border:1px solid #dfe4e8;background:#fff;color:#586470}.nsx-free-download-note{display:block;max-width:570px;margin:20px auto 0;color:#8a949d;font-size:9.5px;line-height:1.65}
+@@keyframes nsxFreePulse{0%{box-shadow:0 0 0 0 rgba(255,110,4,.30)}70%{box-shadow:0 0 0 9px rgba(255,110,4,0)}100%{box-shadow:0 0 0 0 rgba(255,110,4,0)}}
+@@media(max-width:720px){.nsx-free-download-stage{padding:42px 0 58px}.nsx-free-download-card{padding:34px 18px;border-radius:19px}.nsx-free-download-card h1{font-size:31px}.nsx-free-download-actions{flex-direction:column}.nsx-free-download-retry,.nsx-free-download-back{width:100%;box-sizing:border-box}}
+</style>
+
+<script>
+(function () {
+    var expectedToken = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(trackingToken.ToLowerInvariant()));
+    var downloadUrl = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(downloadUrl));
+    var productName = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(productName));
+    var productId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Id.ToString()));
+    var progress = document.getElementById('downloadProgress');
+    var frame = document.getElementById('freeDownloadFrame');
+    var completed = false;
+
+    function readCookie(name) {
+        var prefix = name + '=';
+        var parts = document.cookie ? document.cookie.split(';') : [];
+        for (var i = 0; i < parts.length; i++) {
+            var value = parts[i].trim();
+            if (value.indexOf(prefix) === 0) return decodeURIComponent(value.substring(prefix.length));
+        }
+        return '';
+    }
+
+    function clearSuccessCookie() {
+        document.cookie = 'NSX.FreeDownloadSuccess=; Max-Age=0; path=/; SameSite=Lax';
+    }
+
+    function fireDownloadSuccess() {
+        if (completed) return;
+        completed = true;
+        clearSuccessCookie();
+        if (progress) {
+            progress.classList.add('is-success');
+            progress.querySelector('span').textContent = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(downloadStartedText));
+        }
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', 'free_download_success', {
+                product_id: productId,
+                product_name: productName,
+                download_type: 'free_windows_software'
+            });
+        }
+    }
+
+    @if (registrationCompleted)
+    {
+        <text>
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', 'sign_up', { method: 'NSX account' });
+            window.gtag('event', 'registration_complete', { source: 'free_download_flow', product_id: productId, product_name: productName });
+        }
+        </text>
+    }
+
+    clearSuccessCookie();
+    window.setTimeout(function () {
+        if (frame) frame.src = downloadUrl;
+    }, 500);
+
+    var checks = 0;
+    var timer = window.setInterval(function () {
+        checks++;
+        var cookieValue = readCookie('NSX.FreeDownloadSuccess').toLowerCase();
+        if (cookieValue && cookieValue === expectedToken) {
+            window.clearInterval(timer);
+            fireDownloadSuccess();
+            return;
+        }
+        if (checks >= 120) window.clearInterval(timer);
+    }, 500);
+})();
+</script>

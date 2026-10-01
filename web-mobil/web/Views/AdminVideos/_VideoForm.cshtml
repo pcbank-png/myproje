@@ -1,0 +1,146 @@
+@model NSYazilim.Web.ViewModels.ProductVideoFormViewModel
+@{
+    var isEdit = Model.Id > 0;
+    var actionUrl = isEdit ? $"/Admin/Videos/Edit/{Model.Id}" : "/Admin/Videos/Create";
+}
+
+<form class="nsx-video-form nsx-standard-form" method="post" action="@actionUrl" novalidate>
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div class="nsx-admin-card nsx-video-form-main">
+        <div class="nsx-video-form-title">
+            <span>Temel Bilgiler</span>
+            <h2>Videoyu programa bağlayın</h2>
+            <p>Program seçildiğinde site tarafındaki başlık, açıklama, fiyat, stok ve işlem butonları o programdan otomatik alınır.</p>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="nsx-video-field">
+            <label asp-for="ProductId"></label>
+            <select asp-for="ProductId" required>
+                <option value="0">Program seçin</option>
+                @foreach (var product in Model.Products)
+                {
+                    <option value="@product.Id">@product.Name @(!product.IsActive ? "(Pasif)" : "")</option>
+                }
+            </select>
+            <span asp-validation-for="ProductId" class="text-danger"></span>
+            <small>Her video yalnızca seçtiğiniz programa bağlı çalışır.</small>
+        </div>
+
+        <div class="nsx-video-field">
+            <label asp-for="YouTubeUrl"></label>
+            <input asp-for="YouTubeUrl" id="youtubeUrlInput" placeholder="https://youtu.be/VIDEO_KODU" autocomplete="off" />
+            <span asp-validation-for="YouTubeUrl" class="text-danger"></span>
+            <small>YouTube watch, youtu.be, Shorts, Live ve embed bağlantıları desteklenir.</small>
+        </div>
+
+        <div class="nsx-video-form-row">
+            <div class="nsx-video-field">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" placeholder="Boş bırakırsanız program adı kullanılır" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+                <small>İsteğe bağlıdır. Boşsa başlık seçilen programdan oluşturulur.</small>
+            </div>
+
+            <div class="nsx-video-field">
+                <label asp-for="VideoType"></label>
+                <select asp-for="VideoType">
+                    <option value="Tanıtım">Tanıtım</option>
+                    <option value="Kurulum">Kurulum</option>
+                    <option value="Kullanım">Kullanım</option>
+                    <option value="Eğitim">Eğitim</option>
+                    <option value="Güncelleme">Güncelleme</option>
+                    <option value="İpuçları">İpuçları</option>
+                </select>
+                <span asp-validation-for="VideoType" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="nsx-video-form-row compact">
+            <div class="nsx-video-field">
+                <label asp-for="SortOrder"></label>
+                <input asp-for="SortOrder" type="number" />
+                <small>Küçük sayı önce gösterilir.</small>
+            </div>
+
+            <label class="nsx-video-switch-card">
+                <input asp-for="IsFeatured" type="checkbox" />
+                <span>
+                    <strong>Öne Çıkan</strong>
+                    <small>Liste başında göster</small>
+                </span>
+            </label>
+
+            <label class="nsx-video-switch-card">
+                <input asp-for="IsActive" type="checkbox" />
+                <span>
+                    <strong>Yayında</strong>
+                    <small>Sitede görünür olsun</small>
+                </span>
+            </label>
+        </div>
+    </div>
+
+    <aside class="nsx-admin-card nsx-video-form-preview">
+        <div class="nsx-video-form-title">
+            <span>Canlı Önizleme</span>
+            <h2>YouTube kapağı</h2>
+        </div>
+        <div class="nsx-video-preview-frame" id="videoPreviewFrame">
+            <div>
+                <b>▶</b>
+                <span>Bağlantıyı yapıştırınca kapak burada görünür.</span>
+            </div>
+        </div>
+        <div class="nsx-video-source-note">
+            <strong>Video dosyası siteye yüklenmez</strong>
+            <p>Oynatma ve trafik YouTube üzerinden çalışır. Plesk depolama alanı kullanılmaz.</p>
+        </div>
+        <div class="nsx-video-form-actions">
+            <button class="nsx-admin-btn primary" type="submit">@(isEdit ? "Değişiklikleri Kaydet" : "Videoyu Kaydet")</button>
+            <a class="nsx-admin-btn" href="/Admin/Videos">Vazgeç</a>
+        </div>
+    </aside>
+</form>
+
+<script>
+(function () {
+    const input = document.getElementById('youtubeUrlInput');
+    const frame = document.getElementById('videoPreviewFrame');
+    if (!input || !frame) return;
+
+    function getVideoId(value) {
+        value = (value || '').trim();
+        if (/^[A-Za-z0-9_-]{11}$/.test(value)) return value;
+        try {
+            if (!value.includes('://')) value = 'https://' + value.replace(/^\/+/, '');
+            const url = new URL(value);
+            const host = url.hostname.toLowerCase();
+            const parts = url.pathname.split('/').filter(Boolean);
+            if (host === 'youtu.be' || host === 'www.youtu.be') return parts[0] || '';
+            if (host.endsWith('youtube.com')) {
+                if (['embed', 'shorts', 'live'].includes(parts[0])) return parts[1] || '';
+                return url.searchParams.get('v') || '';
+            }
+        } catch (_) { }
+        return '';
+    }
+
+    function updatePreview() {
+        const id = getVideoId(input.value);
+        if (!/^[A-Za-z0-9_-]{11}$/.test(id)) {
+            frame.innerHTML = '<div><b>▶</b><span>Geçerli YouTube bağlantısı bekleniyor.</span></div>';
+            frame.classList.remove('has-image');
+            return;
+        }
+        frame.innerHTML = '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt="YouTube video kapağı"><span class="nsx-video-play">▶</span>';
+        frame.classList.add('has-image');
+    }
+
+    input.addEventListener('input', updatePreview);
+    updatePreview();
+})();
+</script>

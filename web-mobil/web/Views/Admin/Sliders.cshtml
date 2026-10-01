@@ -1,0 +1,88 @@
+@model List<NSYazilim.Web.Models.HomeSlider>
+
+@{
+    ViewData["Title"] = "Slider Yönetimi";
+    var sliders = Model ?? new List<NSYazilim.Web.Models.HomeSlider>();
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Slider Yönetimi</h1>
+            <div class="text-muted">Ana sayfa slider görsellerini, ürün bağlantılarını ve sıralamayı yönet.</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-dark rounded-4 fw-bold" href="/Admin/Products">Ürünler</a>
+            <a class="btn btn-primary rounded-4 fw-bold" href="/Admin/SliderAdd">Yeni Slider</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+    }
+
+    <style>
+        .nsx-slider-thumb{width:150px;height:76px;object-fit:cover;border-radius:16px;border:1px solid #e5e7eb;background:#f8fafc}
+        .nsx-slider-badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;font-weight:800;font-size:12px}
+        .nsx-slider-badge.on{background:#fff7ed;color:#f56800;border:1px solid #fed7aa}
+        .nsx-slider-badge.off{background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb}
+        .nsx-slider-action{display:flex;gap:6px;justify-content:flex-end;flex-wrap:nowrap}
+    </style>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Görsel</th>
+                            <th>Sıra</th>
+                            <th>Başlık</th>
+                            <th>Ürün</th>
+                            <th>Link</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var slider in sliders)
+                    {
+                        <tr>
+                            <td><img class="nsx-slider-thumb" src="@slider.ImagePath" alt="@slider.Title" /></td>
+                            <td><strong>@slider.SortOrder</strong></td>
+                            <td>
+                                <div class="fw-bold">@slider.Title</div>
+                                <small class="text-muted">@(string.IsNullOrWhiteSpace(slider.Subtitle) ? "Açıklama yok" : slider.Subtitle)</small>
+                            </td>
+                            <td>@(slider.Product?.Name ?? "Serbest slider")</td>
+                            <td><small class="text-muted">@(string.IsNullOrWhiteSpace(slider.LinkUrl) ? "-" : slider.LinkUrl)</small></td>
+                            <td>
+                                <span class="nsx-slider-badge @(slider.IsActive ? "on" : "off")">@(slider.IsActive ? "Yayında" : "Kapalı")</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="nsx-slider-action nsx-admin-table-actions">
+                                    <a class="btn btn-sm btn-outline-dark rounded-4" href="/Admin/SliderEdit/@slider.Id">Düzenle</a>
+                                    <form method="post" action="/Admin/SliderToggle/@slider.Id">
+                                        @Html.AntiForgeryToken()
+                                        <button class="btn btn-sm btn-outline-warning rounded-4" type="submit">@(slider.IsActive ? "Kapat" : "Yayınla")</button>
+                                    </form>
+                                    <form method="post" action="/Admin/SliderDelete/@slider.Id" onsubmit="return confirm('Slider silinsin mi?');">
+                                        @Html.AntiForgeryToken()
+                                        <button class="btn btn-sm btn-outline-danger rounded-4" type="submit">Sil</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!sliders.Any())
+            {
+                <div class="text-center text-muted py-5">Henüz slider eklenmedi. Ürün ekleme/düzenleme ekranından veya Yeni Slider butonundan ekleyebilirsin.</div>
+            }
+        </div>
+    </div>
+</div>

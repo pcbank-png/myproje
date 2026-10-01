@@ -1,0 +1,80 @@
+@model bool
+@using NSYazilim.Web.Services
+@inject SiteLocalizationService SiteLocalization
+@{
+    var lang = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    async Task<string> T(string source)
+        => await SiteLocalization.TranslateAsync(source, lang.Code, Context.RequestAborted);
+}
+@functions {
+    private static Microsoft.AspNetCore.Html.IHtmlContent Icon(string name)
+    {
+        var path = name switch
+        {
+            "phone" => "<path fill='currentColor' stroke='none' d='M6.6 2.5c.7-.3 1.5 0 1.8.7l2 4.4c.3.7.1 1.4-.4 1.9l-1.8 1.6a15.2 15.2 0 0 0 4.8 4.8l1.6-1.8c.5-.5 1.2-.7 1.9-.4l4.3 2c.8.3 1.1 1.1.8 1.8l-.8 2.2c-.5 1.3-1.8 2.1-3.2 1.8C9.6 20 4 14.4 2.5 6.4c-.3-1.4.5-2.7 1.8-3.2z'/>",
+            "mail" => "<rect x='2' y='4' width='20' height='16' rx='2' fill='currentColor' stroke='none'/><path d='m3 6 9 7 9-7' stroke='var(--icon-cutout, #873109)' stroke-width='1.4'/>",
+            "download" => "<path d='M12 3v12m-5-5 5 5 5-5M3 17v5h18v-5'/>",
+            "clock" => "<circle cx='11.5' cy='12.5' r='9'/><path d='M12 6v7l4 2M19 2l2 3M20 19l2 2'/>",
+            "team" => "<circle cx='12' cy='6' r='3'/><path d='M6 21v-4a6 6 0 0 1 12 0v4M5 4a3 3 0 1 0 0 6M19 4a3 3 0 1 1 0 6M2 20v-4a4 4 0 0 1 3-4M22 20v-4a4 4 0 0 0-3-4'/>",
+            "shield" => "<path d='m12 2 9 4v6c0 5-5 8-9 10-4-2-9-5-9-10V6zM8 12l3 3 5-6'/>",
+            "file" => "<path d='M5 2h10l5 5v15H5zM14 2v6h6M9 12h7M9 16h7'/>",
+            "send" => "<path d='m2 11 20-9-7 20-4-8zM11 14 22 2M7 16v5l4-3'/>",
+            "windows" => "<path fill='currentColor' stroke='none' d='M2 5 11 3.7v8H2zm10-1.5L22 2v9.7H12zM2 13h9v7.3L2 19zm10 0h10v9l-10-1.5z'/>",
+            "check" => "<path d='m4 12 5 5L21 4'/>",
+            _ => "<path d='m9 4 8 8-8 8'/>"
+        };
+        return new Microsoft.AspNetCore.Html.HtmlString($"<svg viewBox='0 0 24 24' aria-hidden='true' focusable='false'>{path}</svg>");
+    }
+}
+
+<div class="nsx-contact-cards">
+    <a class="nsx-contact-card" href="tel:+905434624226" aria-label="@(await T("0543 462 42 26 numarasını hemen ara"))">
+        <span class="nsx-contact-number">01</span>
+        <div class="nsx-contact-intro">
+            <span class="nsx-contact-icon">@Icon("phone")</span>
+            <div class="nsx-contact-copy">
+                <span class="nsx-contact-label">@(await T("TELEFON"))</span>
+                <strong class="nsx-contact-title is-phone">0543 462 42 26</strong>
+                <p>@(await T("Satış, ürün seçimi ve teknik destek için doğrudan iletişim."))</p>
+            </div>
+        </div>
+        <div class="nsx-contact-features">
+            <div>@Icon("clock")<b>@(await T("Hızlı Yanıt"))</b><span>@(await T("Mesai saatlerinde"))<br />@(await T("anında destek"))</span></div>
+            <div>@Icon("team")<b>@(await T("Uzman Ekip"))</b><span>@(await T("Deneyimli"))<br />@(await T("teknik kadro"))</span></div>
+            <div>@Icon("shield")<b>@(await T("Güvenilir"))</b><span>@(await T("Doğrudan"))<br />@(await T("NSX desteği"))</span></div>
+        </div>
+        <span class="nsx-contact-cta"><span>@Icon("phone") @(await T("Hemen Ara"))</span>@Icon("arrow")</span>
+    </a>
+    <a class="nsx-contact-card" href="mailto:destek@@nsxyazilim.com" aria-label="@(await T("destek@nsxyazilim.com adresine e-posta gönder"))">
+        <span class="nsx-contact-number">02</span>
+        <div class="nsx-contact-intro">
+            <span class="nsx-contact-icon">@Icon("mail")</span>
+            <div class="nsx-contact-copy">
+                <span class="nsx-contact-label">@(await T("E-POSTA"))</span>
+                <strong class="nsx-contact-title is-email">destek@@nsxyazilim.com</strong>
+                <p>@(await T("Sipariş, lisans ve ayrıntılı teknik destek taleplerinizi e-posta ile paylaşın."))</p>
+            </div>
+        </div>
+        <div class="nsx-contact-features">
+            <div>@Icon("file")<b>@(await T("Detaylı İletişim"))</b><span>@(await T("Taleplerinizi açık"))<br />@(await T("şekilde iletin"))</span></div>
+            <div>@Icon("clock")<b>@(await T("En Kısa Sürede"))</b><span>@(await T("Ekibimiz size"))<br />@(await T("dönüş yapar"))</span></div>
+            <div>@Icon("send")<b>@(await T("Tüm Talepler"))</b><span>@(await T("Sipariş, lisans,"))<br />@(await T("teknik destek"))</span></div>
+        </div>
+        <span class="nsx-contact-cta"><span>@Icon("mail") @(await T("E-Posta Gönder"))</span>@Icon("arrow")</span>
+    </a>
+    <a class="nsx-contact-card nsx-contact-remote @(Model ? "" : "is-unavailable")"
+       href="@(Model ? "/uzaktan-yardim-indir" : null)" download="@(Model ? "" : null)"
+       aria-disabled="@(Model ? null : "true")" aria-label="@(Model ? await T("Ücretsiz uzaktan yardım programını indir") : await T("Destek programı hazırlanıyor"))">
+        <span class="nsx-contact-free">@(await T("Ücretsiz"))</span>
+        <div class="nsx-contact-intro">
+            <span class="nsx-contact-icon">@Icon("download")</span>
+            <div class="nsx-contact-copy">
+                <span class="nsx-contact-label">@(await T("NSX UZAKTAN DESTEK"))</span>
+                <strong class="nsx-contact-title">@(await T("Ücretsiz Uzaktan Yardım"))<br />@(await T("Programını İndir"))</strong>
+            </div>
+        </div>
+        <p class="nsx-contact-description">@(Model ? await T("Kurulum gerektirmeyen NSX Uzaktan Yardım uygulamasını indirip destek ekibimize bağlantı kodunu iletin.") : await T("Destek programı kısa süre içinde indirilebilir olacak."))</p>
+        <div class="nsx-contact-platforms"><span>@Icon("check") @(await T("Kurulum gerektirmez"))</span><span>@Icon("windows") Windows</span></div>
+        <span class="nsx-contact-cta"><span>@Icon("download") @(Model ? await T("Ücretsiz Hemen İndir") : await T("Program hazırlanıyor"))</span>@Icon("arrow")</span>
+    </a>
+</div>

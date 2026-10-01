@@ -1,0 +1,2345 @@
+/* NSX Admin Unified Light System
+   Sunum katmani: mevcut admin islevlerini degistirmeden butun ekranlari tek dilde birlestirir. */
+
+:root{
+  --admin-font:var(--nsx-font,"Segoe UI Variable Text","Segoe UI",Arial,sans-serif);
+  --admin-bg:var(--nsx-page);
+  --admin-panel:var(--nsx-panel);
+  --admin-panel-soft:var(--nsx-panel-soft);
+  --admin-ink:var(--nsx-ink);
+  --admin-ink-2:var(--nsx-ink-secondary);
+  --admin-muted:var(--nsx-muted);
+  --admin-line:var(--nsx-line);
+  --admin-line-strong:var(--nsx-line-strong);
+  --admin-orange:var(--nsx-accent);
+  --admin-orange-dark:var(--nsx-accent-dark);
+  --admin-orange-soft:var(--nsx-accent-soft);
+  --admin-anthracite:var(--nsx-anthracite);
+  --admin-success:var(--nsx-success);
+  --admin-danger:var(--nsx-danger);
+  --admin-warning:var(--nsx-warning);
+  --admin-radius:var(--nsx-radius);
+  --admin-radius-sm:var(--nsx-radius-small);
+  --admin-shadow:var(--nsx-shadow);
+  --admin-shadow-soft:var(--nsx-shadow-soft);
+}
+
+html,body{min-height:100%}
+body,
+body.nsx-admin-body{
+  margin:0!important;
+  color:var(--admin-ink)!important;
+  background:
+    radial-gradient(circle at 92% 0,rgba(255,110,4,.075),transparent 26%),
+    linear-gradient(180deg,#f8f9fa 0,var(--admin-bg) 320px)!important;
+  font-family:var(--admin-font)!important;
+  font-size:14px!important;
+  line-height:1.5!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+body *{font-family:inherit}
+body :is(h1,h2,h3,h4,h5,h6){color:var(--admin-ink);font-family:var(--admin-font)!important;letter-spacing:-.025em}
+body :is(input,select,textarea,button,.btn,[class*="-btn"]){font-family:var(--admin-font)!important}
+
+/* Ana iskelet */
+.nsx-admin-shell{
+  min-height:100vh!important;
+  display:grid!important;
+  grid-template-columns:252px minmax(0,1fr)!important;
+  gap:0!important;
+}
+.nsx-admin-sidebar{
+  position:sticky!important;
+  top:0!important;
+  z-index:40!important;
+  height:100vh!important;
+  padding:16px 13px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  background:rgba(255,255,255,.96)!important;
+  border-right:1px solid var(--admin-line)!important;
+  box-shadow:8px 0 28px rgba(24,33,43,.035)!important;
+  scrollbar-width:thin;
+  scrollbar-color:#cbd4dc transparent;
+}
+.nsx-admin-logo{
+  display:flex!important;
+  align-items:center!important;
+  gap:11px!important;
+  min-height:58px!important;
+  margin:0 0 12px!important;
+  padding:8px 9px!important;
+  color:var(--admin-ink)!important;
+  text-decoration:none!important;
+  border-bottom:1px solid #edf0f2!important;
+}
+.nsx-admin-logo>span{
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 42px!important;
+  width:42px!important;
+  height:42px!important;
+  border:1px solid #ff8730!important;
+  border-radius:13px!important;
+  color:#fff!important;
+  background:linear-gradient(145deg,#ff8121,#ed5900)!important;
+  box-shadow:0 9px 20px rgba(255,110,4,.22),inset 0 1px 0 rgba(255,255,255,.34)!important;
+  font-weight:850!important;
+  letter-spacing:-.04em!important;
+}
+.nsx-admin-logo strong{display:block!important;color:var(--admin-ink)!important;font-size:14px!important;font-weight:750!important;line-height:1.15!important}
+.nsx-admin-logo small{display:block!important;margin-top:3px!important;color:var(--admin-muted)!important;font-size:10px!important;font-weight:500!important;line-height:1.2!important}
+.nsx-admin-menu{display:grid!important;gap:3px!important}
+.nsx-admin-menu a{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  min-height:38px!important;
+  padding:8px 11px 8px 25px!important;
+  border:1px solid transparent!important;
+  border-radius:10px!important;
+  color:#596570!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  text-decoration:none!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1.15!important;
+  transform:none!important;
+  transition:color .17s ease,background .17s ease,border-color .17s ease,transform .17s ease!important;
+}
+.nsx-admin-menu a::before{
+  content:"";
+  position:absolute;
+  left:11px;
+  top:50%;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#c8d0d7;
+  transform:translateY(-50%);
+  transition:background .17s ease,box-shadow .17s ease;
+}
+.nsx-admin-menu a:hover{
+  color:var(--admin-ink)!important;
+  background:#f7f8f9!important;
+  border-color:#e5e9ec!important;
+  transform:translateX(2px)!important;
+}
+.nsx-admin-menu a.active{
+  color:#c84d00!important;
+  background:linear-gradient(180deg,#fff,#fff4eb)!important;
+  border-color:#f2c5a4!important;
+  box-shadow:0 7px 17px rgba(255,110,4,.075),inset 0 1px 0 #fff!important;
+}
+.nsx-admin-menu a.active::before{background:var(--admin-orange)!important;box-shadow:0 0 0 4px rgba(255,110,4,.12)!important}
+
+.nsx-admin-content{min-width:0!important;display:flex!important;flex-direction:column!important}
+.nsx-admin-topbar{
+  position:sticky!important;
+  top:0!important;
+  z-index:35!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:16px!important;
+  min-height:72px!important;
+  padding:12px 22px!important;
+  background:rgba(255,255,255,.92)!important;
+  border-bottom:1px solid var(--admin-line)!important;
+  box-shadow:0 7px 20px rgba(24,33,43,.035)!important;
+  backdrop-filter:blur(14px)!important;
+}
+.nsx-admin-topbar strong{display:block!important;color:var(--admin-ink)!important;font-size:19px!important;font-weight:750!important;line-height:1.15!important}
+.nsx-admin-top-kicker{margin:0 0 3px!important;color:var(--admin-orange-dark)!important;font-size:10px!important;font-weight:800!important;letter-spacing:.08em!important;text-transform:uppercase!important}
+.nsx-admin-top-actions{display:flex!important;align-items:center!important;gap:8px!important}
+.nsx-admin-main{width:100%!important;max-width:1720px!important;margin:0 auto!important;padding:18px 20px 30px!important}
+.nsx-admin-main :is(.container,.container-fluid){width:100%!important;max-width:none!important;margin:0!important;padding-left:0!important;padding-right:0!important}
+.nsx-admin-main :is(.container.py-4,.container-fluid.py-4,.nsx-admin-page){padding-top:0!important;padding-bottom:0!important}
+
+/* Sayfa genislikleri ve ortak basliklar */
+.nsx-admin-main :is(
+  .nsx-admin-final,.nsx-admin-page,.nsx-products-page,.nsx-demo-page,.nsx-api-services-page,.nsx-update-admin-page,
+  .nsx-bulkmail-page,.nsx-campaign-page,.admin-comments-page,.nsx-ads-page,.nsx-online-admin,.nsx-ai-page,.nsx-vs,
+  .nsx-live-admin-page,.nsx-manual-sale-pro
+){width:100%!important;max-width:1520px!important;margin-left:auto!important;margin-right:auto!important}
+
+.nsx-admin-page-head,
+.nsx-admin-toolbar,
+.nsx-admin-head:not(.nsx-ads-head),
+.nsx-products-page>.d-flex:first-child,
+.nsx-demo-page>.d-flex:first-child,
+.nsx-admin-main>.container>.d-flex:first-child{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+  min-height:74px!important;
+  margin:0 0 14px!important;
+  padding:16px 18px!important;
+  border:1px solid var(--admin-line)!important;
+  border-radius:var(--admin-radius)!important;
+  background:linear-gradient(135deg,#fff 0,#fbfbfc 72%,#fff4eb 100%)!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+}
+.nsx-admin-main :is(h1,.nsx-admin-page-head h1,.nsx-admin-head h1){margin:0!important;color:var(--admin-ink)!important;font-size:clamp(22px,2.1vw,29px)!important;font-weight:780!important;line-height:1.12!important;letter-spacing:-.035em!important}
+.nsx-admin-main :is(h2,h3){color:var(--admin-ink)!important;font-weight:750!important}
+.nsx-admin-main :is(.nsx-admin-page-head p,.nsx-admin-head p,.text-muted,.muted,.sub){color:var(--admin-muted)!important}
+.nsx-admin-page-head p,.nsx-admin-head p{margin:4px 0 0!important;font-size:13px!important}
+
+/* Butun farkli hero alanlarini tek acik standarda bagla */
+.nsx-admin-body :is(
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,
+  .nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+){
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:20px!important;
+  min-height:142px!important;
+  margin:0 0 16px!important;
+  padding:23px 25px!important;
+  overflow:hidden!important;
+  border:1px solid var(--admin-line)!important;
+  border-left:4px solid var(--admin-orange)!important;
+  border-radius:20px!important;
+  color:var(--admin-ink)!important;
+  background:
+    radial-gradient(circle at 94% 5%,rgba(255,110,4,.13),transparent 30%),
+    radial-gradient(circle at 4% 115%,rgba(65,201,190,.055),transparent 34%),
+    linear-gradient(135deg,#fff 0,#f8fafb 100%)!important;
+  box-shadow:var(--admin-shadow)!important;
+}
+.nsx-admin-body :is(
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,
+  .nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+)::after{opacity:.22!important;border-color:#f0b78f!important;background:transparent!important;box-shadow:none!important;filter:none!important;pointer-events:none!important}
+.nsx-admin-body :is(
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,
+  .nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) :is(h1,h2,h3,strong,b){color:var(--admin-ink)!important}
+.nsx-admin-body :is(
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,
+  .nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) h1{margin:8px 0 7px!important;font-size:clamp(24px,2.5vw,32px)!important;font-weight:800!important;line-height:1.08!important;letter-spacing:-.04em!important}
+.nsx-admin-body :is(
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,
+  .nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) :is(p,small,em){color:var(--admin-muted)!important;font-style:normal!important}
+.nsx-admin-body :is(
+  .nsx-admin-kicker,.nsx-bulkmail-kicker,.nsx-campaign-kicker,.admin-comments-hero .text-uppercase,
+  .nsx-ads-kicker,.nsx-live-admin-kicker,.nsx-online-kicker,.nsx-ai-kicker,.nsx-vs-kicker,.nsx-manual-sale-kicker,.nsx-video-kicker
+){
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:30px!important;
+  padding:0 10px!important;
+  border:1px solid #f0c19f!important;
+  border-radius:9px!important;
+  color:#cf5100!important;
+  background:#fff4eb!important;
+  font-size:10px!important;
+  font-weight:800!important;
+  letter-spacing:.055em!important;
+  text-transform:uppercase!important;
+}
+
+/* Kart ve panel standardi */
+.nsx-admin-main :is(
+  .nsx-admin-card,.card,.nsx-admin-stat-card,.nsx-admin-panel-card,.nsx-bulkmail-card,.nsx-campaign-card,
+  .admin-comment-card,.admin-comment-empty,.admin-comment-filter,.nsx-ads-table-card,.nsx-ads-info-card,
+  .nsx-online-panel,.nsx-online-stats article,.nsx-ai-card,.nsx-ai-product-strip article,.nsx-ai-filter,.nsx-ai-table-card,
+  .nsx-vs-card,.nsx-vs-panel,.nsx-live-session-panel,.nsx-live-chat-panel,.nsx-manual-sale-card,
+  .nsx-update-info-card,.nsx-api-stat,.nsx-admin-revenue-mini>div,.nsx-admin-revenue-main
+){
+  color:var(--admin-ink)!important;
+  background:var(--admin-panel)!important;
+  border:1px solid var(--admin-line)!important;
+  border-radius:var(--admin-radius)!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+}
+.nsx-admin-main :is(.card,.nsx-admin-card,.nsx-admin-panel-card,.nsx-bulkmail-card,.nsx-campaign-card,.admin-comment-card){overflow:hidden}
+.nsx-admin-main :is(.card-body,.nsx-admin-card-body){padding:16px 18px!important}
+.nsx-admin-card-head,
+.nsx-admin-panel-head,
+.nsx-online-panel-head,
+.nsx-ai-table-head,
+.nsx-manual-sale-card-top,
+.nsx-live-chat-top{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  min-height:58px!important;
+  padding:13px 16px!important;
+  color:var(--admin-ink)!important;
+  background:linear-gradient(180deg,#fff,#f7f8f9)!important;
+  border-bottom:1px solid var(--admin-line)!important;
+}
+.nsx-admin-main :is(.nsx-admin-card-head,.nsx-admin-panel-head,.nsx-online-panel-head,.nsx-ai-table-head,.nsx-manual-sale-card-top,.nsx-live-chat-top) :is(strong,h2,h3){color:var(--admin-ink)!important;font-size:15px!important;font-weight:750!important}
+.nsx-admin-main :is(.nsx-admin-card-head,.nsx-admin-panel-head,.nsx-online-panel-head,.nsx-ai-table-head,.nsx-manual-sale-card-top,.nsx-live-chat-top) :is(small,p,span){color:var(--admin-muted)!important}
+
+/* Metrikler: ayni beyaz yuzey ve turuncu vurgu */
+.nsx-admin-main :is(.nsx-admin-grid-stats,.nsx-admin-metric-strip,.nsx-ads-stats,.nsx-ads-mini-stats,.nsx-online-stats,.nsx-ai-cards,.nsx-vs-metrics,.nsx-api-stat-grid){gap:12px!important}
+.nsx-admin-main :is(.nsx-admin-stat-card,.nsx-admin-metric-strip>div,.nsx-ads-stats>div,.nsx-ads-mini-stats>div,.nsx-online-stats article,.nsx-ai-card,.nsx-vs-card,.nsx-api-stat){
+  min-height:96px!important;
+  padding:16px!important;
+  color:var(--admin-ink)!important;
+  background:linear-gradient(180deg,#fff,#fbfcfd)!important;
+  border:1px solid var(--admin-line)!important;
+  border-top:3px solid #f3b183!important;
+  border-radius:16px!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+}
+.nsx-admin-main :is(.nsx-admin-stat-card,.nsx-admin-metric-strip>div,.nsx-ads-stats>div,.nsx-ads-mini-stats>div,.nsx-online-stats article,.nsx-ai-card,.nsx-vs-card,.nsx-api-stat) :is(span,small,em){color:var(--admin-muted)!important;font-size:11px!important;font-weight:650!important}
+.nsx-admin-main :is(.nsx-admin-stat-card,.nsx-admin-metric-strip>div,.nsx-ads-stats>div,.nsx-ads-mini-stats>div,.nsx-online-stats article,.nsx-ai-card,.nsx-vs-card,.nsx-api-stat)>strong,
+.nsx-admin-main :is(.nsx-admin-metric-strip>div,.nsx-ads-stats>div,.nsx-ads-mini-stats>div) strong{
+  color:var(--admin-ink)!important;
+  font-size:clamp(24px,2.3vw,32px)!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+}
+.nsx-admin-main .nsx-admin-stat-card>span{color:var(--admin-orange-dark)!important;font-size:22px!important}
+.nsx-admin-main .nsx-admin-stat-card:hover{transform:translateY(-2px)!important;border-color:#efbb96!important;box-shadow:0 15px 31px rgba(24,33,43,.09)!important}
+
+/* Gelir ve canli sayac kartlarini koyu temadan cikart */
+.nsx-admin-revenue-board{gap:12px!important}
+.nsx-admin-revenue-main{border-left:4px solid var(--admin-orange)!important;padding:22px!important}
+.nsx-admin-revenue-main::after{background:rgba(255,110,4,.07)!important}
+.nsx-admin-revenue-main :is(span,strong,p,b){color:var(--admin-ink)!important}
+.nsx-admin-revenue-main>span{color:#cf5100!important;background:var(--admin-orange-soft)!important;border-color:#efc5a8!important}
+.nsx-admin-revenue-main>strong{font-size:clamp(30px,3vw,44px)!important}
+.nsx-online-live-card{
+  flex:0 0 210px!important;
+  padding:18px!important;
+  border:1px solid #f0c4a5!important;
+  border-radius:16px!important;
+  background:#fff5ed!important;
+  backdrop-filter:none!important;
+  text-align:center!important;
+}
+.nsx-online-live-card :is(span,small){color:#9a6542!important}
+.nsx-online-live-card strong{color:var(--admin-ink)!important;font-size:42px!important}
+
+/* Tablolar */
+.nsx-admin-main :is(.table-responsive,.nsx-ai-table-card,.nsx-vs-table-wrap,.nsx-online-table-wrap,.nsx-ads-table-card){
+  overflow:auto!important;
+  border:1px solid var(--admin-line)!important;
+  border-radius:15px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+.nsx-admin-main :is(.table,.nsx-admin-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table){
+  width:100%!important;
+  margin:0!important;
+  color:var(--admin-ink)!important;
+  background:#fff!important;
+  border-collapse:collapse!important;
+  font-size:12.5px!important;
+  line-height:1.35!important;
+}
+.nsx-admin-main :is(.table,.nsx-admin-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table) thead th{
+  padding:11px 10px!important;
+  color:#4e5a66!important;
+  background:#f4f6f7!important;
+  border:0!important;
+  border-bottom:1px solid var(--admin-line-strong)!important;
+  font-size:10.5px!important;
+  font-weight:800!important;
+  line-height:1.2!important;
+  letter-spacing:.045em!important;
+  text-transform:uppercase!important;
+  white-space:nowrap!important;
+}
+.nsx-admin-main :is(.table,.nsx-admin-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table) tbody td{
+  padding:9px 10px!important;
+  color:var(--admin-ink-2)!important;
+  background:#fff!important;
+  border:0!important;
+  border-bottom:1px solid #edf0f2!important;
+  vertical-align:middle!important;
+}
+.nsx-admin-main :is(.table,.nsx-admin-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table) tbody tr:last-child td{border-bottom:0!important}
+.nsx-admin-main :is(.table,.nsx-admin-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table) tbody tr:hover td{background:#fff8f2!important}
+.nsx-admin-main :is(.table,.nsx-admin-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table) :is(strong,b){color:var(--admin-ink)!important;font-weight:750!important}
+.nsx-admin-main :is(.table,.nsx-admin-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table) :is(small,.small){color:var(--admin-muted)!important}
+.nsx-admin-main code,
+.nsx-admin-code,
+.nsx-vs-code,
+.nsx-online-ip{
+  display:inline-block;
+  max-width:240px;
+  padding:4px 7px!important;
+  overflow:hidden;
+  color:#a64508!important;
+  background:#fff4eb!important;
+  border:1px solid #f0c8ac!important;
+  border-radius:7px!important;
+  font-family:"Cascadia Mono","Segoe UI Mono",Consolas,monospace!important;
+  font-size:11px!important;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Formlar */
+.nsx-admin-main :is(.form-label,label){color:#3d4853!important;font-size:12px!important;font-weight:700!important}
+.nsx-admin-main :is(.form-control,.form-select,input:not([type="checkbox"]):not([type="radio"]),select,textarea),
+body:has(>.topbar) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea),
+body:has(>form.card) :is(input:not([type="checkbox"]):not([type="radio"])){
+  min-height:40px!important;
+  padding:8px 11px!important;
+  color:var(--admin-ink)!important;
+  background:#fff!important;
+  border:1px solid var(--admin-line-strong)!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+  outline:none!important;
+}
+.nsx-admin-main textarea,
+body:has(>.topbar) textarea{min-height:120px!important;resize:vertical!important}
+.nsx-admin-main :is(.form-control,.form-select,input,select,textarea):focus,
+body:has(>.topbar) :is(input,select,textarea):focus,
+body:has(>form.card) input:focus{
+  border-color:#ee8b46!important;
+  box-shadow:0 0 0 3px rgba(255,110,4,.11)!important;
+}
+.nsx-admin-main :is(.form-check-input,input[type="checkbox"],input[type="radio"]){accent-color:var(--admin-orange)!important}
+.nsx-admin-main :is(.input-group-text){color:#5d6873!important;background:#f4f6f7!important;border-color:var(--admin-line-strong)!important}
+
+/* Butonlar */
+.nsx-admin-btn,
+.nsx-admin-main .btn,
+body:has(>.topbar) :is(.btn,button),
+body:has(>form.card) button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  min-height:36px!important;
+  padding:7px 12px!important;
+  border:1px solid var(--admin-line-strong)!important;
+  border-radius:10px!important;
+  color:var(--admin-ink)!important;
+  background:#fff!important;
+  box-shadow:0 6px 15px rgba(24,33,43,.055)!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:1.1!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  transition:transform .16s ease,background .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease!important;
+}
+.nsx-admin-main :is(.btn:hover,.nsx-admin-btn:hover),
+body:has(>.topbar) :is(.btn,button):hover{color:var(--admin-ink)!important;background:#f5f7f8!important;border-color:#bcc7cf!important;transform:translateY(-1px)!important}
+.nsx-admin-btn.primary,
+.nsx-admin-main :is(.btn-primary,.btn-success),
+body:has(>.topbar) :is(.primary),
+body:has(>form.card) button{
+  color:#fff!important;
+  background:linear-gradient(135deg,#ff7b12,#ed5900)!important;
+  border-color:var(--admin-orange)!important;
+  box-shadow:0 8px 19px rgba(255,110,4,.20),inset 0 1px 0 rgba(255,255,255,.3)!important;
+}
+.nsx-admin-btn.primary:hover,
+.nsx-admin-main :is(.btn-primary,.btn-success):hover,
+body:has(>.topbar) .primary:hover,
+body:has(>form.card) button:hover{color:#fff!important;background:linear-gradient(135deg,#f56b06,#d94f00)!important;border-color:#dc5200!important}
+.nsx-admin-btn.dark,
+.nsx-admin-main :is(.btn-dark,.btn-outline-dark):hover,
+body:has(>.topbar) .dark{color:#fff!important;background:var(--admin-anthracite)!important;border-color:var(--admin-anthracite)!important}
+.nsx-admin-main :is(.btn-danger,.btn-outline-danger):hover,
+.nsx-admin-btn.danger{color:#fff!important;background:var(--admin-danger)!important;border-color:var(--admin-danger)!important}
+.nsx-admin-main :is(.btn-outline-primary,.btn-outline-info,.btn-outline-warning){color:#c34b00!important;background:#fff!important;border-color:#efb990!important}
+.nsx-admin-main :is(.btn-sm,.nsx-admin-btn.sm){min-height:30px!important;padding:5px 8px!important;border-radius:8px!important;font-size:11px!important}
+
+/* Rozet ve durumlar */
+.nsx-admin-main :is(.badge,.nsx-admin-pill,.nsx-status-pill,.nsx-ad-pill,.nsx-version-pill,.nsx-ai-status,.nsx-ai-version,.nsx-slider-badge,.pill){
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:24px!important;
+  padding:4px 8px!important;
+  border:1px solid #d8dfe4!important;
+  border-radius:999px!important;
+  color:#53606c!important;
+  background:#f2f4f6!important;
+  font-size:10px!important;
+  font-weight:750!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.nsx-admin-main :is(.badge.bg-success,.nsx-admin-pill.ok,.nsx-status-pill.active,.nsx-ai-status.live,.nsx-slider-badge.on){color:#126748!important;background:#e9f7f1!important;border-color:#bfe7d5!important}
+.nsx-admin-main :is(.badge.bg-danger,.nsx-admin-pill.bad,.nsx-status-pill.inactive,.nsx-ai-status.idle,.nsx-slider-badge.off){color:#9b3030!important;background:#fff0f0!important;border-color:#efc7c7!important}
+.nsx-admin-main :is(.badge.bg-warning,.nsx-admin-pill.warn){color:#8b570d!important;background:#fff6e6!important;border-color:#efd6a7!important}
+.nsx-admin-main :is(.badge.bg-primary,.badge.bg-info,.nsx-admin-pill.info){color:#b24708!important;background:#fff2e8!important;border-color:#f0c29f!important}
+
+/* Ozel liste ve bloklar */
+.nsx-admin-shortcuts{display:flex!important;flex-wrap:wrap!important;gap:8px!important;padding:12px!important;border:1px solid var(--admin-line)!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--admin-shadow-soft)!important}
+.nsx-admin-shortcuts a{padding:8px 11px!important;border:1px solid #e0e5e9!important;border-radius:9px!important;color:#52606c!important;background:#f6f7f8!important;font-size:11px!important;font-weight:700!important;text-decoration:none!important}
+.nsx-admin-shortcuts a:hover{color:#c84d00!important;background:#fff4eb!important;border-color:#efc09e!important}
+.nsx-admin-list-row,
+.nsx-admin-license-mini>div,
+.nsx-bulkmail-log,
+.nsx-campaign-item,
+.nsx-live-session-item,
+.filebox,
+.update-item{
+  padding:12px 13px!important;
+  color:var(--admin-ink)!important;
+  background:#f8f9fa!important;
+  border:1px solid #e3e8eb!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+}
+.nsx-admin-main :is(.nsx-admin-list-row,.nsx-admin-license-mini>div,.nsx-bulkmail-log,.nsx-campaign-item,.nsx-live-session-item,.filebox,.update-item) :is(small,p,em,span){color:var(--admin-muted)!important}
+.nsx-campaign-code,.admin-comment-product{color:#bd4900!important;background:#fff2e8!important;border:1px solid #f0c09d!important}
+.admin-stars{color:var(--admin-orange)!important}
+.nsx-vs-bar,.nsx-ai-progress{background:#e9edf0!important}
+.nsx-vs-bar i,.nsx-ai-progress i{background:linear-gradient(90deg,#ff8a34,#e85a00)!important}
+.nsx-online-status-dot,.nsx-online-last i{background:var(--admin-orange)!important;box-shadow:0 0 0 5px rgba(255,110,4,.12)!important;animation:none!important}
+.nsx-live-msg.admin{color:#fff!important;background:linear-gradient(135deg,#ff7b12,#e95600)!important}
+.nsx-live-msg.admin *{color:#fff!important}
+.nsx-live-msg.customer{color:var(--admin-ink)!important;background:#fff!important;border-color:var(--admin-line)!important}
+.nsx-live-chat-messages{background:#f7f8f9!important}
+
+/* Bildirimler */
+.nsx-admin-main .alert{padding:11px 13px!important;border-radius:11px!important;box-shadow:none!important;font-size:12.5px!important}
+.nsx-admin-main .alert-info{color:#6f4b25!important;background:#fff5eb!important;border-color:#f0c9aa!important}
+.nsx-admin-main .alert-success{color:#205f49!important;background:#eff9f5!important;border-color:#c9e8dc!important}
+.nsx-admin-main .alert-warning{color:#755319!important;background:#fff8e9!important;border-color:#eedcaf!important}
+.nsx-admin-main .alert-danger{color:#8e3434!important;background:#fff1f1!important;border-color:#efcaca!important}
+
+/* Bagimsiz urun ekle / duzenle ekranlari */
+body:has(>.topbar){padding-bottom:28px!important}
+body:has(>.topbar)>.topbar{
+  position:sticky!important;
+  top:0!important;
+  z-index:40!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  min-height:72px!important;
+  padding:12px max(18px,calc((100vw - 1380px)/2))!important;
+  color:var(--admin-ink)!important;
+  background:rgba(255,255,255,.94)!important;
+  border-bottom:1px solid var(--admin-line)!important;
+  box-shadow:0 7px 20px rgba(24,33,43,.045)!important;
+  backdrop-filter:blur(14px)!important;
+}
+body:has(>.topbar)>.topbar .brand{color:var(--admin-ink)!important;font-size:18px!important;font-weight:800!important}
+body:has(>.topbar)>.wrap{width:min(1380px,calc(100% - 36px))!important;max-width:1380px!important;margin:22px auto!important;padding:0!important}
+body:has(>.topbar) .header{min-height:70px!important;margin:0 0 14px!important;padding:15px 17px!important;border:1px solid var(--admin-line)!important;border-radius:18px!important;background:linear-gradient(135deg,#fff,#fff8f2)!important;box-shadow:var(--admin-shadow-soft)!important}
+body:has(>.topbar) h1{color:var(--admin-ink)!important;font-size:28px!important;font-weight:800!important}
+body:has(>.topbar) .card{padding:20px!important;border:1px solid var(--admin-line)!important;border-radius:18px!important;background:#fff!important;box-shadow:var(--admin-shadow-soft)!important}
+body:has(>.topbar) .grid{gap:15px!important}
+body:has(>.topbar) label{color:#3d4853!important;font-size:12px!important;font-weight:700!important}
+body:has(>.topbar) .updatebox{padding:17px!important;border:1px solid #efc8aa!important;border-radius:16px!important;background:#fff7f0!important}
+body:has(>.topbar) .updatehead h2{color:var(--admin-ink)!important}
+
+/* Admin giris */
+body:has(>form.card){display:grid!important;place-items:center!important;min-height:100vh!important;padding:22px!important}
+body:has(>form.card)>form.card{
+  position:relative!important;
+  width:min(100%,420px)!important;
+  padding:34px!important;
+  overflow:hidden!important;
+  border:1px solid var(--admin-line)!important;
+  border-radius:22px!important;
+  background:#fff!important;
+  box-shadow:0 25px 70px rgba(24,33,43,.14)!important;
+}
+body:has(>form.card)>form.card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,#ff8a34,#e85600)}
+body:has(>form.card) .brand{color:var(--admin-ink)!important;font-size:26px!important;font-weight:800!important}
+body:has(>form.card) .sub{margin:4px 0 22px!important;color:var(--admin-muted)!important}
+body:has(>form.card) label:not(.remember-row){color:#3d4853!important;font-size:12px!important;font-weight:700!important}
+body:has(>form.card) .remember-row{border-color:var(--admin-line)!important;border-radius:11px!important;background:#f7f8f9!important}
+body:has(>form.card) .remember-row input{accent-color:var(--admin-orange)!important}
+
+/* Responsive */
+@media(max-width:1180px){
+  .nsx-admin-shell{grid-template-columns:218px minmax(0,1fr)!important}
+  .nsx-admin-main{padding:16px 14px 26px!important}
+  .nsx-admin-body :is(.nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,.nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head){padding:21px!important}
+}
+@media(max-width:900px){
+  .nsx-admin-shell{display:block!important}
+  .nsx-admin-sidebar{position:relative!important;height:auto!important;padding:10px!important;border-right:0!important;border-bottom:1px solid var(--admin-line)!important}
+  .nsx-admin-logo{min-height:50px!important;margin-bottom:7px!important;padding-bottom:7px!important}
+  .nsx-admin-menu{display:flex!important;flex-wrap:wrap!important;gap:5px!important;padding-bottom:5px!important;overflow:visible!important}
+  .nsx-admin-menu a{flex:0 0 auto!important;min-height:36px!important;padding:7px 11px!important}
+  .nsx-admin-menu a::before{display:none!important}
+  .nsx-admin-topbar{position:sticky!important;min-height:64px!important;padding:10px 14px!important}
+  .nsx-admin-main{padding:13px 11px 24px!important}
+  .nsx-admin-body :is(.nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,.nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head){align-items:flex-start!important;flex-direction:column!important;min-height:0!important}
+  .nsx-online-live-card{width:100%!important;flex-basis:auto!important;text-align:left!important}
+  .nsx-admin-final-hero>div:first-child>h1,
+  .nsx-admin-final-hero>div:first-child>p,
+  .nsx-admin-final-hero>.nsx-admin-hero-actions{display:flex!important}
+  .nsx-admin-final-hero>div:first-child>h1,.nsx-admin-final-hero>div:first-child>p{display:block!important}
+  .nsx-admin-mobile-quick{display:none!important}
+}
+@media(max-width:680px){
+  .nsx-admin-topbar,.nsx-admin-page-head,.nsx-admin-toolbar,.nsx-admin-head:not(.nsx-ads-head),.nsx-products-page>.d-flex:first-child,.nsx-demo-page>.d-flex:first-child{align-items:flex-start!important;flex-direction:column!important}
+  .nsx-admin-top-actions,.nsx-admin-page-head>.d-flex,.nsx-admin-head>.d-flex{width:100%!important;flex-wrap:wrap!important}
+  .nsx-admin-body :is(.nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,.nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head){padding:18px!important;border-radius:16px!important}
+  .nsx-admin-body :is(.nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,.nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head) h1{font-size:24px!important}
+  .nsx-admin-main :is(.nsx-admin-grid-stats,.nsx-admin-metric-strip,.nsx-ads-stats,.nsx-ads-mini-stats,.nsx-online-stats,.nsx-ai-cards,.nsx-vs-metrics,.nsx-api-stat-grid){grid-template-columns:1fr!important}
+  .admin-comment-head,.nsx-campaign-item,.nsx-bulkmail-log,.nsx-admin-list-row{align-items:flex-start!important;flex-direction:column!important}
+  body:has(>.topbar)>.topbar{padding:11px 16px!important}
+  body:has(>.topbar)>.wrap{width:calc(100% - 22px)!important;margin:14px auto!important}
+  body:has(>.topbar) .grid{grid-template-columns:1fr!important}
+  body:has(>.topbar) .full{grid-column:auto!important}
+  body:has(>.topbar) .actions{flex-direction:column!important}
+  body:has(>.topbar) .actions :is(.btn,button,a){width:100%!important}
+  body:has(>form.card)>form.card{padding:29px 22px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .nsx-admin-body *,body:has(>.topbar) *,body:has(>form.card) *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+/* Eski koyu tema dosyalarindaki yuksek ozgulluklu beyaz metin kurallarini kesin olarak kapat. */
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,
+  .nsx-ads-admin-hero,.nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) *:not(.btn):not(.badge):not(input):not(select):not(textarea){
+  color:var(--admin-ink)!important;
+  text-shadow:none!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,
+  .nsx-ads-admin-hero,.nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) :is(p,small,em):not(.btn):not(.badge):not(input):not(select):not(textarea){
+  color:var(--admin-muted)!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,.nsx-ads-head,
+  .nsx-ads-admin-hero,.nsx-live-admin-head,.nsx-online-hero,.nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) :is(
+  .nsx-admin-kicker,.nsx-bulkmail-kicker,.nsx-campaign-kicker,.admin-comments-kicker,
+  .nsx-ads-kicker,.nsx-ads-admin-kicker,.nsx-live-admin-kicker,.nsx-online-kicker,
+  .nsx-ai-kicker,.nsx-vs-kicker,.nsx-manual-sale-kicker,.nsx-video-kicker,.text-uppercase
+):not(.btn):not(.badge):not(input):not(select):not(textarea){
+  color:#cf5100!important;
+  text-shadow:none!important;
+}
+
+body.nsx-admin-body .nsx-admin-main .nsx-admin-revenue-main
+*:not(.btn):not(.badge):not(input):not(select):not(textarea){
+  color:var(--admin-ink)!important;
+  text-shadow:none!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-admin-revenue-main
+>span:not(.btn):not(.badge):not(input):not(select):not(textarea){
+  color:#cf5100!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-admin-revenue-main
+:is(p,small,em):not(.btn):not(.badge):not(input):not(select):not(textarea){
+  color:var(--admin-muted)!important;
+}
+
+/* Bootstrap koyu kartlari da acik admin yuzeyine dahil et; buton ve rozetlerin anlamsal kontrasti korunur. */
+body.nsx-admin-body .nsx-admin-main
+:is(.bg-dark,.text-bg-dark,.card.bg-dark,.alert.bg-dark):not(.btn):not(.badge):not(button):not(a){
+  color:var(--admin-ink)!important;
+  background:var(--admin-panel)!important;
+  border-color:var(--admin-line)!important;
+}
+body.nsx-admin-body .nsx-admin-main
+:is(.bg-dark,.text-bg-dark,.card.bg-dark,.alert.bg-dark):not(.btn):not(.badge):not(button):not(a)
+*:not(.btn):not(.badge):not(input):not(select):not(textarea){
+  color:var(--admin-ink)!important;
+  text-shadow:none!important;
+}
+
+/* Tam genislikli alt sayfalar: yatay tablo scroll'u yerine alan icinde akilli kirilim. */
+html,
+body.nsx-admin-body{max-width:100%!important;overflow-x:hidden!important}
+.nsx-admin-sidebar{scrollbar-width:none!important}
+.nsx-admin-sidebar::-webkit-scrollbar{width:0!important;height:0!important}
+.nsx-admin-main{
+  max-width:none!important;
+  padding:14px 12px 28px!important;
+  overflow-x:clip!important;
+}
+.nsx-admin-main :is(
+  .nsx-admin-final,.nsx-admin-page,.nsx-products-page,.nsx-demo-page,.nsx-api-services-page,.nsx-update-admin-page,
+  .nsx-bulkmail-page,.nsx-campaign-page,.admin-comments-page,.nsx-ads-page,.nsx-online-admin,.nsx-ai-page,.nsx-vs,
+  .nsx-live-admin-page,.nsx-manual-sale-pro,.nsx-video-admin-grid
+){
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+.nsx-admin-main :is(.container,.container-fluid){max-width:none!important}
+
+.nsx-admin-main :is(
+  .table-responsive,.nsx-license-table-wrap,.nsx-ai-table-card,.nsx-vs-table-wrap,
+  .nsx-online-table-wrap,.nsx-ads-table-card,.nsx-ads-table-card .table-responsive
+){
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow-x:visible!important;
+  scrollbar-width:none!important;
+}
+.nsx-admin-main :is(
+  .table,.nsx-admin-table,.nsx-license-table,.nsx-products-table,.nsx-demo-table,.nsx-api-table,.nsx-update-table,
+  .nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table
+){
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  table-layout:fixed!important;
+}
+.nsx-admin-main :is(
+  .table,.nsx-admin-table,.nsx-license-table,.nsx-products-table,.nsx-demo-table,.nsx-api-table,.nsx-update-table,
+  .nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table
+) :is(th,td){
+  min-width:0!important;
+  max-width:none!important;
+  padding:8px 7px!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+}
+.nsx-admin-main :is(
+  .table,.nsx-admin-table,.nsx-license-table,.nsx-products-table,.nsx-demo-table,.nsx-api-table,.nsx-update-table,
+  .nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table
+) thead th{
+  font-size:9.5px!important;
+  line-height:1.15!important;
+}
+.nsx-admin-main :is(
+  .table,.nsx-admin-table,.nsx-license-table,.nsx-products-table,.nsx-demo-table,.nsx-api-table,.nsx-update-table,
+  .nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table
+) tbody td{
+  height:auto!important;
+  font-size:11px!important;
+  line-height:1.25!important;
+}
+.nsx-admin-main :is(code,.nsx-admin-code,.nsx-vs-code,.nsx-online-ip){
+  max-width:100%!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important;
+}
+.nsx-admin-main :is(
+  .nsx-admin-actions,.nsx-license-actions,.nsx-update-actions,.nsx-ads-actions,.nsx-admin-row-actions,
+  .nsx-admin-table-actions,.nsx-slider-action
+){
+  width:max-content!important;
+  max-width:none!important;
+  justify-content:flex-end!important;
+  flex-wrap:nowrap!important;
+  white-space:nowrap!important;
+}
+.nsx-admin-main .nsx-admin-table-actions{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  vertical-align:middle!important;
+}
+.nsx-admin-main .nsx-admin-table-actions :is(form,.btn,.nsx-admin-btn,a,button){
+  flex:0 0 auto!important;
+  width:auto!important;
+  margin:0!important;
+  white-space:nowrap!important;
+}
+.nsx-admin-main table :is(form,.d-flex,[style*="min-width"]){
+  min-width:0!important;
+  max-width:100%!important;
+}
+.nsx-admin-main :is(.nsx-ad-preview-row,.nsx-ai-customer){min-width:0!important;max-width:100%!important}
+.nsx-admin-main .nsx-ad-preview-row img{width:86px!important;height:34px!important;flex-basis:86px!important}
+body:has(>.topbar)>.wrap{width:calc(100% - 24px)!important;max-width:none!important}
+
+@media(max-width:1180px){
+  .nsx-admin-main{padding:12px 9px 24px!important}
+  .nsx-admin-main :is(.table,.nsx-admin-table,.nsx-license-table,.nsx-products-table,.nsx-demo-table,.nsx-api-table,.nsx-update-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table) :is(th,td){padding:7px 5px!important}
+  .nsx-admin-main :is(.table,.nsx-admin-table,.nsx-license-table,.nsx-products-table,.nsx-demo-table,.nsx-api-table,.nsx-update-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table) tbody td{font-size:10px!important}
+  .nsx-admin-main :is(.btn-sm,.nsx-admin-btn.sm){padding:5px 6px!important;font-size:10px!important}
+}
+
+/* Dashboard sag panel: lisans bilgileri kart sinirinin disina tasmasin. */
+.nsx-admin-final>.row{
+  width:100%!important;
+  max-width:100%!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  --bs-gutter-x:14px!important;
+}
+.nsx-admin-final>.row>[class*="col-"]{
+  min-width:0!important;
+  padding-left:calc(var(--bs-gutter-x) * .5)!important;
+  padding-right:calc(var(--bs-gutter-x) * .5)!important;
+}
+.nsx-admin-final :is(.nsx-admin-panel-card,.nsx-admin-panel-head,.nsx-admin-list,.nsx-admin-license-mini){
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+}
+.nsx-admin-final .nsx-admin-panel-head>div,
+.nsx-admin-final .nsx-admin-list-row>div{min-width:0!important}
+.nsx-admin-final .nsx-admin-list-row :is(strong,small){overflow-wrap:anywhere!important}
+.nsx-admin-final .nsx-admin-license-mini>div{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:5px 9px!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+}
+.nsx-admin-final .nsx-admin-license-mini>div>strong{
+  grid-column:1!important;
+  min-width:0!important;
+  overflow-wrap:anywhere!important;
+}
+.nsx-admin-final .nsx-admin-license-mini>div>small{
+  grid-column:2!important;
+  min-width:0!important;
+  max-width:105px!important;
+  text-align:right!important;
+  overflow-wrap:anywhere!important;
+}
+.nsx-admin-final .nsx-admin-license-mini>div>code{
+  grid-column:1!important;
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:5px 7px!important;
+  overflow-wrap:anywhere!important;
+  word-break:break-word!important;
+  white-space:normal!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+}
+.nsx-admin-final .nsx-admin-license-mini>div>span{
+  grid-column:2!important;
+  justify-self:end!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:1380px) and (min-width:1200px){
+  .nsx-admin-final>.row>.col-xl-5{width:39%!important}
+  .nsx-admin-final>.row>.col-xl-4{width:30%!important}
+  .nsx-admin-final>.row>.col-xl-3{width:31%!important}
+}
+
+/* Tek admin yapisi: tum sayfa ustleri, ana kartlar ve tablo basliklari ayni sistemde. */
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-page-head,.nsx-admin-toolbar,.nsx-admin-head,
+  .container>.d-flex:first-child,.container-fluid>.d-flex:first-child,
+  .nsx-products-page>.d-flex:first-child,.nsx-demo-page>.d-flex:first-child,
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,
+  .nsx-ads-head,.nsx-ads-admin-hero,.nsx-live-admin-head,.nsx-online-hero,
+  .nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+){
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  width:100%!important;
+  min-height:112px!important;
+  margin:0 0 14px!important;
+  padding:18px 20px!important;
+  overflow:hidden!important;
+  color:var(--admin-ink)!important;
+  background:
+    radial-gradient(circle at 95% 4%,rgba(255,110,4,.11),transparent 31%),
+    linear-gradient(135deg,#fff 0,#f8fafb 100%)!important;
+  border:1px solid var(--admin-line)!important;
+  border-left:4px solid var(--admin-orange)!important;
+  border-radius:18px!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-page-head,.nsx-admin-toolbar,.nsx-admin-head,
+  .container>.d-flex:first-child,.container-fluid>.d-flex:first-child,
+  .nsx-products-page>.d-flex:first-child,.nsx-demo-page>.d-flex:first-child,
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,
+  .nsx-ads-head,.nsx-ads-admin-hero,.nsx-live-admin-head,.nsx-online-hero,
+  .nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) :is(h1,h2){
+  margin:5px 0 4px!important;
+  color:var(--admin-ink)!important;
+  font-size:clamp(24px,2.25vw,31px)!important;
+  font-weight:800!important;
+  line-height:1.08!important;
+  letter-spacing:-.038em!important;
+  text-shadow:none!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-page-head,.nsx-admin-toolbar,.nsx-admin-head,
+  .container>.d-flex:first-child,.container-fluid>.d-flex:first-child,
+  .nsx-products-page>.d-flex:first-child,.nsx-demo-page>.d-flex:first-child,
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,
+  .nsx-ads-head,.nsx-ads-admin-hero,.nsx-live-admin-head,.nsx-online-hero,
+  .nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) p{
+  max-width:820px!important;
+  margin:0!important;
+  color:var(--admin-muted)!important;
+  font-size:12.5px!important;
+  font-weight:550!important;
+  line-height:1.5!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-page-head,.nsx-admin-toolbar,.nsx-admin-head,
+  .container>.d-flex:first-child,.container-fluid>.d-flex:first-child,
+  .nsx-products-page>.d-flex:first-child,.nsx-demo-page>.d-flex:first-child,
+  .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,
+  .nsx-ads-head,.nsx-ads-admin-hero,.nsx-live-admin-head,.nsx-online-hero,
+  .nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+) :is(
+  .nsx-admin-kicker,.nsx-admin-section-kicker,.nsx-bulkmail-kicker,.nsx-campaign-kicker,
+  .admin-comments-kicker,.nsx-ads-kicker,.nsx-ads-admin-kicker,.nsx-live-admin-kicker,
+  .nsx-online-kicker,.nsx-ai-kicker,.nsx-vs-kicker,.nsx-manual-sale-kicker,.nsx-video-kicker,
+  div:first-child>span:first-child
+){
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:28px!important;
+  margin:0!important;
+  padding:0 9px!important;
+  color:#c84d00!important;
+  background:var(--admin-orange-soft)!important;
+  border:1px solid #efbf9d!important;
+  border-radius:8px!important;
+  font-size:9.5px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  letter-spacing:.06em!important;
+  text-transform:uppercase!important;
+}
+
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-card,.card:not(.bg-dark),.nsx-admin-stat-card,.nsx-admin-panel-card,
+  .nsx-bulkmail-card,.nsx-campaign-card,.admin-comment-card,.admin-comment-empty,.admin-comment-filter,
+  .nsx-ads-table-card,.nsx-ads-info-card,.nsx-online-panel,.nsx-online-stats article,
+  .nsx-ai-card,.nsx-ai-product-strip article,.nsx-ai-filter,.nsx-ai-table-card,
+  .nsx-vs-card,.nsx-vs-panel,.nsx-live-session-panel,.nsx-live-chat-panel,
+  .nsx-manual-sale-card,.nsx-update-info-card,.nsx-api-stat,
+  .nsx-admin-revenue-mini>div,.nsx-admin-revenue-main
+){
+  border:1px solid var(--admin-line)!important;
+  border-top:3px solid var(--admin-orange)!important;
+  border-radius:16px!important;
+  background:var(--admin-panel)!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-card-head,.nsx-admin-panel-head,.nsx-online-panel-head,.nsx-ai-table-head,
+  .nsx-manual-sale-card-top,.nsx-live-chat-top,.admin-comment-head,.nsx-ads-table-head
+){
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  min-height:60px!important;
+  margin:0!important;
+  padding:13px 16px!important;
+  color:var(--admin-ink)!important;
+  background:linear-gradient(180deg,#fff 0,#f5f7f8 100%)!important;
+  border:0!important;
+  border-bottom:1px solid var(--admin-line)!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-card-head,.nsx-admin-panel-head,.nsx-online-panel-head,.nsx-ai-table-head,
+  .nsx-manual-sale-card-top,.nsx-live-chat-top,.admin-comment-head,.nsx-ads-table-head
+) :is(strong,h2,h3){
+  margin:0!important;
+  color:var(--admin-ink)!important;
+  font-size:15px!important;
+  font-weight:780!important;
+  line-height:1.2!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-card-head,.nsx-admin-panel-head,.nsx-online-panel-head,.nsx-ai-table-head,
+  .nsx-manual-sale-card-top,.nsx-live-chat-top,.admin-comment-head,.nsx-ads-table-head
+) :is(small,p){
+  margin:3px 0 0!important;
+  color:var(--admin-muted)!important;
+  font-size:11.5px!important;
+  line-height:1.35!important;
+}
+
+body.nsx-admin-body .nsx-admin-main :is(
+  .nsx-admin-stat-card,.nsx-admin-metric-strip>div,.nsx-ads-stats>div,.nsx-ads-mini-stats>div,
+  .nsx-online-stats article,.nsx-ai-card,.nsx-vs-card,.nsx-api-stat
+){border-top-color:var(--admin-orange)!important}
+
+@media(max-width:680px){
+  body.nsx-admin-body .nsx-admin-main :is(
+    .nsx-admin-page-head,.nsx-admin-toolbar,.nsx-admin-head,
+    .container>.d-flex:first-child,.container-fluid>.d-flex:first-child,
+    .nsx-products-page>.d-flex:first-child,.nsx-demo-page>.d-flex:first-child,
+    .nsx-admin-final-hero,.nsx-bulkmail-hero,.nsx-campaign-hero,.admin-comments-hero,
+    .nsx-ads-head,.nsx-ads-admin-hero,.nsx-live-admin-head,.nsx-online-hero,
+    .nsx-ai-hero,.nsx-vs-hero,.nsx-manual-sale-hero,.nsx-video-admin-head
+  ){
+    align-items:flex-start!important;
+    flex-direction:column!important;
+    min-height:0!important;
+    padding:16px!important;
+  }
+}
+
+/* Tüm admin sayfaları: mobil menüyü tek satırlık, dokunmatik bir gezinme şeridine dönüştür. */
+@media(max-width:900px){
+  body.nsx-admin-body .nsx-admin-sidebar{
+    padding-bottom:7px!important;
+    overflow-x:hidden!important;
+    background:rgba(255,255,255,.98)!important;
+    box-shadow:0 10px 26px rgba(24,33,43,.07)!important;
+  }
+  body.nsx-admin-body .nsx-admin-menu{
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    gap:7px!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:3px 3px 10px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    overscroll-behavior-inline:contain!important;
+    scroll-behavior:smooth!important;
+    scroll-snap-type:x proximity!important;
+    scrollbar-width:thin!important;
+    scrollbar-color:#ff7a1a #edf1f4!important;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-x pan-y!important;
+  }
+  body.nsx-admin-body .nsx-admin-menu::-webkit-scrollbar{height:7px!important}
+  body.nsx-admin-body .nsx-admin-menu::-webkit-scrollbar-track{
+    background:#edf1f4!important;
+    border-radius:999px!important;
+  }
+  body.nsx-admin-body .nsx-admin-menu::-webkit-scrollbar-thumb{
+    background:linear-gradient(90deg,#ff8628,#ed5900)!important;
+    border:1px solid #edf1f4!important;
+    border-radius:999px!important;
+  }
+  body.nsx-admin-body .nsx-admin-menu>a{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 auto!important;
+    min-height:38px!important;
+    padding:8px 13px!important;
+    white-space:nowrap!important;
+    scroll-snap-align:start!important;
+    border-color:#e1e7eb!important;
+    background:linear-gradient(180deg,#fff,#f5f7f8)!important;
+    box-shadow:0 5px 13px rgba(24,33,43,.055)!important;
+  }
+  body.nsx-admin-body .nsx-admin-menu>a.active{
+    color:#c84d00!important;
+    border-color:#f0b98f!important;
+    background:linear-gradient(180deg,#fff,#fff0e4)!important;
+    box-shadow:0 7px 16px rgba(255,110,4,.13),inset 0 1px 0 #fff!important;
+  }
+}
+
+/* Açık admin teması: eski koyu-tema yardımcı sınıflarından kalan soluk yazıları temizle. */
+body.nsx-admin-body main.nsx-admin-main .badge.bg-dark,
+body.nsx-admin-body main.nsx-admin-main .badge.bg-secondary,
+body.nsx-admin-body main.nsx-admin-main .badge.bg-light{
+  color:#344354!important;
+  -webkit-text-fill-color:#344354!important;
+  background:#edf1f4!important;
+  border-color:#cbd5dd!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-demo-page .badge.bg-dark{
+  color:#24384c!important;
+  -webkit-text-fill-color:#24384c!important;
+  background:#eaf0f5!important;
+  border-color:#c7d3dd!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(
+  #nsxClearLiveChats,.nsx-live-delete,.nsx-live-reply-form>button,
+  form[action*="delete" i] button,form[action*="delete" i] input[type="submit"]
+):disabled{
+  color:#566370!important;
+  -webkit-text-fill-color:#566370!important;
+  background:#e1e6ea!important;
+  border-color:#cbd3da!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+
+/* Canli destek toplu silme: standart admin tehlikeli islem butonu. */
+body.nsx-admin-body .nsx-admin-main .nsx-live-admin-head .nsx-live-clear-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:38px!important;
+  padding:8px 13px!important;
+  border:1px solid #c93e43!important;
+  border-radius:10px!important;
+  color:#fff!important;
+  background:linear-gradient(135deg,#df4b50,#c9343a)!important;
+  box-shadow:0 7px 16px rgba(201,52,58,.18)!important;
+  font-size:11.5px!important;
+  font-weight:780!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-live-admin-head .nsx-live-clear-btn:hover{
+  color:#fff!important;
+  background:linear-gradient(135deg,#ce3c42,#b92d33)!important;
+  border-color:#b92d33!important;
+  transform:translateY(-1px)!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-live-admin-head .nsx-live-clear-btn:disabled{
+  color:#fff!important;
+  background:#c9ced3!important;
+  border-color:#c9ced3!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  cursor:not-allowed!important;
+  transform:none!important;
+}
+
+/* Havale Bildirimleri: islem alani sayfa icinde eksiksiz kalsin. */
+.nsx-admin-main .nsx-bank-transfer-table th:nth-child(1){width:11%!important}
+.nsx-admin-main .nsx-bank-transfer-table th:nth-child(2){width:13%!important}
+.nsx-admin-main .nsx-bank-transfer-table th:nth-child(3){width:13%!important}
+.nsx-admin-main .nsx-bank-transfer-table th:nth-child(4){width:7%!important}
+.nsx-admin-main .nsx-bank-transfer-table th:nth-child(5){width:10%!important}
+.nsx-admin-main .nsx-bank-transfer-table th:nth-child(6){width:13%!important}
+.nsx-admin-main .nsx-bank-transfer-table th:nth-child(7){width:9%!important}
+.nsx-admin-main .nsx-bank-transfer-table th:nth-child(8){width:24%!important}
+.nsx-admin-main .nsx-bank-transfer-table td:last-child{padding-left:6px!important;padding-right:10px!important}
+.nsx-admin-main .nsx-bank-transfer-table .nsx-admin-row-actions{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  justify-content:stretch!important;
+  gap:6px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+.nsx-admin-main .nsx-bank-transfer-table .nsx-admin-inline-form{
+  display:grid!important;
+  grid-template-columns:minmax(92px,1fr) auto auto!important;
+  align-items:center!important;
+  gap:5px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+.nsx-admin-main .nsx-bank-transfer-table .nsx-admin-inline-form .form-control{
+  width:100%!important;
+  min-width:0!important;
+  height:36px!important;
+  padding:7px 9px!important;
+  border-radius:9px!important;
+  font-size:10.5px!important;
+}
+.nsx-admin-main .nsx-bank-transfer-table .nsx-admin-btn.sm{
+  min-width:0!important;
+  padding:6px 7px!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:1180px){
+  .nsx-admin-main .nsx-bank-transfer-table .nsx-admin-inline-form{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .nsx-admin-main .nsx-bank-transfer-table .nsx-admin-inline-form .form-control{
+    grid-column:1/-1!important;
+  }
+}
+
+/* Video yonetimi ust aksiyonu: diger admin primary butonlariyla birebir. */
+body.nsx-admin-body .nsx-admin-main :is(.nsx-video-admin-head,.nsx-ads-head)>:is(.nsx-video-create-btn,.nsx-ads-create-btn){
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:42px!important;
+  padding:10px 16px!important;
+  border:1px solid var(--admin-orange)!important;
+  border-radius:11px!important;
+  color:#fff!important;
+  background:linear-gradient(135deg,#ff7b12,#ed5900)!important;
+  box-shadow:0 8px 19px rgba(255,110,4,.20),inset 0 1px 0 rgba(255,255,255,.3)!important;
+  font-size:12px!important;
+  font-weight:780!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(.nsx-video-admin-head,.nsx-ads-head)>:is(.nsx-video-create-btn,.nsx-ads-create-btn):hover{
+  color:#fff!important;
+  background:linear-gradient(135deg,#f56b06,#d94f00)!important;
+  border-color:#dc5200!important;
+  transform:translateY(-1px)!important;
+}
+
+/* Yorum kartlari: urun rozetleri esit olcu ve hizada. */
+body.nsx-admin-body .nsx-admin-main .admin-comment-product{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:260px!important;
+  max-width:100%!important;
+  min-height:34px!important;
+  padding:7px 12px!important;
+  border:1px solid #efb78e!important;
+  border-radius:10px!important;
+  color:#bd4900!important;
+  background:#fff4eb!important;
+  font-size:11.5px!important;
+  font-weight:780!important;
+  line-height:1.2!important;
+  text-align:center!important;
+  white-space:normal!important;
+}
+body.nsx-admin-body .nsx-admin-main .admin-comment-head>div:first-child{
+  min-width:260px!important;
+}
+body.nsx-admin-body .nsx-admin-main .admin-comment-card h3{
+  margin:9px 0 2px!important;
+}
+
+@media(max-width:680px){
+  body.nsx-admin-body .nsx-admin-main .admin-comment-product,
+  body.nsx-admin-body .nsx-admin-main .admin-comment-head>div:first-child{
+    width:100%!important;
+    min-width:0!important;
+  }
+  body.nsx-admin-body .nsx-admin-main .admin-comment-head>div:last-child{
+    width:100%!important;
+    text-align:left!important;
+  }
+}
+
+/* Ayrik urun ekle/duzenle ekranlarini da ayni gorsel sisteme bagla. */
+body:has(>.topbar) .header{
+  min-height:112px!important;
+  margin-bottom:14px!important;
+  padding:18px 20px!important;
+  border:1px solid var(--admin-line)!important;
+  border-left:4px solid var(--admin-orange)!important;
+  border-radius:18px!important;
+  background:
+    radial-gradient(circle at 95% 4%,rgba(255,110,4,.11),transparent 31%),
+    linear-gradient(135deg,#fff 0,#f8fafb 100%)!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+}
+body:has(>.topbar) .card{
+  border:1px solid var(--admin-line)!important;
+  border-top:3px solid var(--admin-orange)!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+}
+body:has(>.topbar)>.wrap:has(>h1:first-child){position:relative!important}
+body:has(>.topbar)>.wrap:has(>h1:first-child)::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  top:0;
+  left:0;
+  right:0;
+  height:102px;
+  border:1px solid var(--admin-line);
+  border-left:4px solid var(--admin-orange);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 95% 4%,rgba(255,110,4,.11),transparent 31%),
+    linear-gradient(135deg,#fff 0,#f8fafb 100%);
+  box-shadow:var(--admin-shadow-soft);
+}
+body:has(>.topbar)>.wrap:has(>h1:first-child)>h1,
+body:has(>.topbar)>.wrap:has(>h1:first-child)>p.muted{
+  position:relative!important;
+  z-index:1!important;
+  margin-left:20px!important;
+  margin-right:20px!important;
+}
+body:has(>.topbar)>.wrap:has(>h1:first-child)>h1{
+  margin-top:0!important;
+  margin-bottom:4px!important;
+  padding-top:19px!important;
+  color:var(--admin-ink)!important;
+  font-size:28px!important;
+  font-weight:800!important;
+  letter-spacing:-.035em!important;
+}
+body:has(>.topbar)>.wrap:has(>h1:first-child)>p.muted{
+  margin-bottom:32px!important;
+  color:var(--admin-muted)!important;
+}
+body:has(>.topbar)>.wrap:has(>h1:first-child)>form.card{position:relative!important;z-index:1!important}
+
+/* Reklam listesi: onizleme sutununda yalnizca banner, dengeli sutun oranlari. */
+.nsx-admin-main .nsx-ads-table th:nth-child(1){width:12%!important}
+.nsx-admin-main .nsx-ads-table th:nth-child(2){width:20%!important}
+.nsx-admin-main .nsx-ads-table th:nth-child(3){width:8%!important}
+.nsx-admin-main .nsx-ads-table th:nth-child(4){width:15%!important}
+.nsx-admin-main .nsx-ads-table th:nth-child(5){width:12%!important}
+.nsx-admin-main .nsx-ads-table th:nth-child(6){width:9%!important}
+.nsx-admin-main .nsx-ads-table th:nth-child(7){width:24%!important}
+.nsx-admin-main .nsx-ad-preview-row{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  gap:0!important;
+}
+.nsx-admin-main .nsx-ad-preview-row>div{display:none!important}
+.nsx-admin-main .nsx-ad-preview-row img{
+  display:block!important;
+  width:100%!important;
+  max-width:158px!important;
+  height:44px!important;
+  flex:0 1 158px!important;
+  object-fit:contain!important;
+  border-radius:7px!important;
+}
+
+/* Reklam ekle/duzenle: profesyonel form ici bosluk ve alan ritmi. */
+.nsx-admin-main .nsx-ads-form-grid{
+  align-items:start!important;
+  gap:18px!important;
+  width:100%!important;
+  max-width:100%!important;
+}
+.nsx-admin-main :is(.nsx-ads-form-main,.nsx-ads-form-side){
+  min-width:0!important;
+  padding:22px 24px 24px!important;
+  overflow:hidden!important;
+}
+.nsx-admin-main :is(.nsx-ads-form-main,.nsx-ads-form-side)>h3{
+  min-height:56px!important;
+  margin:-22px -24px 20px!important;
+  padding:16px 20px!important;
+  color:var(--admin-ink)!important;
+  background:linear-gradient(180deg,#fff 0,#f5f7f8 100%)!important;
+  border-bottom:1px solid var(--admin-line)!important;
+  font-size:16px!important;
+  font-weight:800!important;
+  line-height:1.35!important;
+  letter-spacing:-.015em!important;
+}
+.nsx-admin-main :is(.nsx-ads-form-main,.nsx-ads-form-side)>.row{
+  --bs-gutter-x:16px!important;
+  --bs-gutter-y:16px!important;
+  margin-left:calc(var(--bs-gutter-x) * -.5)!important;
+  margin-right:calc(var(--bs-gutter-x) * -.5)!important;
+}
+.nsx-admin-main .nsx-ads-form-grid .form-label{
+  display:block!important;
+  margin:0 0 6px!important;
+  color:#394551!important;
+  font-size:11.5px!important;
+  font-weight:750!important;
+  line-height:1.3!important;
+}
+.nsx-admin-main .nsx-ads-form-grid :is(.form-control,.form-select){
+  min-height:44px!important;
+  padding:9px 12px!important;
+  border-color:var(--admin-line-strong)!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  font-size:12.5px!important;
+}
+.nsx-admin-main .nsx-ads-form-grid textarea.form-control{
+  min-height:92px!important;
+  padding-top:11px!important;
+}
+.nsx-admin-main .nsx-ads-form-grid input[type="file"]{
+  padding:7px 9px!important;
+  background:#f8f9fa!important;
+}
+.nsx-admin-main .nsx-ads-form-grid :is(.text-muted,small){
+  display:block!important;
+  margin-top:5px!important;
+  color:var(--admin-muted)!important;
+  font-size:10.5px!important;
+  line-height:1.4!important;
+}
+.nsx-admin-main .nsx-ads-form-side .nsx-ad-live-preview{
+  margin:0 0 20px!important;
+  padding:14px!important;
+  border-radius:17px!important;
+}
+.nsx-admin-main .nsx-ads-form-grid :is(.nsx-ad-checkline,.nsx-ad-active-box){
+  min-height:44px!important;
+  padding:10px 12px!important;
+  border-radius:12px!important;
+}
+.nsx-admin-main .nsx-ads-form-side>button[type="submit"]{
+  min-height:46px!important;
+  margin-top:18px!important;
+  border-radius:11px!important;
+}
+.nsx-admin-main .nsx-ads-danger-zone{padding:18px 20px!important}
+
+@media(max-width:1200px){
+  .nsx-admin-main .nsx-ads-form-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:680px){
+  .nsx-admin-main :is(.nsx-ads-form-main,.nsx-ads-form-side){padding:18px 16px 20px!important}
+  .nsx-admin-main :is(.nsx-ads-form-main,.nsx-ads-form-side)>h3{margin:-18px -16px 17px!important;padding:14px 16px!important}
+}
+
+/* Tum tam-sayfa admin formlari: Reklam Yonetimi ile ayni olcu ve yuzey sistemi. */
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form,
+body:has(>.topbar) .nsx-standard-form{
+  color:var(--admin-ink)!important;
+  font-family:var(--admin-font)!important;
+}
+
+/* Formun kendisi ana kart oldugunda ortak kart kabugu. */
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form:is(.card,.nsx-admin-card,.nsx-manual-sale-card,.nsx-update-form),
+body:has(>.topbar) .nsx-standard-form.card{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  border:1px solid var(--admin-line)!important;
+  border-top:3px solid var(--admin-orange)!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+  overflow:hidden!important;
+}
+
+/* Form bir yonetim kartinin icindeyse kart ve baslik ritmini koru. */
+body.nsx-admin-body .nsx-admin-main :is(.nsx-bulkmail-card,.nsx-campaign-card,.nsx-admin-card):has(>.nsx-standard-form){
+  padding:0!important;
+  border:1px solid var(--admin-line)!important;
+  border-top:3px solid var(--admin-orange)!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+  overflow:hidden!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(.nsx-bulkmail-card,.nsx-campaign-card,.nsx-admin-card):has(>.nsx-standard-form)>h2{
+  margin:0!important;
+  padding:16px 20px 3px!important;
+  color:var(--admin-ink)!important;
+  background:linear-gradient(180deg,#fff 0,#f5f7f8 100%)!important;
+  font-size:16px!important;
+  font-weight:800!important;
+  line-height:1.3!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(.nsx-bulkmail-card,.nsx-campaign-card,.nsx-admin-card):has(>.nsx-standard-form)>h2+ p{
+  margin:0!important;
+  padding:0 20px 14px!important;
+  color:var(--admin-muted)!important;
+  background:linear-gradient(180deg,#f8f9fa 0,#f5f7f8 100%)!important;
+  border-bottom:1px solid var(--admin-line)!important;
+  font-size:11.5px!important;
+  line-height:1.4!important;
+}
+body.nsx-admin-body .nsx-admin-main :is(.nsx-bulkmail-card,.nsx-campaign-card,.nsx-admin-card):has(>.nsx-standard-form)>.nsx-standard-form{
+  padding:22px 24px 24px!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-campaign-card:has(>.nsx-standard-form)>h2:not(:has(+p)){
+  padding-bottom:14px!important;
+  border-bottom:1px solid var(--admin-line)!important;
+}
+
+/* Ana kart govdesi, kolon araligi ve alan olculeri. */
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form>.card-body,
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form>.nsx-manual-sale-card-body,
+body:has(>.topbar) .nsx-standard-form.card{
+  padding:22px 24px 24px!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form.nsx-update-form{
+  padding:22px 24px 24px!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(.row,.nsx-video-form-row){
+  --bs-gutter-x:16px!important;
+  --bs-gutter-y:16px!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(.form-label,label:not(.form-check-label):not(.nsx-check-card):not(.nsx-video-switch-card):not(.nsx-bulkmail-check):not(.nsx-campaign-check)),
+body:has(>.topbar) .nsx-standard-form label:not(.check){
+  display:block!important;
+  margin:0 0 6px!important;
+  color:#394551!important;
+  font-size:11.5px!important;
+  font-weight:750!important;
+  line-height:1.3!important;
+  letter-spacing:0!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(.form-control,.form-select,.input-group-text),
+body:has(>.topbar) .nsx-standard-form :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+  min-height:44px!important;
+  padding:9px 12px!important;
+  border:1px solid var(--admin-line-strong)!important;
+  border-radius:10px!important;
+  color:var(--admin-ink)!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  font-size:12.5px!important;
+  font-weight:550!important;
+  line-height:1.35!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form textarea.form-control,
+body:has(>.topbar) .nsx-standard-form textarea{
+  min-height:92px!important;
+  padding-top:11px!important;
+  resize:vertical!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form input[type="file"],
+body:has(>.topbar) .nsx-standard-form input[type="file"]{
+  padding:7px 9px!important;
+  background:#f8f9fa!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(.form-control,.form-select):focus,
+body:has(>.topbar) .nsx-standard-form :is(input,select,textarea):focus{
+  border-color:var(--admin-orange)!important;
+  box-shadow:0 0 0 3px rgba(255,110,4,.12)!important;
+  outline:0!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form .input-group>.form-control{
+  border-top-right-radius:0!important;
+  border-bottom-right-radius:0!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form .input-group>.input-group-text{
+  border-top-left-radius:0!important;
+  border-bottom-left-radius:0!important;
+  background:#f5f7f8!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(.form-text,.text-muted,small){
+  color:var(--admin-muted)!important;
+  font-size:10.5px!important;
+  line-height:1.4!important;
+}
+
+/* Secenek/switch kutulari tek acik turuncu stile bagli. */
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(
+  .nsx-manual-sale-switch-box,.nsx-bulkmail-check,.nsx-campaign-check,
+  .nsx-check-card,.nsx-video-switch-card
+){
+  min-height:54px!important;
+  padding:11px 13px!important;
+  border:1px solid #f2c3a1!important;
+  border-radius:12px!important;
+  color:var(--admin-ink)!important;
+  background:#fff7f1!important;
+  box-shadow:none!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(.form-check-input,input[type="checkbox"],input[type="radio"]){
+  accent-color:var(--admin-orange)!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form .form-check-input:checked{
+  border-color:var(--admin-orange)!important;
+  background-color:var(--admin-orange)!important;
+}
+
+/* Bolum basliklari ve alt islem seridi reklam formundaki hiyerarsiyle ayni. */
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form>.nsx-manual-sale-card-top,
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form>.nsx-video-form-title{
+  min-height:56px!important;
+  padding:15px 20px!important;
+  border-bottom:1px solid var(--admin-line)!important;
+  background:linear-gradient(180deg,#fff 0,#f5f7f8 100%)!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form .nsx-manual-sale-section-title{
+  margin:0 0 14px!important;
+  color:var(--admin-ink)!important;
+  font-size:13px!important;
+  font-weight:800!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form .nsx-manual-sale-section-title span{
+  width:26px!important;
+  height:26px!important;
+  border-radius:8px!important;
+  color:#fff!important;
+  background:var(--admin-orange)!important;
+  font-size:11px!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(
+  .card-footer,.nsx-manual-sale-footer,.nsx-video-form-actions,.actions
+){
+  min-height:62px!important;
+  margin:0!important;
+  padding:13px 20px!important;
+  border:0!important;
+  border-top:1px solid var(--admin-line)!important;
+  background:#f8f9fa!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form>button[type="submit"],
+body.nsx-admin-body .nsx-admin-main .nsx-standard-form>.btn[type="submit"]{
+  min-height:42px!important;
+  margin-top:18px!important;
+}
+
+/* Video formu iki kartli kalir; iki kart da ayni form yuzeyini kullanir. */
+body.nsx-admin-body .nsx-admin-main .nsx-video-form.nsx-standard-form{
+  gap:18px!important;
+}
+body.nsx-admin-body .nsx-admin-main .nsx-video-form.nsx-standard-form>:is(.nsx-video-form-main,.nsx-video-form-preview){
+  border-top:3px solid var(--admin-orange)!important;
+  border-radius:16px!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+}
+
+/* Ayrik urun formlarinda da ayni kolon ve tam-genislik islem seridi. */
+body:has(>.topbar) .nsx-standard-form>.grid{gap:16px!important}
+body:has(>.topbar) .nsx-standard-form>.actions{
+  min-height:62px!important;
+  margin:24px -24px -24px!important;
+  padding:13px 20px!important;
+  border-top:1px solid var(--admin-line)!important;
+  background:#f8f9fa!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+}
+body:has(>.topbar) .nsx-standard-form .check{
+  min-height:48px!important;
+  padding:10px 12px!important;
+  border:1px solid #f2c3a1!important;
+  border-radius:12px!important;
+  background:#fff7f1!important;
+}
+body:has(>.topbar) .nsx-standard-form .check input{accent-color:var(--admin-orange)!important}
+
+@media(max-width:680px){
+  body.nsx-admin-body .nsx-admin-main :is(.nsx-bulkmail-card,.nsx-campaign-card,.nsx-admin-card):has(>.nsx-standard-form)>.nsx-standard-form,
+  body.nsx-admin-body .nsx-admin-main .nsx-standard-form>.card-body,
+  body.nsx-admin-body .nsx-admin-main .nsx-standard-form>.nsx-manual-sale-card-body,
+  body.nsx-admin-body .nsx-admin-main .nsx-standard-form.nsx-update-form,
+  body:has(>.topbar) .nsx-standard-form.card{
+    padding:18px 16px 20px!important;
+  }
+  body.nsx-admin-body .nsx-admin-main .nsx-standard-form :is(.card-footer,.nsx-manual-sale-footer,.nsx-video-form-actions,.actions){
+    padding:12px 16px!important;
+  }
+  body:has(>.topbar) .nsx-standard-form>.actions{
+    margin:20px -16px -20px!important;
+    padding:12px 16px!important;
+  }
+}
+
+/* Calisan eski Razor ciktisinda da Video/Reklam ana aksiyonlarini kesin kilitle. */
+body.nsx-admin-body main.nsx-admin-main .nsx-video-admin-head>a.nsx-admin-btn.primary,
+body.nsx-admin-body main.nsx-admin-main .nsx-ads-head>a.nsx-admin-btn.primary{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:132px!important;
+  min-height:42px!important;
+  padding:10px 16px!important;
+  border:1px solid #f56800!important;
+  border-radius:11px!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:linear-gradient(135deg,#ff7b12 0%,#ed5900 100%)!important;
+  box-shadow:0 8px 19px rgba(255,110,4,.20),inset 0 1px 0 rgba(255,255,255,.30)!important;
+  font-family:var(--admin-font)!important;
+  font-size:12px!important;
+  font-weight:780!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  text-shadow:none!important;
+  white-space:nowrap!important;
+  opacity:1!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-video-admin-head>a.nsx-admin-btn.primary:hover,
+body.nsx-admin-body main.nsx-admin-main .nsx-ads-head>a.nsx-admin-btn.primary:hover{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:linear-gradient(135deg,#f56b06 0%,#d94f00 100%)!important;
+  border-color:#d94f00!important;
+  box-shadow:0 11px 24px rgba(217,79,0,.24)!important;
+  transform:translateY(-1px)!important;
+}
+
+/* Calisan eski Canli Destek Razor ciktisindaki mevcut butonlari dogrudan kilitle. */
+body.nsx-admin-body main.nsx-admin-main #nsxClearLiveChats,
+body.nsx-admin-body main.nsx-admin-main .nsx-live-delete{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:36px!important;
+  padding:8px 12px!important;
+  border:1px solid #c9343a!important;
+  border-radius:10px!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:linear-gradient(135deg,#df4b50 0%,#c9343a 100%)!important;
+  box-shadow:0 7px 16px rgba(201,52,58,.18)!important;
+  font-family:var(--admin-font)!important;
+  font-size:11.5px!important;
+  font-weight:780!important;
+  line-height:1!important;
+  text-shadow:none!important;
+  white-space:nowrap!important;
+  opacity:1!important;
+}
+body.nsx-admin-body main.nsx-admin-main #nsxClearLiveChats:hover,
+body.nsx-admin-body main.nsx-admin-main .nsx-live-delete:hover{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:linear-gradient(135deg,#ce3c42 0%,#b92d33 100%)!important;
+  border-color:#b92d33!important;
+  transform:translateY(-1px)!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-live-reply-form>button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:92px!important;
+  min-height:40px!important;
+  padding:9px 14px!important;
+  border:1px solid #f56800!important;
+  border-radius:10px!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:linear-gradient(135deg,#ff7b12 0%,#ed5900 100%)!important;
+  box-shadow:0 7px 17px rgba(255,110,4,.18)!important;
+  font-family:var(--admin-font)!important;
+  font-size:11.5px!important;
+  font-weight:780!important;
+  line-height:1!important;
+  text-shadow:none!important;
+  opacity:1!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-live-reply-form>button:hover:not(:disabled){
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:linear-gradient(135deg,#f56b06 0%,#d94f00 100%)!important;
+  border-color:#d94f00!important;
+  transform:translateY(-1px)!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(#nsxClearLiveChats,.nsx-live-delete,.nsx-live-reply-form>button):disabled{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:#c7cdd2!important;
+  border-color:#c7cdd2!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  cursor:not-allowed!important;
+  transform:none!important;
+}
+
+/* Eski ve yeni urun ekle/duzenle ciktisinda turuncu kutu + beyaz tik. */
+body:has(>.topbar) #IsActive,
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #IsActive{
+  width:20px!important;
+  height:20px!important;
+  min-height:20px!important;
+  margin:0!important;
+  padding:0!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  border:1px solid #c9d1d9!important;
+  border-radius:3px!important;
+  background:#fff!important;
+  background-image:none!important;
+  cursor:pointer!important;
+}
+body:has(>.topbar) #IsActive:checked,
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #IsActive:checked{
+  border-color:#ff6e04!important;
+  background-color:#ff6e04!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4' d='M3 8.2 6.3 11.5 13 4.8'/%3E%3C/svg%3E")!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  background-size:15px 15px!important;
+}
+
+/* Canli Destek ust aksiyonu diger sayfalarla ayni turuncu primary standartta. */
+body.nsx-admin-body main.nsx-admin-main #nsxClearLiveChats{
+  min-width:138px!important;
+  min-height:42px!important;
+  padding:10px 16px!important;
+  border:1px solid #f56800!important;
+  border-radius:11px!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:linear-gradient(135deg,#ff7b12 0%,#ed5900 100%)!important;
+  box-shadow:0 8px 19px rgba(255,110,4,.20),inset 0 1px 0 rgba(255,255,255,.30)!important;
+  font-size:12px!important;
+  font-weight:780!important;
+}
+body.nsx-admin-body main.nsx-admin-main #nsxClearLiveChats:hover{
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:linear-gradient(135deg,#f56b06 0%,#d94f00 100%)!important;
+  border-color:#d94f00!important;
+  box-shadow:0 11px 24px rgba(217,79,0,.24)!important;
+  transform:translateY(-1px)!important;
+}
+
+/* Urun Ekle/Duzenle: ortak layout icinde dengeli tam-genislik form yerlesimi. */
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm{
+  width:100%!important;
+  max-width:100%!important;
+  margin:16px 0 18px!important;
+  padding:22px 24px 24px!important;
+  border:1px solid var(--admin-line)!important;
+  border-top:3px solid var(--admin-orange)!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:var(--admin-shadow-soft)!important;
+  overflow:hidden!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm>.grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:start!important;
+  gap:17px 16px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm>.grid>div{
+  width:100%!important;
+  min-width:0!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm>.grid>.full{
+  grid-column:1/-1!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm label:not(.check){
+  display:block!important;
+  margin:0 0 6px!important;
+  color:#394551!important;
+  font-size:11.5px!important;
+  font-weight:750!important;
+  line-height:1.3!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm :is(
+  input:not([type="checkbox"]):not([type="radio"]),select:not([data-editor-block]),textarea:not(.nsx-editor-source)
+){
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  min-height:44px!important;
+  padding:9px 12px!important;
+  border:1px solid var(--admin-line-strong)!important;
+  border-radius:10px!important;
+  color:var(--admin-ink)!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  font-family:var(--admin-font)!important;
+  font-size:12.5px!important;
+  font-weight:550!important;
+  line-height:1.35!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm textarea:not(.nsx-editor-source){
+  min-height:110px!important;
+  resize:vertical!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm input[type="file"]{
+  padding:7px 9px!important;
+  background:#f8f9fa!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm :is(input,select:not([data-editor-block]),textarea:not(.nsx-editor-source)):focus{
+  border-color:var(--admin-orange)!important;
+  box-shadow:0 0 0 3px rgba(255,110,4,.12)!important;
+  outline:0!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm small{
+  display:block!important;
+  margin-top:5px!important;
+  color:var(--admin-muted)!important;
+  font-size:10.5px!important;
+  line-height:1.4!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm .check{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  min-height:44px!important;
+  padding:10px 12px!important;
+  border:1px solid #f2c3a1!important;
+  border-radius:12px!important;
+  background:#fff7f1!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm .nsx-rich-editor{
+  width:100%!important;
+  min-width:0!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm .nsx-editor-heading label{
+  margin:0 0 5px!important;
+  font-size:13px!important;
+  font-weight:800!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm .nsx-editor-toolbar select[data-editor-block]{
+  display:inline-block!important;
+  width:160px!important;
+  max-width:160px!important;
+  min-height:36px!important;
+  padding:0 10px!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm :is(.nsx-editor-surface,.nsx-editor-source){
+  width:100%!important;
+  min-width:0!important;
+  min-height:320px!important;
+  padding:22px!important;
+  box-sizing:border-box!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm .nsx-editor-source{
+  resize:vertical!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm>.actions{
+  min-height:62px!important;
+  margin:24px -24px -24px!important;
+  padding:13px 20px!important;
+  border-top:1px solid var(--admin-line)!important;
+  background:#f8f9fa!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+}
+
+@media(max-width:760px){
+  body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm{
+    margin-top:12px!important;
+    padding:18px 16px 20px!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm>.grid{
+    grid-template-columns:1fr!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm>.grid>.full{
+    grid-column:auto!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm .nsx-editor-toolbar select[data-editor-block]{
+    width:100%!important;
+    max-width:100%!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm :is(.nsx-editor-surface,.nsx-editor-source){
+    min-height:270px!important;
+    padding:18px!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main :is(.nsx-product-add-page,.nsx-product-edit-page) #nsxUploadForm>.actions{
+    margin:20px -16px -20px!important;
+    padding:12px 16px!important;
+  }
+}
+
+/* Admin genelinde yalnizca gercek silme islemleri icin tek buton standardi. */
+body.nsx-admin-body main.nsx-admin-main :is(
+  form[action*="delete" i] button,
+  form[action*="delete" i] input[type="submit"],
+  button[form^="delete" i],
+  button[data-delete-session],
+  #nsxClearLiveChats
+){
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  min-width:auto!important;
+  min-height:34px!important;
+  padding:7px 12px!important;
+  border:1px solid #ff6e04!important;
+  border-radius:10px!important;
+  color:#fff!important;
+  background:#ff6e04!important;
+  box-shadow:0 7px 16px rgba(255,110,4,.18)!important;
+  font-family:var(--admin-font)!important;
+  font-size:11.5px!important;
+  font-weight:750!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+  transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(
+  form[action*="delete" i] button,
+  form[action*="delete" i] input[type="submit"],
+  button[form^="delete" i],
+  button[data-delete-session],
+  #nsxClearLiveChats
+):is(:hover,:focus-visible){
+  color:#fff!important;
+  background:#d94f00!important;
+  border-color:#d94f00!important;
+  box-shadow:0 10px 21px rgba(217,79,0,.24)!important;
+  transform:translateY(-1px)!important;
+  outline:0!important;
+}
+body.nsx-admin-body main.nsx-admin-main :is(
+  form[action*="delete" i] button,
+  form[action*="delete" i] input[type="submit"],
+  button[form^="delete" i],
+  button[data-delete-session],
+  #nsxClearLiveChats
+):disabled{
+  color:#fff!important;
+  background:#f7a46a!important;
+  border-color:#f7a46a!important;
+  box-shadow:none!important;
+  transform:none!important;
+  cursor:not-allowed!important;
+  opacity:.72!important;
+}
+
+/* Admin kare checkbox standardi: turuncu yuzey ve her tarayicida beyaz SVG tik. */
+body.nsx-admin-body main.nsx-admin-main input[type="checkbox"]:not(.nsx-toggle-switch),
+body:has(>form.card) .remember-row input[type="checkbox"]{
+  display:inline-block!important;
+  flex:0 0 20px!important;
+  width:20px!important;
+  min-width:20px!important;
+  max-width:20px!important;
+  height:20px!important;
+  min-height:20px!important;
+  max-height:20px!important;
+  margin:0!important;
+  padding:0!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  border:1px solid #c9d1d9!important;
+  border-radius:4px!important;
+  color:#fff!important;
+  background-color:#fff!important;
+  background-image:none!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  background-size:15px 15px!important;
+  box-shadow:inset 0 1px 2px rgba(15,23,42,.04)!important;
+  vertical-align:middle!important;
+  cursor:pointer!important;
+  transition:border-color .16s ease,background-color .16s ease,box-shadow .16s ease!important;
+}
+body.nsx-admin-body main.nsx-admin-main input[type="checkbox"]:not(.nsx-toggle-switch):checked,
+body:has(>form.card) .remember-row input[type="checkbox"]:checked{
+  border-color:#ff6e04!important;
+  color:#fff!important;
+  background-color:#ff6e04!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4' d='M3 8.2 6.3 11.5 13 4.8'/%3E%3C/svg%3E")!important;
+  box-shadow:0 0 0 1px rgba(255,110,4,.08)!important;
+}
+body.nsx-admin-body main.nsx-admin-main input[type="checkbox"]:not(.nsx-toggle-switch):focus-visible,
+body:has(>form.card) .remember-row input[type="checkbox"]:focus-visible{
+  border-color:#ff6e04!important;
+  box-shadow:0 0 0 3px rgba(255,110,4,.16)!important;
+  outline:0!important;
+}
+body.nsx-admin-body main.nsx-admin-main input[type="checkbox"]:not(.nsx-toggle-switch):disabled,
+body:has(>form.card) .remember-row input[type="checkbox"]:disabled{
+  cursor:not-allowed!important;
+  opacity:.55!important;
+}
+
+/* Admin anasayfa alt bilgilendirme karti: dengeli ic bosluk ve metin hizasi. */
+body.nsx-admin-body main.nsx-admin-main .nsx-admin-update-note{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  width:100%!important;
+  min-height:76px!important;
+  margin-top:22px!important;
+  padding:16px 20px!important;
+  border-top:3px solid var(--admin-orange)!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-admin-update-note p{
+  flex:1 1 auto!important;
+  margin:0!important;
+  padding:0!important;
+  color:var(--admin-ink-soft)!important;
+  font-size:12.5px!important;
+  font-weight:550!important;
+  line-height:1.55!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-admin-update-note p b{
+  color:var(--admin-ink)!important;
+  font-weight:800!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-admin-update-note .nsx-admin-btn{
+  flex:0 0 auto!important;
+  margin:0!important;
+}
+@media(max-width:680px){
+  body.nsx-admin-body main.nsx-admin-main .nsx-admin-update-note{
+    align-items:flex-start!important;
+    flex-direction:column!important;
+    gap:12px!important;
+    padding:16px!important;
+  }
+}
+
+/* Lisans tablosu: durum dar, islemler rahat ve tek satirda. */
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(1){width:9%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(2){width:9.5%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(3){width:9%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(4){width:5%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(5){width:9%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(6){width:5.5%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(7){width:7%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(8){width:11%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(9){width:7%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(10){width:6%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(11){width:3%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table th:nth-child(12){width:18%!important}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table :is(th,td):nth-child(11){
+  padding-left:5px!important;
+  padding-right:5px!important;
+  text-align:center!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table .nsx-license-status .nsx-admin-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:36px!important;
+  padding:4px 6px!important;
+  margin:0 auto!important;
+  white-space:nowrap!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table .nsx-license-action-cell{
+  padding-left:10px!important;
+  padding-right:10px!important;
+  white-space:nowrap!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table .nsx-license-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  flex-wrap:nowrap!important;
+  gap:6px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table .nsx-license-actions form{
+  display:flex!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  margin:0!important;
+}
+body.nsx-admin-body main.nsx-admin-main .nsx-license-table .nsx-license-actions :is(.btn,.nsx-admin-btn){
+  flex:0 0 auto!important;
+  min-height:34px!important;
+  margin:0!important;
+  padding:7px 10px!important;
+  white-space:nowrap!important;
+}
+
+/* Urun tablosu: yalnizca ID minimum, kalan alan diger sutunlara ortak dagilir. */
+body.nsx-admin-body main.nsx-admin-main .nsx-products-table :is(th,td):nth-child(2){
+  width:3%!important;
+  padding-left:4px!important;
+  padding-right:4px!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+
+/* Mobil admin liste tablolari: sutunlari ezme, kart icinde yatay kaydir. */
+@media(max-width:900px){
+  body.nsx-admin-body main.nsx-admin-main :is(
+    .table-responsive,.nsx-license-table-wrap,.nsx-vs-table-wrap,.nsx-online-table-wrap
+  ){
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    overscroll-behavior-inline:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-width:thin!important;
+    scrollbar-color:#ff7a1a #edf1f4!important;
+    touch-action:pan-x pan-y!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main :is(
+    .table-responsive,.nsx-license-table-wrap,.nsx-vs-table-wrap,.nsx-online-table-wrap
+  )::-webkit-scrollbar{height:9px!important}
+  body.nsx-admin-body main.nsx-admin-main :is(
+    .table-responsive,.nsx-license-table-wrap,.nsx-vs-table-wrap,.nsx-online-table-wrap
+  )::-webkit-scrollbar-track{background:#edf1f4!important;border-radius:999px!important}
+  body.nsx-admin-body main.nsx-admin-main :is(
+    .table-responsive,.nsx-license-table-wrap,.nsx-vs-table-wrap,.nsx-online-table-wrap
+  )::-webkit-scrollbar-thumb{background:#ff7a1a!important;border:2px solid #edf1f4!important;border-radius:999px!important}
+
+  body.nsx-admin-body main.nsx-admin-main :is(
+    .table,.nsx-admin-table,.nsx-license-table,.nsx-products-table,.nsx-demo-table,
+    .nsx-api-table,.nsx-update-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table
+  ){
+    width:max-content!important;
+    max-width:none!important;
+    min-width:780px!important;
+    table-layout:auto!important;
+    margin-bottom:0!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main :is(
+    .nsx-license-table,.nsx-products-table,.nsx-demo-table,.nsx-api-table,
+    .nsx-ai-table,.nsx-online-table,.nsx-ads-table
+  ){min-width:1080px!important}
+  body.nsx-admin-body main.nsx-admin-main :is(.nsx-update-table,.nsx-vs-table){min-width:880px!important}
+
+  body.nsx-admin-body main.nsx-admin-main :is(
+    .table,.nsx-admin-table,.nsx-license-table,.nsx-products-table,.nsx-demo-table,
+    .nsx-api-table,.nsx-update-table,.nsx-ai-table,.nsx-vs-table,.nsx-online-table,.nsx-ads-table
+  ) :is(th,td){
+    width:auto!important;
+    min-width:max-content!important;
+    max-width:none!important;
+    padding:9px 10px!important;
+    white-space:nowrap!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+    font-size:11px!important;
+    line-height:1.35!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main table :is(code,.nsx-admin-code,.nsx-vs-code,.nsx-online-ip){
+    max-width:none!important;
+    white-space:nowrap!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main table :is(
+    .nsx-admin-actions,.nsx-license-actions,.nsx-update-actions,.nsx-ads-actions,.nsx-admin-row-actions,
+    .nsx-admin-table-actions,.nsx-slider-action
+  ){
+    width:max-content!important;
+    max-width:none!important;
+    flex-wrap:nowrap!important;
+    white-space:nowrap!important;
+  }
+  body.nsx-admin-body main.nsx-admin-main table :is(form,.d-flex,[style*="min-width"]){
+    max-width:none!important;
+  }
+}
+
+/* Global admin quick access: shared on every admin page. */
+.nsx-admin-global-quick-shell{
+  position:sticky!important;
+  top:72px!important;
+  z-index:34!important;
+  display:flex!important;
+  justify-content:flex-end!important;
+  width:100%!important;
+  padding:6px 20px 0!important;
+  pointer-events:none!important;
+}
+.nsx-admin-global-quick{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:6px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  padding:5px!important;
+  border:1px solid rgba(255,110,4,.18)!important;
+  border-radius:13px!important;
+  background:rgba(255,255,255,.94)!important;
+  box-shadow:0 8px 20px rgba(24,33,43,.07),inset 0 1px 0 #fff!important;
+  backdrop-filter:blur(12px)!important;
+  pointer-events:auto!important;
+}
+.nsx-admin-global-quick a,
+.nsx-admin-global-quick a:link,
+.nsx-admin-global-quick a:visited{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:32px!important;
+  padding:0 12px!important;
+  border:1px solid #e85b00!important;
+  border-radius:9px!important;
+  background:linear-gradient(135deg,#ff7f22 0%,#ff6e04 58%,#ed5900 100%)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:0 5px 12px rgba(255,110,4,.16),inset 0 1px 0 rgba(255,255,255,.24)!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  font-size:10.5px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  letter-spacing:-.01em!important;
+  transition:transform .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease!important;
+}
+.nsx-admin-global-quick a:hover,
+.nsx-admin-global-quick a:focus-visible{
+  border-color:#cb4c00!important;
+  background:linear-gradient(135deg,#f46a09 0%,#df5700 62%,#c94b00 100%)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  transform:translateY(-1px)!important;
+  box-shadow:0 8px 17px rgba(194,72,0,.20),0 0 0 3px rgba(255,110,4,.08)!important;
+}
+.nsx-admin-global-quick a.active{
+  border-color:#222b33!important;
+  background:linear-gradient(135deg,#343c44 0%,#252b31 100%)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  box-shadow:0 6px 14px rgba(24,33,43,.20),inset 0 1px 0 rgba(255,255,255,.10)!important;
+}
+.nsx-admin-global-quick a:focus-visible{
+  outline:2px solid rgba(255,110,4,.40)!important;
+  outline-offset:2px!important;
+}
+
+@media(max-width:900px){
+  .nsx-admin-global-quick-shell{
+    top:64px!important;
+    justify-content:flex-start!important;
+    padding:5px 10px 0!important;
+    overflow:hidden!important;
+  }
+  .nsx-admin-global-quick{
+    justify-content:flex-start!important;
+    gap:5px!important;
+    width:100%!important;
+    max-width:100%!important;
+    padding:4px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scrollbar-width:none!important;
+    overscroll-behavior-x:contain!important;
+    scroll-snap-type:x proximity!important;
+  }
+  .nsx-admin-global-quick::-webkit-scrollbar{display:none!important;}
+  .nsx-admin-global-quick a,
+  .nsx-admin-global-quick a:link,
+  .nsx-admin-global-quick a:visited{
+    flex:0 0 auto!important;
+    min-height:31px!important;
+    padding:0 10px!important;
+    font-size:10px!important;
+    scroll-snap-align:start!important;
+  }
+  .nsx-admin-main{padding-top:13px!important;}
+}
+
+@media(max-width:420px){
+  .nsx-admin-global-quick-shell{padding-left:8px!important;padding-right:8px!important;}
+  .nsx-admin-global-quick a,
+  .nsx-admin-global-quick a:link,
+  .nsx-admin-global-quick a:visited{
+    min-height:30px!important;
+    padding:0 9px!important;
+    border-radius:8px!important;
+    font-size:9.7px!important;
+  }
+}

@@ -1,0 +1,207 @@
+@model NSYazilim.Web.ViewModels.CheckoutPaymentViewModel
+@using System.Globalization
+@using NSYazilim.Web.Services
+@inject SiteLocalizationService SiteLocalization
+@inject SeoLanguageUrlService SeoLanguageUrls
+@{
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    async Task<string> T(string source)
+    {
+        var translated = await SiteLocalization.TranslateAsync(source, currentLanguage.Code, Context.RequestAborted);
+        return CheckoutUiTranslations.Resolve(source, currentLanguage.Code, translated);
+    }
+
+    var pageTitle = await T("Ödeme Yöntemi | NSX Yazılım");
+    ViewData["Title"] = pageTitle;
+    ViewData["Robots"] = "noindex, nofollow, noarchive";
+
+    CultureInfo displayCulture;
+    try
+    {
+        displayCulture = CultureInfo.GetCultureInfo(currentLanguage.Code);
+    }
+    catch (CultureNotFoundException)
+    {
+        displayCulture = CultureInfo.GetCultureInfo("tr-TR");
+    }
+    var mainImage = Model.Product.Images?.OrderByDescending(x => x.IsMain).ThenBy(x => x.SortOrder).FirstOrDefault()?.ImagePath
+        ?? "/nsx-assets/logo-brand.webp";
+    var productName = await SiteLocalization.TranslateAsync(Model.Product.Name, currentLanguage.Code, Context.RequestAborted);
+    var licenseLabel = await T(Model.LicenseLabel);
+    var productUrl = await SeoLanguageUrls.BuildLocalizedReturnUrlAsync(Model.ProductUrl, currentLanguage, Context.RequestAborted);
+    var bankTransferUrl = await SeoLanguageUrls.BuildLocalizedReturnUrlAsync(Model.BankTransferUrl, currentLanguage, Context.RequestAborted);
+
+    var backLabel = await T("Ürüne dön");
+    var securePayment = await T("GÜVENLİ ÖDEME");
+    var heading = await T("Ödeme yöntemini seçin");
+    var intro = await T("Kartla Shopier üzerinden anında ödeme yapabilir veya Havale / EFT ile devam edebilirsiniz.");
+    var sslText = await T("Ödemeleriniz 256-bit SSL ile koruma altındadır.");
+    var selectedProduct = await T("Seçili ürün");
+    var amountLabel = await T("Tutar");
+    var recommended = await T("ÖNERİLEN");
+    var cardPaymentLabel = await T("KARTLA ÖDEME");
+    var cardTitle = await T("Banka / Kredi Kartı");
+    var cardDescription = await T("Shopier güvenli ödeme altyapısı üzerinden kartınızla hızlı ve güvenli ödeme yapın.");
+    var instantPayment = await T("Anında ödeme");
+    var sslSecurity = await T("256-bit SSL güvenliği");
+    var allCards = await T("Tüm yaygın kartlarla ödeme");
+    var cardCta = await T("Shopier ile Güvenli Öde");
+    var verifyLicense = await T("Shopier ekranında lisans seçiminizi doğrulayın.");
+    var emailDelivery = await T("Otomatik lisans teslimatı için Shopier'de hesabınızdaki e-posta adresini kullanın:");
+    var cardUnavailable = await T("Bu ürün için kartla ödeme bağlantısı henüz tanımlı değil.");
+    var matchingPending = await T("Shopier eşleştirmesi bekleniyor");
+    var bankKicker = await T("BANKA TRANSFERİ");
+    var bankTitle = await T("Havale / EFT");
+    var bankDescription = await T("Banka hesabımıza havale yaptıktan sonra ödeme bildiriminizi gönderin. Onay sonrası lisansınız hesabınıza tanımlanır.");
+    var allBanks = await T("Tüm bankalardan ödeme");
+    var practical = await T("Güvenli ve pratik");
+    var fastApproval = await T("Onay sonrası hızlı işlem");
+    var viewBankInfo = await T("Banka bilgilerimizi görüntüleyin");
+    var bankInfoDetail = await T("Havale / EFT için gerekli hesap bilgileri, açıklama ve ödeme sonrası adımlar.");
+    var bankCta = await T("Banka Bilgilerini Gör");
+    var secureInfrastructure = await T("Güvenli Ödeme Altyapısı");
+    var secureInfrastructureText = await T("Kart ödemeleri Shopier güvenli ödeme altyapısı üzerinden tamamlanır.");
+    var transferPayment = await T("Havale / EFT ile Ödeme");
+    var transferPaymentText = await T("Ödeme onayından sonra dijital lisansınız hesabınıza tanımlanır.");
+    var digitalDelivery = await T("Dijital teslimat");
+    var secureLicensing = await T("Güvenli lisanslama");
+    var technicalSupport = await T("NSX teknik destek");
+}
+
+<style id="nsx-checkout-payment-pro-v3">
+.nsx-payment-choice-page{min-height:calc(100vh - 140px);padding:42px 20px 64px;background:radial-gradient(circle at 82% 2%,rgba(255,110,4,.08),transparent 28%),linear-gradient(180deg,#f8fafc 0%,#fff 58%);color:#172033}.nsx-payment-choice-shell{width:min(1180px,100%);margin:0 auto}.nsx-payment-choice-head{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) minmax(240px,320px);align-items:start;gap:18px;margin-bottom:24px}.nsx-payment-choice-headcopy>span{display:inline-flex;align-items:center;gap:8px;min-height:28px;margin-bottom:8px;padding:0 11px;border:1px solid rgba(255,110,4,.2);border-radius:999px;background:rgba(255,110,4,.07);color:#f26700;font-size:11px;font-weight:900;letter-spacing:.11em}.nsx-payment-choice-headcopy>span:before{content:"";width:7px;height:7px;border-radius:50%;background:#ff6e04;box-shadow:0 0 0 5px rgba(255,110,4,.1)}.nsx-payment-choice-head h1{margin:0 0 9px;color:#132038;font-size:clamp(30px,4vw,44px);font-weight:900;letter-spacing:-.04em;line-height:1.05}.nsx-payment-choice-head p{max-width:720px;margin:0;color:#68768a;font-size:14px;line-height:1.65}.nsx-payment-choice-back{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;margin-top:3px;border:1px solid #dce3ec;border-radius:14px;background:#fff;color:#233d60;text-decoration:none;font-size:21px;box-shadow:0 8px 22px rgba(35,61,96,.07)}.nsx-payment-security{display:grid;grid-template-columns:58px 1fr;align-items:center;gap:12px;justify-self:end;min-width:250px;padding:13px 15px;border:1px solid #f0e2d7;border-radius:20px;background:linear-gradient(135deg,#fff,#fff7f0);box-shadow:0 14px 34px rgba(255,110,4,.08)}.nsx-payment-security__shield{display:grid;place-items:center;width:58px;height:58px;border:1px solid rgba(255,110,4,.24);border-radius:18px;background:#fff3e9;color:#ff6e04}.nsx-payment-security__shield svg{width:30px;height:30px}.nsx-payment-security strong{display:block;color:#28364a;font-size:12.5px;line-height:1.5}.nsx-payment-choice-product{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:15px;align-items:center;margin-bottom:18px;padding:14px 17px;border:1px solid #e0e6ee;border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 12px 30px rgba(35,61,96,.055)}.nsx-payment-choice-product img{width:62px;height:62px;object-fit:contain;border-radius:12px;background:#f5f7fa}.nsx-payment-choice-product__meta{display:grid;gap:3px}.nsx-payment-choice-product small{color:#8b96a5;font-size:11px}.nsx-payment-choice-product strong{color:#132038;font-size:16px;font-weight:900}.nsx-payment-choice-product span{color:#607085;font-size:12px}.nsx-payment-choice-amount{display:grid;justify-items:end;gap:2px;padding-inline-start:24px;border-inline-start:1px solid #edf0f4}.nsx-payment-choice-amount small{font-size:10px}.nsx-payment-choice-amount b{color:#233d60;font-size:20px;white-space:nowrap}.nsx-payment-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.nsx-payment-choice-card{position:relative;display:flex;min-height:382px;flex-direction:column;padding:22px;border:1px solid #dfe6ef;border-radius:23px;background:#fff;box-shadow:0 17px 42px rgba(35,61,96,.07);overflow:hidden}.nsx-payment-choice-card.is-primary{border:1.5px solid #ff7a16;background:linear-gradient(145deg,#fffaf6,#fff 52%);box-shadow:0 18px 46px rgba(255,110,4,.11)}.nsx-payment-choice-card.is-disabled{opacity:.72;background:#fbfcfd}.nsx-payment-choice-ribbon{position:absolute;top:16px;inset-inline-start:16px;display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:999px;background:#ff6e04;color:#fff;font-size:9.5px;font-weight:900;letter-spacing:.06em}.nsx-payment-choice-ribbon:before{content:"★";font-size:10px}.nsx-payment-choice-cardtop{display:grid;grid-template-columns:62px minmax(0,1fr) auto;align-items:center;gap:14px;margin-top:35px}.nsx-payment-choice-card:not(.is-primary) .nsx-payment-choice-cardtop{margin-top:0}.nsx-payment-choice-icon{display:grid;place-items:center;width:62px;height:62px;border-radius:17px;background:#f2f6fb;color:#233d60}.nsx-payment-choice-icon svg{width:32px;height:32px}.is-primary .nsx-payment-choice-icon{background:#fff0e5;color:#c34f00}.nsx-payment-choice-cardcopy{display:grid;gap:6px}.nsx-payment-choice-cardcopy small{color:#8490a2;font-size:9.5px;font-weight:900;letter-spacing:.12em}.nsx-payment-choice-cardcopy h2{margin:0;color:#132038;font-size:20px;font-weight:900;letter-spacing:-.02em}.nsx-payment-choice-cardcopy p{margin:0;color:#637287;font-size:12.5px;line-height:1.55}.nsx-credit-card-demo{width:178px;height:104px;padding:14px;border-radius:16px;background:radial-gradient(circle at 76% 26%,#30353d 0 17%,transparent 18%),linear-gradient(145deg,#343a42,#11151a 65%);box-shadow:0 13px 28px rgba(12,17,24,.2);color:#fff;display:grid;grid-template-rows:auto 1fr auto;gap:6px}.nsx-credit-card-demo__top{display:flex;align-items:center;justify-content:space-between}.nsx-credit-card-demo__chip{width:25px;height:18px;border-radius:5px;background:linear-gradient(135deg,#f6d98a,#c99c3e)}.nsx-credit-card-demo__wave{font-size:18px;opacity:.85;transform:rotate(90deg)}.nsx-credit-card-demo__number{align-self:center;font-size:12px;letter-spacing:.12em}.nsx-credit-card-demo__bottom{display:flex;justify-content:space-between;color:#cbd1d7;font-size:7px;letter-spacing:.08em}.nsx-payment-benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:18px 0 14px}.nsx-payment-benefits span{display:flex;align-items:center;gap:7px;color:#627086;font-size:10px;line-height:1.25}.nsx-payment-benefits i{display:grid;place-items:center;width:20px;height:20px;flex:none;border-radius:50%;background:#fff0e6;color:#ff6e04;font-style:normal;font-size:11px;font-weight:900}.nsx-payment-card-brands{margin-top:2px;padding:11px 14px;border:1px solid #e6eaf0;border-radius:15px;background:#fbfcfe}.nsx-payment-brands{display:flex;align-items:center;justify-content:space-around;gap:20px;min-height:42px}.nsx-payment-brand{display:inline-flex;align-items:center;justify-content:center;flex:none;white-space:nowrap}.nsx-payment-brand--visa{color:#1a2a76;font-size:29px;font-weight:1000;font-style:italic;letter-spacing:-.08em}.nsx-payment-brand--mastercard{position:relative;display:grid;justify-items:center;gap:0}.nsx-payment-brand__mc-circles{position:relative;display:block;width:45px;height:27px}.nsx-payment-brand__mc-circles b{position:absolute;top:1px;width:25px;height:25px;border-radius:50%}.nsx-payment-brand__mc-circles b:first-child{left:2px;background:#e91d2d}.nsx-payment-brand__mc-circles b:last-child{right:2px;background:#f7a61b;opacity:.94}.nsx-payment-brand--mastercard small{margin-top:-1px;color:#171717;font-size:7px;font-weight:800}.nsx-payment-brand--amex{display:grid;place-items:center;width:61px;height:37px;padding:3px;border-radius:3px;background:#1478c9;color:#fff;font-size:8.5px;font-weight:1000;line-height:.9;letter-spacing:-.05em;text-shadow:0 1px rgba(0,0,0,.18)}.nsx-payment-brand--troy{color:#333b46;font-size:28px;font-weight:1000;font-style:italic;letter-spacing:-.08em}.nsx-payment-brand--troy span{margin-inline-start:1px;color:#26a8a4;font-size:12px}.nsx-payment-choice-cta{display:flex;align-items:center;justify-content:center;gap:9px;min-height:48px;margin-top:14px;border:1px solid #ff6e04;border-radius:13px;background:linear-gradient(90deg,#ff6e04,#f45d00);box-shadow:0 12px 24px rgba(255,110,4,.17);color:#fff;text-decoration:none;font-size:12.5px;font-weight:900;transition:transform .16s ease,box-shadow .16s ease}.nsx-payment-choice-cta:hover{transform:translateY(-1px);box-shadow:0 15px 28px rgba(255,110,4,.22);color:#fff}.nsx-payment-choice-note{display:grid;gap:4px;margin-top:10px;color:#788599;font-size:9.5px;line-height:1.45}.nsx-payment-choice-note strong{color:#526178}.nsx-payment-choice-disabled-status{display:flex;align-items:center;justify-content:center;min-height:48px;margin-top:auto;border:1px dashed #d7dee8;border-radius:13px;background:#f7f9fb;color:#7e8a9a;font-size:11px;font-weight:850}.nsx-bank-cardtop{grid-template-columns:62px minmax(0,1fr)}.nsx-bank-feature{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:11px;margin-top:18px;padding:12px;border:1px solid #e5eaf0;border-radius:15px;background:#f8fafc}.nsx-bank-feature__icon{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#eef3f8;color:#233d60}.nsx-bank-feature__icon svg{width:23px;height:23px}.nsx-bank-feature strong{display:block;color:#2a384d;font-size:11px}.nsx-bank-feature small{display:block;margin-top:3px;color:#7b8797;font-size:9px;line-height:1.35}.nsx-bank-feature>b{color:#718096;font-size:18px}.nsx-payment-choice-cta.is-secondary{margin-top:auto;border-color:#d7dfe9;background:#fff;box-shadow:none;color:#233d60}.nsx-payment-choice-cta.is-secondary:hover{border-color:#aebdd0;background:#f9fbfd;color:#233d60}.nsx-payment-trustbar{display:grid;grid-template-columns:minmax(240px,1fr) auto minmax(220px,.8fr);align-items:center;gap:20px;margin-top:17px;padding:13px 16px;border:1px solid #e1e6ed;border-radius:17px;background:#fff;box-shadow:0 10px 30px rgba(35,61,96,.045)}.nsx-payment-trustbar__item{display:flex;align-items:center;gap:10px;min-width:0}.nsx-payment-trustbar__icon{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:12px;background:#fff1e7;color:#ff6e04}.nsx-payment-trustbar__icon svg{width:22px;height:22px}.nsx-payment-trustbar__item strong{display:block;color:#27354a;font-size:10.5px}.nsx-payment-trustbar__item small{display:block;margin-top:2px;color:#7c8898;font-size:8.5px;line-height:1.35}.nsx-payment-trustbar__brands{min-width:315px;padding:0 18px;border-inline:1px solid #e8ecf1}.nsx-payment-choice-trust{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:17px;color:#66758a;font-size:10px}.nsx-payment-choice-trust span{padding:7px 11px;border-radius:999px;background:#f5f8fb}
+@@media(max-width:980px){.nsx-payment-choice-head{grid-template-columns:auto 1fr}.nsx-payment-security{grid-column:2;justify-self:start;min-width:0}.nsx-payment-choice-grid{grid-template-columns:1fr}.nsx-payment-choice-card{min-height:auto}.nsx-payment-trustbar{grid-template-columns:1fr}.nsx-payment-trustbar__brands{width:100%;min-width:0;padding:10px 0;border-inline:0;border-block:1px solid #edf0f4}.nsx-payment-choice-cardtop{grid-template-columns:62px minmax(0,1fr) auto}}
+@@media(max-width:650px){.nsx-payment-choice-page{padding:28px 12px 48px}.nsx-payment-choice-head{grid-template-columns:42px 1fr}.nsx-payment-security{display:none}.nsx-payment-choice-product{grid-template-columns:52px 1fr}.nsx-payment-choice-product img{width:52px;height:52px}.nsx-payment-choice-amount{grid-column:2;justify-items:start;padding:6px 0 0;border-inline-start:0}.nsx-payment-choice-card{padding:17px}.nsx-payment-choice-cardtop{grid-template-columns:52px 1fr}.nsx-payment-choice-icon{width:52px;height:52px}.nsx-credit-card-demo{grid-column:1 / -1;width:100%;height:108px}.nsx-payment-benefits{grid-template-columns:1fr}.nsx-payment-brands{gap:10px;justify-content:space-between}.nsx-payment-brand--visa{font-size:23px}.nsx-payment-brand--troy{font-size:22px}.nsx-payment-brand--amex{width:54px;height:33px}.nsx-payment-choice-head h1{font-size:30px}.nsx-payment-choice-head p{font-size:12.5px}}
+</style>
+
+<main class="nsx-payment-choice-page">
+    <section class="nsx-payment-choice-shell">
+        <header class="nsx-payment-choice-head">
+            <a href="@productUrl" class="nsx-payment-choice-back" aria-label="@backLabel">←</a>
+            <div class="nsx-payment-choice-headcopy">
+                <span>@securePayment</span>
+                <h1>@heading</h1>
+                <p>@intro</p>
+            </div>
+            <aside class="nsx-payment-security" aria-label="@sslText">
+                <span class="nsx-payment-security__shield" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5 19 5v5.7c0 4.6-2.7 8.4-7 10.8-4.3-2.4-7-6.2-7-10.8V5l7-2.5Z" stroke="currentColor" stroke-width="1.7"/><rect x="8.8" y="10.4" width="6.4" height="5.3" rx="1.2" stroke="currentColor" stroke-width="1.5"/><path d="M10.2 10.4V8.9a1.8 1.8 0 0 1 3.6 0v1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+                </span>
+                <strong>@sslText</strong>
+            </aside>
+        </header>
+
+        <div class="nsx-payment-choice-product">
+            <img src="@mainImage" alt="@productName" />
+            <div class="nsx-payment-choice-product__meta">
+                <small>@selectedProduct</small>
+                <strong>@productName</strong>
+                <span>@licenseLabel</span>
+            </div>
+            <div class="nsx-payment-choice-amount">
+                <small>@amountLabel</small>
+                <b>@Model.Amount.ToString("N2", displayCulture) ₺</b>
+            </div>
+        </div>
+
+        <div class="nsx-payment-choice-grid">
+            <section class="nsx-payment-choice-card is-primary @(Model.ShopierAvailable ? "" : "is-disabled")">
+                <span class="nsx-payment-choice-ribbon">@recommended</span>
+                <div class="nsx-payment-choice-cardtop">
+                    <span class="nsx-payment-choice-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M7 15h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    </span>
+                    <div class="nsx-payment-choice-cardcopy">
+                        <small>@(Model.ShopierAvailable ? recommended : cardPaymentLabel)</small>
+                        <h2>@cardTitle</h2>
+                        <p>@(Model.ShopierAvailable ? cardDescription : cardUnavailable)</p>
+                    </div>
+                    <div class="nsx-credit-card-demo" aria-hidden="true">
+                        <div class="nsx-credit-card-demo__top"><span class="nsx-credit-card-demo__chip"></span><span class="nsx-credit-card-demo__wave">)))</span></div>
+                        <div class="nsx-credit-card-demo__number">••••  ••••  ••••  4242</div>
+                        <div class="nsx-credit-card-demo__bottom"><span>NSX YAZILIM</span><span>12/28</span></div>
+                    </div>
+                </div>
+
+                <div class="nsx-payment-benefits">
+                    <span><i>✓</i>@instantPayment</span>
+                    <span><i>✓</i>@sslSecurity</span>
+                    <span><i>✓</i>@allCards</span>
+                </div>
+
+                <div class="nsx-payment-card-brands">
+                    @await Html.PartialAsync("_PaymentBrandMarks")
+                </div>
+
+                @if (Model.ShopierAvailable)
+                {
+                    <a class="nsx-payment-choice-cta" href="@Model.ShopierUrl" rel="nofollow noopener">
+                        <span aria-hidden="true">🔒</span><span>@cardCta</span><span aria-hidden="true">→</span>
+                    </a>
+                    <div class="nsx-payment-choice-note">
+                        <span>@verifyLicense <strong>@licenseLabel</strong></span>
+                        @if (!string.IsNullOrWhiteSpace(Model.CustomerEmail))
+                        {
+                            <span>@emailDelivery <strong>@Model.CustomerEmail</strong></span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="nsx-payment-choice-disabled-status">@matchingPending</div>
+                }
+            </section>
+
+            <section class="nsx-payment-choice-card">
+                <div class="nsx-payment-choice-cardtop nsx-bank-cardtop">
+                    <span class="nsx-payment-choice-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M3 9.2 12 4l9 5.2M5 10v7.5M9.5 10v7.5M14.5 10v7.5M19 10v7.5M3 19.5h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <div class="nsx-payment-choice-cardcopy">
+                        <small>@bankKicker</small>
+                        <h2>@bankTitle</h2>
+                        <p>@bankDescription</p>
+                    </div>
+                </div>
+
+                <div class="nsx-payment-benefits">
+                    <span><i>✓</i>@allBanks</span>
+                    <span><i>✓</i>@practical</span>
+                    <span><i>✓</i>@fastApproval</span>
+                </div>
+
+                <div class="nsx-bank-feature">
+                    <span class="nsx-bank-feature__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M3 9.2 12 4l9 5.2M5 10v7.5M9.5 10v7.5M14.5 10v7.5M19 10v7.5M3 19.5h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span><strong>@viewBankInfo</strong><small>@bankInfoDetail</small></span>
+                    <b aria-hidden="true">›</b>
+                </div>
+
+                <a class="nsx-payment-choice-cta is-secondary" href="@bankTransferUrl"><span>@bankCta</span><span aria-hidden="true">→</span></a>
+            </section>
+        </div>
+
+        <div class="nsx-payment-trustbar">
+            <div class="nsx-payment-trustbar__item">
+                <span class="nsx-payment-trustbar__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5 19 5v5.7c0 4.6-2.7 8.4-7 10.8-4.3-2.4-7-6.2-7-10.8V5l7-2.5Z" stroke="currentColor" stroke-width="1.7"/><path d="m8.7 12.1 2.1 2.1 4.7-4.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span><strong>@secureInfrastructure</strong><small>@secureInfrastructureText</small></span>
+            </div>
+            <div class="nsx-payment-trustbar__brands">@await Html.PartialAsync("_PaymentBrandMarks")</div>
+            <div class="nsx-payment-trustbar__item">
+                <span class="nsx-payment-trustbar__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M3 9.2 12 4l9 5.2M5 10v7.5M9.5 10v7.5M14.5 10v7.5M19 10v7.5M3 19.5h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span><strong>@transferPayment</strong><small>@transferPaymentText</small></span>
+            </div>
+        </div>
+
+        <div class="nsx-payment-choice-trust">
+            <span>✓ @digitalDelivery</span>
+            <span>✓ @secureLicensing</span>
+            <span>✓ @technicalSupport</span>
+        </div>
+    </section>
+</main>

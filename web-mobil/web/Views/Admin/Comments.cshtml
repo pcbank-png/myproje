@@ -1,0 +1,97 @@
+@model List<NSYazilim.Web.Models.ProductComment>
+
+@{
+    ViewData["Title"] = "Yorum Yönetimi";
+    var status = ViewBag.Status?.ToString() ?? "all";
+}
+
+<div class="admin-comments-page">
+    <div class="admin-comments-hero">
+        <div>
+            <div class="small text-uppercase fw-bold opacity-75" style="letter-spacing:2px;">NSX Admin</div>
+            <h1>Yorum Yönetimi</h1>
+            <p>Ürün yorumlarını onayla, pasife al veya sil.</p>
+        </div>
+        <a href="/Admin" class="btn btn-light rounded-4 fw-bold px-4">Admin Panel</a>
+    </div>
+
+    <div class="admin-comment-filter">
+        <a class="@(status == "all" ? "active" : "")" href="/Admin/Comments?status=all">Tümü</a>
+        <a class="@(status == "pending" ? "active" : "")" href="/Admin/Comments?status=pending">Bekleyen</a>
+        <a class="@(status == "approved" ? "active" : "")" href="/Admin/Comments?status=approved">Onaylı</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="admin-comment-empty">
+            <div>💬</div>
+            <h3>Yorum bulunamadı</h3>
+            <p>Ürünlere yorum geldikçe burada listelenecek.</p>
+        </div>
+    }
+    else
+    {
+        <div class="admin-comment-list">
+            @foreach (var item in Model)
+            {
+                var safeRating = Math.Clamp(item.Rating, 1, 5);
+                var stars = "";
+                for (var i = 0; i < safeRating; i++)
+                {
+                    stars += "★";
+                }
+                var productUrl = item.Product != null && !string.IsNullOrWhiteSpace(item.Product.Slug)
+                    ? $"/urun/{item.Product.Slug.Trim().ToLowerInvariant()}"
+                    : $"/store/detail/{item.ProductId}";
+
+                <div class="admin-comment-card">
+                    <div class="admin-comment-head">
+                        <div>
+                            <span class="admin-comment-product">@(item.Product?.Name ?? "Ürün")</span>
+                            <h3>@item.FullName</h3>
+                            <small>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="admin-stars">@stars</div>
+                            <span class="admin-comment-status @(item.IsApproved ? "ok" : "wait")">
+                                @(item.IsApproved ? "Onaylı" : "Bekliyor")
+                            </span>
+                        </div>
+                    </div>
+
+                    <p>@(string.IsNullOrWhiteSpace(item.Comment) ? "Yalnızca puan verdi." : item.Comment)</p>
+
+                    <div class="admin-comment-actions">
+                        @if (!item.IsApproved)
+                        {
+                            <form method="post" action="/Admin/CommentApprove">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button class="btn btn-success rounded-4 fw-bold">Onayla</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" action="/Admin/CommentPassive">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button class="btn btn-warning rounded-4 fw-bold">Pasife Al</button>
+                            </form>
+                        }
+
+                        <form method="post" action="/Admin/CommentDelete" onsubmit="return confirm('Bu yorum silinsin mi?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button class="btn btn-outline-danger rounded-4 fw-bold">Sil</button>
+                        </form>
+
+                        @if (item.ProductId > 0)
+                        {
+                            <a class="btn btn-outline-dark rounded-4 fw-bold" href="@productUrl" target="_blank">Ürünü Aç</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

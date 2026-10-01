@@ -1,0 +1,543 @@
+﻿@model NSYazilim.Web.Controllers.BlogController.SeoPage
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@{
+    var blogLang = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    async Task<string> BT(string? source)
+        => string.IsNullOrWhiteSpace(source)
+            ? string.Empty
+            : await SiteLocalization.TranslateAsync(source, blogLang.Code, Context.RequestAborted);
+
+    var relatedProductName = await BT(ViewBag.RelatedProductName?.ToString());
+    var relatedProductUrl = ViewBag.RelatedProductUrl?.ToString();
+    var relatedProductPrimaryText = await BT(ViewBag.RelatedProductPrimaryText?.ToString());
+    var relatedProductPrimaryUrl = ViewBag.RelatedProductPrimaryUrl?.ToString();
+    var relatedPages = ViewBag.RelatedPages as IReadOnlyList<NSYazilim.Web.Controllers.BlogController.SeoPage>
+        ?? new List<NSYazilim.Web.Controllers.BlogController.SeoPage>();
+    var isVeresiyePage = IsVeresiyeRelated(Model);
+    var showFreeVeresiyePromotion = isVeresiyePage;
+    var isFreeVeresiyeLanding = string.Equals(Model.Slug, "ucretsiz-veresiye-programi", StringComparison.OrdinalIgnoreCase);
+    const string veresiyeProductUrl = "/urun/nsx-veresiye-takip-pro-free";
+    const string veresiyeProductAnchor = "NSX Veresiye Takip Pro’yu ücretsiz indirin; v1.0.5 Bulut ve Mobil Yönetim özelliklerini kullanmaya başlayın.";
+    const string veresiyeVideoEmbedUrl = "https://www.youtube.com/embed/ypsXQY6iOl4";
+    var detailUrl = Model.IsLanding ? $"/{Model.Slug}" : $"/blog/{Model.Slug}";
+    var blogHeroWords = (Model.H1 ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var blogHeroAccentCount = blogHeroWords.Length >= 4 ? 2 : 1;
+    var blogHeroMain = blogHeroWords.Length > blogHeroAccentCount
+        ? string.Join(" ", blogHeroWords.Take(blogHeroWords.Length - blogHeroAccentCount))
+        : string.Empty;
+    var blogHeroAccent = blogHeroWords.Length > 0
+        ? string.Join(" ", blogHeroWords.Skip(Math.Max(0, blogHeroWords.Length - blogHeroAccentCount)))
+        : Model.H1;
+}
+
+
+<style id="nsx-blog-subpage-standard-pro">
+    .public-content-page{--nsx-subpage-hero-height:286px;background:#fff!important;}
+    .public-content-page .public-site-header .service-ribbon > .container,
+    .public-content-page .public-site-header .detail-nav.container,
+    .nsx-blog-redesign-hero > .container,
+    .nsx-blog-index-page > .nsx-blog-index-content,
+    .nsx-blog-detail-hero > .container,
+    .nsx-blog-detail-page > .nsx-blog-detail-content{
+        width:min(1505px,calc(100% - 48px))!important;
+        max-width:1505px!important;
+        margin-left:auto!important;
+        margin-right:auto!important;
+        padding-left:0!important;
+        padding-right:0!important;
+    }
+    .public-content-page > .container{
+        width:100%!important;
+        max-width:none!important;
+        margin:0!important;
+        padding:0!important;
+    }
+    @@media(min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{display:flex!important;align-items:center!important;min-height:78px!important;gap:8px!important;}
+        .public-content-page .public-site-header .brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;margin:0 auto 0 0!important;padding:0!important;}
+        .public-content-page .public-site-header .brand-logo{display:block!important;width:clamp(142px,10.8vw,184px)!important;max-width:184px!important;height:auto!important;object-fit:contain!important;}
+        .public-content-page .public-site-header .nav-links{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex:0 1 auto!important;width:auto!important;margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{white-space:nowrap!important;}
+        .public-content-page .public-site-header .nav-cta{flex:0 0 auto!important;margin-left:0!important;}
+        .public-content-page .public-site-header .menu-toggle{display:none!important;}
+    }
+    @@media(max-width:1180px) and (min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{width:calc(100% - 32px)!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(132px,12.5vw,154px)!important;}
+        .public-content-page .public-site-header .nav-links{gap:7px!important;margin-right:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{font-size:clamp(12px,1.05vw,14px)!important;}
+    }
+
+    .nsx-blog-index-page,.nsx-blog-detail-page{padding:0 0 64px!important;background:#fff!important;}
+    .public-content-page > .nsx-blog-detail-page{padding-top:0!important;margin-top:0!important;}
+    .nsx-blog-index-page:before,.nsx-blog-detail-page:before{display:none!important;}
+    .nsx-blog-redesign-hero,.nsx-blog-detail-hero{
+        font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;
+        position:relative!important;
+        display:block!important;
+        grid-template-columns:none!important;
+        gap:0!important;
+        align-items:initial!important;
+        height:var(--nsx-subpage-hero-height)!important;
+        min-height:var(--nsx-subpage-hero-height)!important;
+        max-height:var(--nsx-subpage-hero-height)!important;
+        width:100%!important;
+        margin:0!important;
+        padding:0!important;
+        overflow:hidden!important;
+        border:0!important;
+        border-radius:0!important;
+        color:#fff!important;
+        background:radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%)!important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22)!important;
+    }
+    .nsx-blog-redesign-hero:before,.nsx-blog-detail-hero:before{
+        content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;opacity:.10!important;
+        background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)!important;
+        background-size:72px 72px!important;
+        -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%)!important;
+        mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%)!important;
+    }
+    .nsx-blog-redesign-hero:after,.nsx-blog-detail-hero:after{display:none!important;}
+    .nsx-blog-redesign-hero > .container,.nsx-blog-detail-hero > .container{position:relative!important;z-index:2!important;height:100%!important;min-height:0!important;display:flex!important;align-items:flex-start!important;padding-top:24px!important;padding-bottom:24px!important;}
+
+    .nsx-blog-redesign-intro{max-width:980px!important;}
+    .nsx-blog-redesign-kicker,.nsx-blog-detail-hero .nsx-blog-kicker{display:flex!important;align-items:center!important;gap:10px!important;margin:0 0 14px!important;color:#39d98a!important;font-size:12px!important;font-weight:900!important;letter-spacing:.11em!important;text-transform:uppercase!important;}
+    .nsx-blog-redesign-kicker i{width:7px!important;height:7px!important;border-radius:50%!important;background:#39d98a!important;box-shadow:0 0 0 5px rgba(57,217,138,.12)!important;}
+    .nsx-blog-detail-hero .nsx-blog-kicker:before{content:""!important;width:7px!important;height:7px!important;flex:0 0 7px!important;border-radius:50%!important;background:#39d98a!important;box-shadow:0 0 0 5px rgba(57,217,138,.12)!important;}
+    .nsx-blog-redesign-intro h1,.nsx-blog-detail-copy h1{max-width:860px!important;margin:0!important;color:#fff!important;font-size:42px!important;font-weight:900!important;line-height:1.06!important;letter-spacing:-.04em!important;}
+    .nsx-blog-detail-copy h1 .nsx-short-hero-white{color:#18212b!important;}
+    .nsx-blog-detail-copy h1 .nsx-short-hero-orange{display:block!important;color:#ff6e04!important;margin-left:0!important;}
+    .nsx-blog-redesign-intro h1 em{display:block!important;color:#ff6e04!important;font-style:normal!important;}
+    .nsx-blog-redesign-intro > p,.nsx-blog-detail-copy > p{max-width:900px!important;margin:12px 0 0!important;color:#d3d8df!important;font-size:14px!important;line-height:1.7!important;font-weight:520!important;}
+    .nsx-blog-redesign-stats,.nsx-blog-detail-meta{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:10px!important;margin-top:16px!important;}
+    .nsx-blog-redesign-stats span,.nsx-blog-detail-meta span{display:inline-flex!important;align-items:center!important;gap:7px!important;min-height:34px!important;padding:0 11px!important;border:1px solid rgba(255,255,255,.15)!important;border-radius:999px!important;background:rgba(255,255,255,.045)!important;color:#d9dee4!important;font-size:10px!important;font-weight:800!important;box-shadow:none!important;}
+    .nsx-blog-redesign-stats strong,.nsx-blog-detail-meta i{color:#39d98a!important;font-size:11px!important;}
+
+    .nsx-blog-index-content{padding-top:40px!important;}
+    .nsx-blog-featured-card{margin:0 0 34px!important;border-radius:18px!important;box-shadow:0 12px 32px rgba(12,16,22,.07)!important;}
+    .nsx-blog-redesign-toolbar{padding:28px 0 22px!important;}
+    .nsx-blog-filters button.active{color:#fff!important;background:#ff6e04!important;border-color:#ff6e04!important;box-shadow:0 8px 18px rgba(255,110,4,.20)!important;}
+
+    .nsx-blog-detail-hero > .container{display:grid!important;grid-template-columns:minmax(0,1fr) 300px!important;gap:34px!important;}
+    .nsx-blog-detail-copy{min-width:0!important;}
+    .nsx-blog-detail-copy h1{font-size:42px!important;font-weight:900!important;line-height:1.06!important;letter-spacing:-.04em!important;overflow:visible!important;}
+    .nsx-blog-detail-copy > p{font-size:14px!important;line-height:1.7!important;font-weight:520!important;overflow:visible!important;}
+    .nsx-blog-hero-image{width:300px!important;height:172px!important;margin:0!important;padding:8px!important;justify-self:end!important;overflow:hidden!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:16px!important;background:rgba(255,255,255,.055)!important;box-shadow:0 16px 34px rgba(0,0,0,.20)!important;}
+    .nsx-blog-hero-image img{display:block!important;width:100%!important;height:138px!important;object-fit:contain!important;object-position:center!important;border-radius:10px!important;background:#fff!important;}
+    .nsx-blog-hero-image figcaption{padding:6px 5px 0!important;overflow:hidden!important;color:#aeb7c0!important;font-size:7px!important;line-height:1.2!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+    .nsx-blog-detail-content{padding-top:32px!important;}
+    .nsx-blog-detail-layout{margin-top:0!important;padding-top:0!important;border-top:0!important;}
+    .nsx-blog-article,.nsx-blog-sidebar-card{border-radius:18px!important;box-shadow:0 9px 26px rgba(12,16,22,.045)!important;}
+
+    @@media(max-width:1180px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container,.nsx-blog-redesign-hero > .container,.nsx-blog-index-page > .nsx-blog-index-content,.nsx-blog-detail-hero > .container,.nsx-blog-detail-page > .nsx-blog-detail-content{width:calc(100% - 32px)!important;}
+        .nsx-blog-detail-hero > .container{padding-top:24px!important;padding-bottom:24px!important;}
+        .nsx-blog-redesign-intro h1{font-size:38px!important;}
+        .nsx-blog-detail-copy h1{font-size:38px!important;}
+        .nsx-blog-detail-hero > .container{grid-template-columns:minmax(0,1fr) 260px!important;gap:24px!important;}
+        .nsx-blog-hero-image{width:260px!important;height:160px!important;}
+        .nsx-blog-hero-image img{height:126px!important;}
+    }
+    @@media(max-width:980px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+        .public-content-page .public-site-header .detail-nav.container{min-height:68px!important;}
+        .public-content-page .public-site-header .brand{margin-right:auto!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(124px,28vw,154px)!important;max-width:154px!important;height:auto!important;}
+        .public-content-page .public-site-header .menu-toggle{margin-left:auto!important;}
+        .nsx-blog-detail-hero > .container{grid-template-columns:1fr!important;}
+        .nsx-blog-hero-image{display:none!important;}
+        .nsx-blog-detail-copy h1{max-width:100%!important;}
+    }
+    @@media(max-width:680px){
+        .nsx-blog-redesign-hero > .container,.nsx-blog-index-page > .nsx-blog-index-content,.nsx-blog-detail-hero > .container,.nsx-blog-detail-page > .nsx-blog-detail-content{width:calc(100% - 18px)!important;}
+        .nsx-blog-redesign-hero > .container,.nsx-blog-detail-hero > .container{padding-top:20px!important;padding-bottom:20px!important;}
+        .nsx-blog-redesign-intro h1{font-size:30px!important;}
+        .nsx-blog-detail-copy h1{font-size:30px!important;}
+        .nsx-blog-redesign-intro > p,.nsx-blog-detail-copy > p{font-size:13px!important;line-height:1.7!important;}
+        .nsx-blog-index-content{padding-top:28px!important;}
+        .nsx-blog-detail-content{padding-top:24px!important;}
+    }
+    @@media(max-width:430px){
+        .nsx-blog-redesign-stats,.nsx-blog-detail-meta{gap:7px!important;}
+        .nsx-blog-redesign-stats span,.nsx-blog-detail-meta span{width:100%!important;justify-content:center!important;}
+    }
+    @@media(max-width:520px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 18px)!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(112px,34vw,136px)!important;}
+    }
+
+
+    /* NSX KISA HERO TIPOGRAFI KILIDI - Yazilimlar sayfasi birebir referanstir. */
+    .nsx-blog-redesign-hero,.nsx-blog-detail-hero{font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;}
+    .nsx-blog-redesign-hero .nsx-blog-redesign-kicker,
+    .nsx-blog-detail-hero .nsx-blog-kicker{
+        display:flex!important;align-items:center!important;gap:10px!important;
+        margin:0 0 14px!important;color:#39d98a!important;
+        font-size:12px!important;font-weight:900!important;letter-spacing:.11em!important;text-transform:uppercase!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-kicker i,
+    .nsx-blog-detail-hero .nsx-blog-kicker:before{
+        width:7px!important;height:7px!important;flex:0 0 7px!important;border-radius:50%!important;
+        background:#39d98a!important;box-shadow:0 0 0 5px rgba(57,217,138,.12)!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-intro h1,
+    .nsx-blog-detail-hero .nsx-blog-detail-copy h1{
+        max-width:860px!important;margin:0!important;color:#fff!important;
+        font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;font-size:42px!important;font-weight:900!important;
+        line-height:1.06!important;letter-spacing:-.04em!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-intro h1 em,
+    .nsx-blog-detail-hero .nsx-blog-detail-copy h1 .nsx-short-hero-orange{
+        display:block!important;color:#ff6e04!important;font-style:normal!important;
+    }
+    .nsx-blog-detail-hero .nsx-blog-detail-copy h1 .nsx-short-hero-white{color:#18212b!important;}
+    .nsx-blog-redesign-hero .nsx-blog-redesign-intro > p,
+    .nsx-blog-detail-hero .nsx-blog-detail-copy > p{
+        max-width:900px!important;margin:12px 0 0!important;color:#d3d8df!important;
+        font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;font-size:14px!important;line-height:1.7!important;font-weight:520!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-stats,
+    .nsx-blog-detail-hero .nsx-blog-detail-meta{
+        display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:10px!important;margin-top:16px!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-stats span,
+    .nsx-blog-detail-hero .nsx-blog-detail-meta span{
+        display:inline-flex!important;align-items:center!important;gap:7px!important;min-height:34px!important;padding:0 11px!important;
+        border:1px solid rgba(255,255,255,.15)!important;border-radius:999px!important;background:rgba(255,255,255,.045)!important;
+        color:#d9dee4!important;font-family:var(--nsx-font,"Segoe UI",Arial,sans-serif)!important;font-size:10px!important;font-weight:800!important;
+    }
+    .nsx-blog-redesign-hero .nsx-blog-redesign-stats strong,
+    .nsx-blog-detail-hero .nsx-blog-detail-meta i{color:#39d98a!important;font-size:11px!important;}
+
+    @@media(max-width:1180px){
+        .nsx-blog-redesign-hero .nsx-blog-redesign-intro h1,
+        .nsx-blog-detail-hero .nsx-blog-detail-copy h1{font-size:38px!important;}
+    }
+    @@media(max-width:680px){
+        .nsx-blog-redesign-hero .nsx-blog-redesign-intro h1,
+        .nsx-blog-detail-hero .nsx-blog-detail-copy h1{font-size:30px!important;}
+        .nsx-blog-redesign-hero .nsx-blog-redesign-intro > p,
+        .nsx-blog-detail-hero .nsx-blog-detail-copy > p{font-size:13px!important;line-height:1.7!important;}
+    }
+    @@media(max-width:430px){
+        .nsx-blog-redesign-hero .nsx-blog-redesign-stats,
+        .nsx-blog-detail-hero .nsx-blog-detail-meta{gap:7px!important;}
+        .nsx-blog-redesign-hero .nsx-blog-redesign-stats span,
+        .nsx-blog-detail-hero .nsx-blog-detail-meta span{width:100%!important;justify-content:center!important;}
+    }
+
+    /* Rehber detay hero metninde global seçim rengi satır blokları oluşturmamalı. */
+    .nsx-blog-detail-hero .nsx-blog-detail-copy h1 .nsx-short-hero-white::selection{
+        color:#18212b!important;background:transparent!important;
+    }
+    .nsx-blog-detail-hero .nsx-blog-detail-copy h1 .nsx-short-hero-orange::selection{
+        color:#ff6e04!important;background:transparent!important;
+    }
+    .nsx-blog-detail-hero .nsx-blog-detail-copy > p::selection{
+        color:#5e6a76!important;background:transparent!important;
+    }
+
+    /* Tüm rehber detayları: ortak hero ölçüsü, tipografi ve dikey ritim. */
+    .nsx-blog-detail-page--guide > .nsx-blog-detail-hero{
+        height:350px!important;
+        min-height:350px!important;
+        max-height:350px!important;
+    }
+    .nsx-blog-detail-page--guide > .nsx-blog-detail-hero > .container{
+        height:100%!important;
+        min-height:350px!important;
+        padding-top:22px!important;
+        padding-bottom:22px!important;
+    }
+    .nsx-blog-detail-page--guide .nsx-blog-detail-copy h1{
+        max-width:1020px!important;
+        font-size:36px!important;
+        line-height:1.04!important;
+    }
+    .nsx-blog-detail-page--guide .nsx-blog-detail-copy .nsx-blog-kicker{
+        margin-bottom:11px!important;
+    }
+    .nsx-blog-detail-page--guide .nsx-blog-detail-copy > p{
+        margin-top:9px!important;
+        line-height:1.6!important;
+    }
+    .nsx-blog-detail-page--guide .nsx-blog-detail-meta{
+        margin-top:12px!important;
+    }
+    @@media(max-width:1180px){
+        .nsx-blog-detail-page--guide .nsx-blog-detail-copy h1{font-size:34px!important;}
+    }
+    @@media(max-width:680px){
+        .nsx-blog-detail-page--guide > .nsx-blog-detail-hero{
+            height:400px!important;min-height:400px!important;max-height:400px!important;
+        }
+        .nsx-blog-detail-page--guide > .nsx-blog-detail-hero > .container{min-height:400px!important;}
+        .nsx-blog-detail-page--guide .nsx-blog-detail-copy h1{font-size:28px!important;line-height:1.08!important;}
+    }
+    @@media(max-width:430px){
+        .nsx-blog-detail-page--guide > .nsx-blog-detail-hero{
+            height:500px!important;min-height:500px!important;max-height:500px!important;
+        }
+        .nsx-blog-detail-page--guide > .nsx-blog-detail-hero > .container{min-height:500px!important;}
+        .nsx-blog-detail-page--guide .nsx-blog-detail-copy h1{font-size:26px!important;}
+    }
+</style>
+
+<section class="nsx-blog-detail-page@(Model.IsLanding ? string.Empty : " nsx-blog-detail-page--guide")">
+    <header class="nsx-blog-detail-hero">
+        <div class="container">
+            <div class="nsx-blog-detail-copy">
+                <div class="nsx-blog-kicker">@(Model.IsLanding ? "NSX Yazılım Çözümü" : "NSX Yazılım Rehberi")</div>
+                <h1><span class="nsx-short-hero-white">@blogHeroMain</span><span class="nsx-short-hero-orange">@blogHeroAccent</span></h1>
+                <p>@Model.Description</p>
+
+                <div class="nsx-blog-detail-meta" aria-label="Yazı bilgileri">
+                    <span>NSX Yazılım</span>
+                    <span><time datetime="@Model.PublishedAt.ToString("O")">@ViewBag.PublishedDateText</time></span>
+                    <span><time datetime="@Model.ModifiedAt.ToString("O")">@Model.ModifiedAt.ToString("dd.MM.yyyy")</time></span>
+                </div>
+            </div>
+
+            <figure class="nsx-blog-hero-image">
+                <img src="@Model.ImageUrl" alt="@Model.ImageAlt" width="@Model.ImageWidth" height="@Model.ImageHeight" fetchpriority="high" decoding="async" />
+                <figcaption>@Model.ImageAlt</figcaption>
+            </figure>
+        </div>
+    </header>
+
+    <div class="container nsx-blog-detail-content">
+        <div class="nsx-blog-detail-layout">
+            <article class="nsx-blog-article">
+                @if (showFreeVeresiyePromotion)
+                {
+                    <div class="nsx-blog-highlight-link">
+                        <a href="@veresiyeProductUrl">@veresiyeProductAnchor</a>
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(relatedProductUrl))
+                {
+                    <section class="nsx-blog-product-access">
+                        <div>
+                            <div class="nsx-blog-kicker">Hızlı Ürün Erişimi</div>
+                            <h2>@relatedProductName</h2>
+                            <p>Bu sayfadan direkt indirme işlemine başlayabilir veya ürün detay sayfasına gidebilirsiniz.</p>
+                        </div>
+                        <div class="nsx-blog-product-actions">
+                            <a class="nsx-btn nsx-btn-primary" href="@relatedProductPrimaryUrl">@(string.IsNullOrWhiteSpace(relatedProductPrimaryText) ? "Hemen İncele" : relatedProductPrimaryText)</a>
+                            @if (!string.Equals(relatedProductPrimaryUrl, relatedProductUrl, StringComparison.OrdinalIgnoreCase))
+                            {
+                                <a class="nsx-btn nsx-btn-light" href="@relatedProductUrl">Detay Sayfasına Git</a>
+                            }
+                        </div>
+                    </section>
+                }
+
+                @if (isFreeVeresiyeLanding)
+                {
+                    <section class="nsx-blog-video-block">
+                        <div class="nsx-blog-video-head">
+                            <div>
+                                <div class="nsx-blog-kicker">Kurulum Videosu + Güncel Sürüm</div>
+                                <h2>NSX Veresiye Takip Pro Kurulum ve Kullanım Videosu</h2>
+                                <p>Videoda masaüstü programının kurulum ve temel kullanım adımlarını izleyebilirsiniz. Güncel v1.0.5 sürümünde bunlara ek olarak QR ile Bulut ve Mobil Yönetim, canlı senkronizasyon, mobil müşteri arama, cari hareket, borç ve tahsilat özellikleri bulunur.</p>
+                            </div>
+                            <a class="nsx-btn nsx-btn-primary" href="@veresiyeProductUrl">Programı Ücretsiz İndir</a>
+                        </div>
+
+                        <div class="nsx-blog-video-frame">
+                            <iframe
+                                src="@veresiyeVideoEmbedUrl"
+                                title="NSX Veresiye Takip Pro Kurulum ve Kullanım Videosu"
+                                loading="lazy"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+
+                        <p class="nsx-blog-video-note"><strong>v1.0.5 güncel sürüm notu:</strong> Video temel masaüstü akışını anlatır. Yeni Bulut ve Mobil sistemde Cloud Bağlantısı ekranından QR oluşturabilir, telefondan müşteri arayabilir, cari hareketleri görebilir, borç ve tahsilat kaydedebilirsiniz.</p>
+                    </section>
+                }
+
+                <div class="nsx-blog-article-body">
+                    @foreach (var paragraph in (Model.Body ?? string.Empty).Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <p>@paragraph.Trim()</p>
+                    }
+                </div>
+
+                @if (Model.Sections?.Length > 0)
+                {
+                    <section class="nsx-blog-info-section nsx-blog-seo-sections">
+                        @foreach (var seoSection in Model.Sections ?? Array.Empty<NSYazilim.Web.Controllers.BlogController.SeoSection>())
+                        {
+                            <h2>@seoSection.Heading</h2>
+                            <p>@seoSection.Content</p>
+                        }
+                    </section>
+                }
+
+                @if (showFreeVeresiyePromotion)
+                {
+                    <p class="nsx-blog-inline-link">
+                        <a href="@veresiyeProductUrl">@veresiyeProductAnchor</a>
+                    </p>
+                }
+
+                @if (Model.Faqs?.Length > 0)
+                {
+                    <section class="nsx-blog-faq">
+                        <div class="nsx-blog-kicker">Merak Edilenler</div>
+                        <h2>Sıkça Sorulan Sorular</h2>
+                        <div class="nsx-blog-faq-grid">
+                            @foreach (var faq in Model.Faqs ?? Array.Empty<NSYazilim.Web.Controllers.BlogController.SeoFaq>())
+                            {
+                                <div>
+                                    <strong>@faq.Question</strong>
+                                    <p>@faq.Answer</p>
+                                </div>
+                            }
+                        </div>
+                    </section>
+                }
+                else if (showFreeVeresiyePromotion)
+                {
+                    <section class="nsx-blog-faq">
+                        <div class="nsx-blog-kicker">Merak Edilenler</div>
+                        <h2>Sıkça Sorulan Sorular</h2>
+                        <div class="nsx-blog-faq-grid">
+                            <div>
+                                <strong>NSX Veresiye Takip Pro ücretsiz mi?</strong>
+                                <p>Evet. Program ücretsiz kullanım için sunulur; güncel v1.0.5 sürümünde masaüstü cari takibe ek olarak Bulut ve Mobil Yönetim özellikleri bulunur.</p>
+                            </div>
+                            <div>
+                                <strong>Bakkal ve marketler için uygun mu?</strong>
+                                <p>Evet. Bakkal, market, bayi ve küçük işletmeler müşteri cari hesaplarını masaüstünden ve QR ile bağlanan mobil panelden takip edebilir.</p>
+                            </div>
+                            <div>
+                                <strong>Cari hesap telefondan yönetilebilir mi?</strong>
+                                <p>Evet. Mobil panelde müşteri aranır; cari hareketleri açılır ve borç veya tahsilat aynı müşteri hesabından kaydedilebilir.</p>
+                            </div>
+                            <div>
+                                <strong>Masaüstü ve mobil veriler nasıl güncel kalır?</strong>
+                                <p>Canlı senkronizasyon, masaüstü ve mobil tarafta yapılan cari değişikliklerin iki tarafta güncel tutulmasına yardımcı olur.</p>
+                            </div>
+                        </div>
+                    </section>
+                }
+
+                <section class="nsx-blog-info-section">
+                    @if (showFreeVeresiyePromotion)
+                    {
+                        <h2>Kimler için uygundur?</h2>
+                        <p>Bakkal, market, bayi, esnaf ve müşteri bazlı borç-tahsilat takibi yapan küçük ve orta ölçekli işletmeler için uygundur. Masaüstünde çalışmaya devam ederken gerektiğinde cep telefonundan cari hesaplara erişmek isteyen işletmelere sade bir Bulut ve Mobil kullanım sunar.</p>
+
+                        <h2>NSX Veresiye v1.0.5 yaklaşımı</h2>
+                        <p>Masaüstü hızını koruyup mobil tarafta yalnızca günlük ihtiyaçlara odaklanır: toplam borç, toplam tahsilat, açık bakiye, müşteri arama, cari hareketler, borç ve tahsilat. Mevcut veriler korunarak Bulut ve Mobil erişim mevcut programa eklenir.</p>
+                    }
+                    else
+                    {
+                        <h2>Kimler için uygundur?</h2>
+                        <p>İşini daha düzenli takip etmek, lisanslı veya ücretsiz yazılım kullanmak ve süreçlerini dijitalleştirmek isteyen işletmeler için uygundur.</p>
+
+                        <h2>NSX Yazılım yaklaşımı</h2>
+                        <p>NSX Yazılım; hızlı kullanım, sade arayüz, güvenli dijital teslimat, güncelleme desteği ve destek odaklı çözümler geliştirmeyi hedefler.</p>
+                    }
+                </section>
+
+                <div class="nsx-blog-final-actions">
+                    @if (showFreeVeresiyePromotion)
+                    {
+                        <a class="nsx-btn nsx-btn-primary" href="@veresiyeProductUrl">NSX Veresiye Programı Ürün Sayfası</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(relatedProductUrl))
+                    {
+                        <a class="nsx-btn nsx-btn-primary" href="@relatedProductPrimaryUrl">@(string.IsNullOrWhiteSpace(relatedProductPrimaryText) ? "Hemen İncele" : relatedProductPrimaryText)</a>
+                        <a class="nsx-btn nsx-btn-light" href="@relatedProductUrl">Detay Sayfasına Git</a>
+                    }
+                    else
+                    {
+                        <a class="nsx-btn nsx-btn-primary" href="@(string.IsNullOrWhiteSpace(Model.CtaUrl) ? "/store" : Model.CtaUrl)">@(string.IsNullOrWhiteSpace(Model.CtaText) ? "Ürünleri İncele" : Model.CtaText)</a>
+                    }
+                    <a class="nsx-btn nsx-btn-light" href="/iletisim">İletişime Geç</a>
+                </div>
+            </article>
+
+            <aside class="nsx-blog-sidebar">
+                <section class="nsx-blog-sidebar-card">
+                    <span class="nsx-blog-sidebar-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6.5 3.5h8l3 3v14h-11z" />
+                            <path d="M14.5 3.5v3h3M9 11h6M9 14.5h6M9 18h4" />
+                        </svg>
+                    </span>
+                    <div class="nsx-blog-kicker">Rehber Bilgisi</div>
+                    <h2>NSX Yazılım Rehberi</h2>
+                    <p>İş süreçlerinizi daha düzenli yönetmenize yardımcı olacak sade ve uygulanabilir bilgiler.</p>
+                    <dl>
+                        <div><dt>Yayın</dt><dd>@Model.PublishedAt.ToString("dd.MM.yyyy")</dd></div>
+                        <div><dt>Güncelleme</dt><dd>@Model.ModifiedAt.ToString("dd.MM.yyyy")</dd></div>
+                        <div><dt>Yayıncı</dt><dd>NSX Yazılım</dd></div>
+                    </dl>
+                    <a class="nsx-blog-sidebar-link" href="/blog">Tüm rehberleri görüntüle <i class="bi bi-arrow-right"></i></a>
+                </section>
+
+                @if (Model.Keywords?.Any() == true)
+                {
+                    <section class="nsx-blog-sidebar-card compact">
+                        <div class="nsx-blog-kicker">Konu Başlıkları</div>
+                        <div class="nsx-blog-tags">
+                            @foreach (var keyword in Model.Keywords.Take(7))
+                            {
+                                <span>@keyword</span>
+                            }
+                        </div>
+                    </section>
+                }
+            </aside>
+        </div>
+
+        @if (relatedPages.Any())
+        {
+            <section class="nsx-blog-related">
+                <div class="nsx-blog-related-head">
+                    <div>
+                        <span>İlgili Rehberler</span>
+                        <h2>Bu konuyla ilgili diğer sayfalar</h2>
+                    </div>
+                    <a href="/blog">Tüm rehberler <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="nsx-blog-related-grid">
+                    @foreach (var item in relatedPages)
+                    {
+                        <a href="@(item.IsLanding ? $"/{item.Slug}" : $"/blog/{item.Slug}")">
+                            <small>NSX Rehber</small>
+                            <strong>@item.H1</strong>
+                            <span>@item.Description</span>
+                        </a>
+                    }
+                </div>
+            </section>
+        }
+    </div>
+</section>
+
+@functions {
+    public bool IsVeresiyeRelated(NSYazilim.Web.Controllers.BlogController.SeoPage page)
+    {
+        return page.Slug is
+            "ucretsiz-veresiye-programi" or
+            "veresiye-programi-nedir" or
+            "ucretsiz-veresiye-programi-nedir" or
+            "ucretsiz-cari-takip-programi" or
+            "esnaflar-icin-veresiye-takip-programi" or
+            "borc-alacak-takip-programi-ucretsiz" or
+            "bakkal-veresiye-defteri-nasil-tutulur" or
+            "cari-hesap-takibi-nasil-yapilir" or
+            "excel-yerine-veresiye-takip-programi" or
+            "veresiye-defteri-programi" or
+            "ucretsiz-cari-hesap-programi" or
+            "veresiye-cari-takip-programi-pro";
+    }
+}

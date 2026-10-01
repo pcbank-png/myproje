@@ -1,0 +1,229 @@
+@using NSYazilim.Web.Services
+@inject SiteLocalizationService SiteLocalization
+@{
+    Layout = "_PublicLayout";
+    var contactLang = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    async Task<string> T(string source)
+        => await SiteLocalization.TranslateAsync(source, contactLang.Code, Context.RequestAborted);
+
+    ViewData["Title"] = await T("İletişim ve Destek");
+    ViewData["MetaDescription"] = await T("NSX Yazılım satış, ürün seçimi, kurulum, lisans ve teknik destek sorularınız için iletişim kanalları.");
+    var supportProgramAvailable = ViewBag.SupportProgramAvailable is bool available && available;
+}
+
+<style id="nsx-support-page-pro">
+    .public-content-page{background:#fff!important;}
+    .public-content-page *{box-sizing:border-box;}
+    .public-content-page > .container{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;}
+
+    .public-content-page .public-site-header .service-ribbon > .container,
+    .public-content-page .public-site-header .detail-nav.container,
+    .nsx-support-hero > .container,
+    .nsx-support-content > .container{
+        width:min(1505px,calc(100% - 48px))!important;
+        max-width:1505px!important;
+        margin-left:auto!important;
+        margin-right:auto!important;
+    }
+
+    @@media (min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{display:flex!important;align-items:center!important;min-height:78px!important;gap:8px!important;}
+        .public-content-page .public-site-header .brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;margin:0 auto 0 0!important;padding:0!important;}
+        .public-content-page .public-site-header .brand-logo{display:block!important;width:clamp(142px,10.8vw,184px)!important;max-width:184px!important;height:auto!important;object-fit:contain!important;}
+        .public-content-page .public-site-header .nav-links{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex:0 1 auto!important;width:auto!important;margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{white-space:nowrap!important;}
+        .public-content-page .public-site-header .nav-cta{flex:0 0 auto!important;margin-left:0!important;}
+        .public-content-page .public-site-header .menu-toggle{display:none!important;}
+    }
+
+    .nsx-support-page{background:#fff;color:#171b20;}
+    .nsx-support-hero{
+        position:relative;
+        width:100%;
+        height:286px!important;
+        min-height:286px!important;
+        max-height:286px!important;
+        overflow:hidden;
+        color:#fff;
+        background:
+            radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),
+            linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%);
+        border-top:1px solid rgba(255,255,255,.04);
+        border-bottom:1px solid rgba(255,255,255,.06);
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22);
+    }
+    .nsx-support-hero:before{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        opacity:.10;
+        background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+        background-size:72px 72px;
+        -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);
+        mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);
+    }
+    .nsx-support-hero > .container{position:relative;z-index:2;height:100%;min-height:0!important;display:flex;align-items:flex-start;padding-top:24px;padding-bottom:24px;}
+    .nsx-support-hero-copy{max-width:980px;}
+    .nsx-support-kicker{display:flex;align-items:center;gap:10px;margin:0 0 14px;color:#39d98a;font-size:12px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-support-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 5px rgba(57,217,138,.12);}
+    .nsx-support-hero h1{max-width:860px;margin:0;color:#fff;font-size:42px;font-weight:900;line-height:1.06;letter-spacing:-.04em;}
+    .nsx-support-hero h1 em{display:block;color:#ff6e04;font-style:normal;}
+    .nsx-support-hero p{max-width:900px;margin:12px 0 0;color:#d3d8df;font-size:14px;line-height:1.7;font-weight:520;}
+    .nsx-support-hero-points{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+    .nsx-support-hero-points span{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 11px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.045);color:#d9dee4;font-size:10px;font-weight:800;}
+    .nsx-support-hero-points b{color:#39d98a;font-size:11px;}
+
+    .nsx-support-content{padding:38px 0 72px;background:#fff;}
+    .nsx-support-section-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,560px);gap:36px;align-items:end;margin-bottom:22px;}
+    .nsx-support-section-head span{display:block;margin-bottom:7px;color:#ff6e04;font-size:10px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-support-section-head h2{max-width:720px;margin:0;color:#171b20;font-size:30px;font-weight:900;line-height:1.12;letter-spacing:-.035em;}
+    .nsx-support-section-head p{margin:0;color:#707b86;font-size:12px;line-height:1.7;}
+
+    .nsx-support-main{display:grid;grid-template-columns:minmax(0,1.34fr) minmax(330px,.66fr);gap:18px;align-items:stretch;}
+    .nsx-support-form,.nsx-support-side{border:1px solid #e1e6eb;border-radius:20px;box-shadow:0 14px 36px rgba(15,23,42,.055);}
+    .nsx-support-form{padding:28px;background:#fff;}
+    .nsx-support-form-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:start;margin-bottom:22px;padding-bottom:20px;border-bottom:1px solid #edf0f3;}
+    .nsx-support-form-head span{display:block;margin-bottom:7px;color:#ff6e04;font-size:9px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-support-form-head h2{margin:0;color:#171b20;font-size:24px;font-weight:900;line-height:1.18;letter-spacing:-.03em;}
+    .nsx-support-form-head p{max-width:580px;margin:8px 0 0;color:#74808b;font-size:11px;line-height:1.65;}
+    .nsx-support-form-badge{display:inline-flex;align-items:center;gap:7px;min-height:32px;padding:0 10px;border:1px solid #dfe5ea;border-radius:999px;background:#fafbfc;color:#596572;font-size:9px;font-weight:850;white-space:nowrap;}
+    .nsx-support-form-badge:before{content:"";width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 4px rgba(57,217,138,.10);}
+    .nsx-support-form label{display:block;margin:14px 0 7px;color:#343d47;font-size:10px;font-weight:900;}
+    .nsx-support-form input,.nsx-support-form textarea{width:100%;border:1px solid #dfe4e9;border-radius:12px;background:#fafbfc;padding:13px 14px;color:#171b20;font:inherit;font-size:12px;outline:none;transition:border-color .16s ease,box-shadow .16s ease,background .16s ease;}
+    .nsx-support-form textarea{min-height:142px;resize:vertical;}
+    .nsx-support-form input:focus,.nsx-support-form textarea:focus{border-color:#ff6e04;background:#fff;box-shadow:0 0 0 3px rgba(255,110,4,.08);}
+    .nsx-support-form button{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:44px;margin-top:17px;padding:0 18px;border:1px solid #ff6e04;border-radius:12px;background:#ff6e04;color:#fff;font-size:10px;font-weight:900;cursor:pointer;box-shadow:0 9px 22px rgba(255,110,4,.20);transition:transform .16s ease,background .16s ease,border-color .16s ease;}
+    .nsx-support-form button:hover{transform:translateY(-1px);border-color:#171b20;background:#171b20;}
+    .nsx-form-message{margin:0 0 14px;padding:11px 13px;border-radius:10px;font-size:11px;font-weight:800;}
+    .nsx-form-message.is-success{color:#176a3b;background:#edf9f2;}
+    .nsx-form-message.is-error{color:#a43127;background:#fff1ef;}
+
+    .nsx-support-side{position:relative;overflow:hidden;padding:28px;background:radial-gradient(circle at 86% 10%,rgba(255,110,4,.14),transparent 32%),linear-gradient(145deg,#10151b 0%,#171d24 100%);color:#fff;}
+    .nsx-support-side > span{display:block;color:#ff8a33;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;}
+    .nsx-support-side h2{margin:9px 0 10px;color:#fff;font-size:24px;font-weight:900;line-height:1.18;letter-spacing:-.03em;}
+    .nsx-support-side > p{margin:0;color:#aeb7c0;font-size:11px;line-height:1.7;}
+    .nsx-support-checklist{display:grid;gap:8px;margin:22px 0 24px;}
+    .nsx-support-checklist div{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:center;padding:11px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.035);}
+    .nsx-support-checklist b{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9px;background:rgba(57,217,138,.10);color:#39d98a;font-size:11px;}
+    .nsx-support-checklist span{color:#d9dee4;font-size:10px;line-height:1.45;font-weight:750;}
+    .nsx-support-side-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .nsx-support-side-actions a{display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 10px;border:1px solid rgba(255,255,255,.14);border-radius:11px;color:#fff;font-size:9px;font-weight:900;text-align:center;text-decoration:none;transition:border-color .16s ease,background .16s ease;}
+    .nsx-support-side-actions a:first-child{border-color:#ff6e04;background:#ff6e04;}
+    .nsx-support-side-actions a:hover{border-color:#fff;background:#fff;color:#171b20;}
+
+    @@media (max-width:1180px){
+        .public-content-page .public-site-header .service-ribbon > .container,
+        .public-content-page .public-site-header .detail-nav.container,
+        .nsx-support-hero > .container,
+        .nsx-support-content > .container{width:calc(100% - 32px)!important;}
+        .public-content-page .public-site-header .nav-links{gap:7px!important;margin-right:7px!important;}
+        .nsx-support-hero > .container{padding-top:24px;padding-bottom:24px;}
+        .nsx-support-hero h1{font-size:38px;}
+        .nsx-support-section-head{grid-template-columns:1fr 420px;gap:26px;}
+    }
+    @@media (max-width:980px){
+        .public-content-page .public-site-header .service-ribbon > .container,
+        .public-content-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+        .nsx-support-hero > .container{width:calc(100% - 24px)!important;padding-top:24px;padding-bottom:24px;}
+        .nsx-support-content > .container{width:calc(100% - 24px)!important;}
+        .nsx-support-section-head{grid-template-columns:1fr;gap:8px;}
+
+
+    
+    .nsx-support-main{grid-template-columns:1fr;}
+    }
+    @@media (max-width:680px){
+        .nsx-support-hero > .container,
+        .nsx-support-content > .container{width:calc(100% - 18px)!important;}
+        .nsx-support-hero > .container{padding-top:20px;padding-bottom:20px;}
+        .nsx-support-hero h1{font-size:30px;}
+        .nsx-support-hero p{font-size:13px;}
+        .nsx-support-content{padding:28px 0 52px;}
+        .nsx-support-section-head h2{font-size:26px;}
+        .nsx-support-form,.nsx-support-side{padding:20px;}
+        .nsx-support-form-head{grid-template-columns:1fr;gap:10px;}
+        .nsx-support-form-badge{justify-self:start;}
+        .nsx-support-side-actions{grid-template-columns:1fr;}
+    }
+    @@media (max-width:430px){
+        .nsx-support-hero-points{gap:7px;}
+        .nsx-support-hero-points span{width:100%;justify-content:center;}
+        .nsx-support-hero-points span:nth-child(3){display:none;}
+    }
+</style>
+
+<link rel="stylesheet" href="/css/nsx-support-channels.css" asp-append-version="true" />
+
+<section class="nsx-support-page">
+    <header class="nsx-support-hero">
+        <div class="container">
+            <div class="nsx-support-hero-copy">
+                <span class="nsx-support-kicker">@(await T("NSX Destek Merkezi"))</span>
+                <h1>@(await T("Doğru çözüme")) <em>@(await T("birlikte ulaşalım."))</em></h1>
+                <p>@(await T("Ürün seçimi, satın alma, kurulum, lisans ve kullanım sorularınız için ihtiyacınıza en uygun destek kanalından bize ulaşın."))</p>
+                <div class="nsx-support-hero-points" aria-label="@(await T("NSX destek alanları"))">
+                    <span><b>✓</b> @(await T("Ürün ve satış desteği"))</span>
+                    <span><b>✓</b> @(await T("Lisans ve kurulum"))</span>
+                    <span><b>✓</b> @(await T("Teknik destek"))</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="nsx-support-content">
+        <div class="container">
+            <div class="nsx-support-section-head">
+                <div>
+                    <span>@(await T("Hızlı İletişim"))</span>
+                    <h2>@(await T("Size en uygun destek kanalını seçin."))</h2>
+                </div>
+                <p>@(await T("Telefon veya e-posta ile bize ulaşabilir, uzaktan teknik destek için ücretsiz yardım programını doğrudan indirebilirsiniz."))</p>
+            </div>
+
+            <partial name="_SupportChannels" model="supportProgramAvailable" />
+
+            <div class="nsx-support-main">
+                <form method="post" action="/Home/FooterContact" class="nsx-support-form">
+                    @Html.AntiForgeryToken()
+                    <div class="nsx-support-form-head">
+                        <div>
+                            <span>@(await T("Destek Talebi"))</span>
+                            <h2>@(await T("Talebinizi bize anlatın"))</h2>
+                            <p>@(await T("Size dönüş yapabilmemiz için e-posta adresinizi ve ihtiyacınızı mümkün olduğunca açık şekilde yazın."))</p>
+                        </div>
+                        <div class="nsx-support-form-badge">@(await T("Destek kanalı aktif"))</div>
+                    </div>
+
+                    @if (TempData["Success"] is string successMessage) { <div class="nsx-form-message is-success">@successMessage</div> }
+                    @if (TempData["Error"] is string errorMessage) { <div class="nsx-form-message is-error">@errorMessage</div> }
+
+                    <label for="footerMail">@(await T("E-posta adresiniz"))</label>
+                    <input id="footerMail" name="footerMail" type="email" autocomplete="email" required placeholder="@(await T("ornek@firma.com"))" />
+
+                    <label for="footerMessage">@(await T("Mesajınız"))</label>
+                    <textarea id="footerMessage" name="footerMessage" rows="6" required maxlength="2000" placeholder="@(await T("İlgilendiğiniz ürünü veya destek talebinizi kısaca yazın."))"></textarea>
+
+                    <button type="submit">@(await T("Mesajı gönder")) <span>→</span></button>
+                </form>
+
+                <aside class="nsx-support-side">
+                    <span>@(await T("Daha Hızlı Çözüm"))</span>
+                    <h2>@(await T("Destek talebinizi hazırlayın."))</h2>
+                    <p>@(await T("Talebinizde aşağıdaki bilgilerin bulunması sorunun daha hızlı anlaşılmasına yardımcı olur."))</p>
+
+                    <div class="nsx-support-checklist">
+                        <div><b>✓</b><span>@(await T("Kullandığınız NSX ürününün adı"))</span></div>
+                        <div><b>✓</b><span>@(await T("Varsa sipariş veya lisans bilginiz"))</span></div>
+                        <div><b>✓</b><span>@(await T("Karşılaştığınız durum ve hata mesajı"))</span></div>
+                    </div>
+
+                    <div class="nsx-support-side-actions">
+                        <a href="https://wa.me/905434624226" target="_blank" rel="noreferrer">@(await T("WhatsApp Destek"))</a>
+                        <a href="/sikca-sorulan-sorular">@(await T("Sık Sorulan Sorular"))</a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+</section>

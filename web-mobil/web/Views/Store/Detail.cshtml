@@ -1,0 +1,715 @@
+@model NSYazilim.Web.Models.Product
+@using NSYazilim.Web.Services
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@inject NSYazilim.Web.Services.SeoLanguageUrlService SeoLanguageUrls
+@using System.Globalization
+@{
+    Layout = null;
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync();
+    var images = Model.Images?.OrderByDescending(x => x.IsMain).ThenBy(x => x.SortOrder).ToList() ?? new List<NSYazilim.Web.Models.ProductImage>();
+    var mainImage = images.FirstOrDefault()?.ImagePath ?? "/nsx-assets/logo-brand.webp";
+    var comments = ViewBag.Comments as List<NSYazilim.Web.Models.ProductComment> ?? new();
+    var averageRating = ViewBag.AverageRating is double rating ? rating : 0;
+    var commentCount = ViewBag.CommentCount is int count ? count : comments.Count;
+    var isFree = Model.YearlyPrice <= 0 && Model.LifetimePrice <= 0;
+    var hasStock = Model.StockQuantity > 0;
+    var category = ProductCategoryHelper.GetLabel(Model);
+    var localizedCategory = await SiteLocalization.TranslateAsync(category, currentLanguage.Code, Context.RequestAborted);
+    var seoProfile = ProductSeoCatalog.Find(Model);
+    var isFreeVeresiye = isFree && seoProfile?.ProductCode == "NSXVERESIYETAKIPPROFREE";
+    var sourceProductName = isFreeVeresiye
+        ? seoProfile!.Name
+        : Model.Name;
+    var localizedProductName = await SiteLocalization.TranslateAsync(sourceProductName, currentLanguage.Code, Context.RequestAborted);
+    // Özet yalnızca hero/SEO içindir. Ürün detay gövdesi aşağıda her dilde TAM
+    // Model.Description ile render edilir; yabancı dilde kısa SEO metnine düşürülmez.
+    var sourceSummary = string.IsNullOrWhiteSpace(Model.MetaDescription)
+        ? (seoProfile?.MetaDescription ?? ProductContentSanitizer.ToPlainText(Model.Description, 700))
+        : Model.MetaDescription;
+    var localizedSummary = await SiteLocalization.TranslateAsync(sourceSummary, currentLanguage.Code, Context.RequestAborted);
+    var canonicalSource = ViewData["Canonical"]?.ToString() ?? $"/urun/{Model.Slug}";
+    var productSeoLinks = await SeoLanguageUrls.BuildAsync(canonicalSource, currentLanguage, Context.RequestAborted);
+    var canonical = productSeoLinks.CurrentUrl;
+    var title = currentLanguage.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase)
+        ? SeoTextHelper.BuildTitle(ViewData["MetaTitle"]?.ToString() ?? Model.Name)
+        : SeoTextHelper.BuildTitle(await SiteLocalization.TranslateAsync(
+            ViewData["MetaTitle"]?.ToString() ?? sourceProductName,
+            currentLanguage.Code,
+            Context.RequestAborted));
+    var description = currentLanguage.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase)
+        ? SeoTextHelper.BuildDescription(ViewData["MetaDescription"]?.ToString() ?? sourceSummary)
+        : SeoTextHelper.BuildDescription(localizedSummary);
+    var ogImage = SeoTextHelper.AbsoluteUrl(ViewData["OgImage"]?.ToString() ?? mainImage);
+    var metaKeywords = currentLanguage.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase)
+        ? (ViewData["MetaKeywords"]?.ToString() ?? SeoTextHelper.ProductKeywords(Model.Name))
+        : localizedProductName;
+    var localizedBrandName = await SiteLocalization.TranslateAsync("NSX Yazılım", currentLanguage.Code, Context.RequestAborted);
+    var productImageLabel = await SiteLocalization.TranslateAsync("ürün görseli", currentLanguage.Code, Context.RequestAborted);
+    var imageZoomLabel = await SiteLocalization.TranslateAsync("görselini büyüt", currentLanguage.Code, Context.RequestAborted);
+    var screenImageLabel = await SiteLocalization.TranslateAsync("program ekranı ve ürün görseli", currentLanguage.Code, Context.RequestAborted);
+    var largeProductImageLabel = await SiteLocalization.TranslateAsync("büyük ürün görseli", currentLanguage.Code, Context.RequestAborted);
+    var aboutInfoLabel = await SiteLocalization.TranslateAsync("hakkında bilgi almak istiyorum.", currentLanguage.Code, Context.RequestAborted);
+    var accelerateLabel = await SiteLocalization.TranslateAsync("İşinizi hızlandırın.", currentLanguage.Code, Context.RequestAborted);
+    var localizedProductImageAlt = $"{localizedProductName} {productImageLabel}";
+    var localizedZoomAria = $"{localizedProductName} {imageZoomLabel}";
+    var localizedScreenImageAlt = $"{localizedProductName} {screenImageLabel}";
+    var localizedLargeImageAlt = $"{localizedProductName} {largeProductImageLabel}";
+    var bankName = ViewBag.BankTransferBankName?.ToString() ?? "";
+    var accountHolder = ViewBag.BankTransferAccountHolder?.ToString() ?? "";
+    var iban = ViewBag.BankTransferIban?.ToString() ?? "";
+    var bankBranch = ViewBag.BankTransferBranch?.ToString() ?? "";
+    var whatsappText = Uri.EscapeDataString($"{localizedProductName} {aboutInfoLabel}");
+    var productFeatures = ProductFeatures(Model.Name);
+    var isSignedIn = User.Identity?.IsAuthenticated == true && User.IsInRole("User");
+    var commentReturnUrl = $"{Context.Request.PathBase}{Context.Request.Path}#yorumlar";
+    var commentLoginUrl = Url.Action("Login", "Account", new { returnUrl = commentReturnUrl, uiLang = currentLanguage.Code }) ?? "/Account/Login";
+    var activeCampaign = ViewBag.ActiveCampaign as NSYazilim.Web.Models.Campaign;
+    var localizedCustomerRatingLabel = await SiteLocalization.TranslateAsync("müşteri puanı", currentLanguage.Code, Context.RequestAborted);
+    var localizedDiscountWord = await SiteLocalization.TranslateAsync("İNDİRİM", currentLanguage.Code, Context.RequestAborted);
+    var localizedCampaignName = activeCampaign == null ? string.Empty : await SiteLocalization.TranslateAsync(activeCampaign.Name, currentLanguage.Code, Context.RequestAborted);
+    if (activeCampaign != null
+        && !currentLanguage.Code.StartsWith("tr", StringComparison.OrdinalIgnoreCase)
+        && string.Equals(localizedCampaignName, activeCampaign.Name, StringComparison.Ordinal))
+    {
+        localizedCampaignName = await SiteLocalization.TranslateAsync("Kampanya", currentLanguage.Code, Context.RequestAborted);
+    }
+    var yearlyDiscount = activeCampaign == null ? 0 : CampaignDiscount(Model.YearlyPrice, activeCampaign);
+    var lifetimeDiscount = activeCampaign == null ? 0 : CampaignDiscount(Model.LifetimePrice, activeCampaign);
+    var yearlyPayable = Math.Max(0, Model.YearlyPrice - yearlyDiscount);
+    var lifetimePayable = Math.Max(0, Model.LifetimePrice - lifetimeDiscount);
+}
+<!DOCTYPE html>
+<html lang="@currentLanguage.UrlCode" dir="@(currentLanguage.IsRtl ? "rtl" : "ltr")">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KYN9MQQ51T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KYN9MQQ51T');
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@title</title>
+    <meta name="description" content="@description" />
+    <meta name="keywords" content="@metaKeywords" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="Nevzat SÜRÜCÜ" /><meta name="publisher" content="@localizedBrandName" />
+    <link rel="canonical" href="@canonical" />
+    @await Html.PartialAsync("_SeoLanguageAlternates", productSeoLinks)
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="@SeoTextHelper.AbsoluteUrl("/sitemap.xml")" />
+    <meta property="og:locale" content="@currentLanguage.Code.Replace('-', '_')" />
+    <meta property="og:type" content="product" />
+    <meta property="og:site_name" content="@localizedBrandName" />
+    <meta property="og:title" content="@title" />
+    <meta property="og:description" content="@description" />
+    <meta property="og:url" content="@canonical" />
+    <meta property="og:image" content="@ogImage" />
+    <meta property="og:image:secure_url" content="@ogImage" />
+    <meta property="og:image:alt" content="@localizedProductImageAlt" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@title" />
+    <meta name="twitter:description" content="@description" />
+    <meta name="twitter:image" content="@ogImage" />
+    <meta name="twitter:image:alt" content="@localizedProductImageAlt" />
+    <link rel="icon" href="/favicon.ico" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-new-site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/public-hero-fixes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-hero-effects.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-pro-v2.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/nsx-install-guide.css" asp-append-version="true" />
+    <style id="nsx-product-detail-pro-standard">
+    .detail-page{--nsx-subpage-hero-height:286px;background:#fbfcfd!important;}
+    .detail-page *{box-sizing:border-box;}
+    .detail-page .detail-footer-section > .container{width:100%!important;max-width:none!important;margin:0!important;padding:0!important;}
+    .detail-page .public-site-header .service-ribbon > .container,
+    .detail-page .public-site-header .detail-nav.container,
+    .detail-page .nsx-product-short-hero > .container,
+    .detail-page .detail-product-stage.container,
+    .detail-page .detail-content.container{
+        width:min(1505px,calc(100% - 48px))!important;max-width:1505px!important;margin-left:auto!important;margin-right:auto!important;
+    }
+    @@media (min-width:981px){
+        .detail-page .public-site-header .detail-nav.container{display:flex!important;align-items:center!important;min-height:78px!important;gap:8px!important;}
+        .detail-page .public-site-header .brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;margin:0 auto 0 0!important;padding:0!important;}
+        .detail-page .public-site-header .brand-logo{display:block!important;width:clamp(142px,10.8vw,184px)!important;max-width:184px!important;height:auto!important;object-fit:contain!important;}
+        .detail-page .public-site-header .nav-links{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex:0 1 auto!important;width:auto!important;margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+        .detail-page .public-site-header .nav-links > a{white-space:nowrap!important;}
+        .detail-page .public-site-header .nav-cta{flex:0 0 auto!important;margin-left:0!important;}
+        .detail-page .public-site-header .menu-toggle{display:none!important;}
+    }
+    .nsx-product-short-hero{position:relative!important;height:var(--nsx-subpage-hero-height)!important;min-height:var(--nsx-subpage-hero-height)!important;max-height:var(--nsx-subpage-hero-height)!important;overflow:hidden!important;color:#fff!important;background:radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%)!important;border-top:1px solid rgba(255,255,255,.04)!important;border-bottom:1px solid rgba(255,255,255,.06)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22)!important;}
+    .nsx-product-short-hero:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.10;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:72px 72px;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);}
+    .nsx-product-short-hero > .container{position:relative;z-index:2;height:100%;display:flex;align-items:flex-start;padding-top:24px!important;padding-bottom:24px!important;}
+    .nsx-product-short-copy{max-width:980px!important;}
+    .nsx-product-short-kicker{display:inline-flex;align-items:center;gap:10px;width:fit-content;max-width:100%;min-height:38px;margin:0 0 16px;padding:0 16px;border:1px solid rgba(255,110,4,.22);border-radius:999px;background:rgba(255,110,4,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 10px 24px rgba(255,110,4,.12);color:#ff8a33;font-size:12px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-product-short-kicker:before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#ff6e04;box-shadow:0 0 0 6px rgba(255,110,4,.12);}
+    .nsx-product-short-hero h1{max-width:980px!important;margin:0!important;color:#fff!important;font-size:42px!important;font-weight:900!important;line-height:1.06!important;letter-spacing:-.04em!important;}
+    .nsx-product-short-hero h1 em{display:block;color:#ff6e04!important;font-style:normal!important;}
+    .nsx-product-short-hero p{max-width:900px!important;margin:12px 0 0!important;color:#d3d8df!important;font-size:14px!important;line-height:1.7!important;font-weight:520!important;}
+    .nsx-product-short-points{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+    .nsx-product-short-points span{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 11px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.045);color:#d9dee4;font-size:10px;font-weight:800;}
+    .nsx-product-short-points b{color:#39d98a;font-size:11px;}
+
+    .detail-page .detail-product-stage{padding:38px 0 28px!important;background:#fbfcfd!important;}
+    .detail-page .detail-layout{grid-template-columns:minmax(0,1.08fr) minmax(400px,.92fr)!important;gap:24px!important;align-items:stretch!important;}
+    .detail-page .detail-media,.detail-page .detail-purchase{border:1px solid #e1e6eb!important;border-radius:20px!important;background:#fff!important;box-shadow:0 14px 38px rgba(15,23,42,.065)!important;}
+    .detail-page .detail-media{display:flex!important;flex-direction:column!important;min-height:100%!important;overflow:hidden!important;background:linear-gradient(180deg,#fff7ef 0 66px,#f5f7fa 66px 100%)!important;}
+    .detail-page .detail-status{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;flex-wrap:wrap!important;flex:0 0 auto!important;min-height:0!important;padding:12px 18px!important;background:linear-gradient(180deg,#fff7ef 0%,#fff1e6 100%)!important;border-bottom:1px solid #f1dfcd!important;}
+    .detail-page .detail-status span{color:#ff6e04!important;font-size:9px!important;font-weight:900!important;}
+    .detail-page .detail-status b{color:#23845d!important;font-size:10px!important;font-weight:800!important;}
+    .detail-page .detail-main-image{display:flex!important;align-items:center!important;justify-content:center!important;flex:1 1 auto!important;width:100%!important;height:auto!important;min-height:570px!important;padding:18px 18px 20px!important;overflow:hidden!important;background:#f5f7fa!important;}
+    .detail-page .detail-main-image img{width:100%!important;height:100%!important;max-height:590px!important;object-fit:contain!important;object-position:center center!important;background:transparent!important;transform:translateY(-4px) scale(1.04)!important;transform-origin:center center!important;}
+    .detail-page .detail-main-image:hover img{transform:translateY(-4px) scale(1.06)!important;}
+    .detail-page .detail-thumbs{flex:0 0 auto!important;padding:10px 16px!important;border-top:1px solid #e7ebf0!important;background:#f5f7fa!important;}
+    .detail-page .detail-media-note{position:relative!important;z-index:2!important;flex:0 0 auto!important;padding:14px 18px!important;background:#f5f7fa!important;}
+    .detail-page .detail-purchase{padding:26px!important;}
+    @@media (min-width:981px){.detail-page .detail-media,.detail-page .detail-purchase{min-height:742px!important;}}
+    .detail-page .detail-primary-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;}
+    .detail-page .detail-category{color:#ff6e04!important;font-size:10px!important;font-weight:900!important;}
+    .detail-page .detail-product-name{margin:12px 0 10px!important;color:#111820!important;font-size:28px!important;line-height:1.12!important;font-weight:900!important;letter-spacing:-.035em!important;}
+    .detail-page .detail-summary{color:#667382!important;font-size:13px!important;line-height:1.68!important;}
+    .detail-page .detail-trust{gap:7px!important;margin:15px 0 17px!important;}
+    .detail-page .detail-trust span{display:inline-flex!important;align-items:center!important;min-height:32px!important;padding:0 10px!important;border:1px solid #e2e7eb!important;border-radius:999px!important;background:#fafbfc!important;color:#536171!important;font-size:9px!important;font-weight:850!important;}
+    .detail-page .license-options{gap:9px!important;margin-top:15px!important;}
+    .detail-page .license-card{min-height:105px!important;border:1px solid #dfe4e9!important;border-radius:14px!important;background:#fafbfc!important;box-shadow:none!important;}
+    .detail-page .license-card.selected{border-color:#ff6e04!important;background:#fff8f2!important;box-shadow:0 0 0 2px rgba(255,110,4,.09)!important;}
+    .detail-page .detail-buy{position:relative!important;justify-content:center!important;padding:0 58px!important;background:#ff6e04!important;border-color:#ff6e04!important;box-shadow:0 10px 24px rgba(255,110,4,.20)!important;transition:background-color .28s ease,border-color .28s ease,box-shadow .28s ease!important;}
+    .detail-page .detail-buy > span{position:absolute!important;right:11px!important;display:grid!important;place-items:center!important;width:34px!important;height:34px!important;margin:0!important;border-radius:9px!important;background:rgba(255,255,255,.94)!important;color:#e85d00!important;font-size:18px!important;line-height:1!important;transition:background-color .28s ease,color .28s ease!important;}
+    .detail-page .detail-buy:hover{border-color:#e75a00!important;background:#eb5d00!important;transform:none!important;box-shadow:0 11px 25px rgba(235,93,0,.23)!important;}
+    .detail-page .detail-buy:hover > span{background:#fff!important;color:#c94c00!important;}
+    .detail-page .detail-demo{position:relative!important;display:grid!important;grid-template-columns:38px auto!important;grid-template-rows:auto auto!important;align-content:center!important;align-items:center!important;justify-content:center!important;column-gap:14px!important;width:100%!important;min-width:0!important;min-height:53px!important;padding:7px 18px!important;overflow:hidden!important;border:1px solid #193b61!important;border-radius:12px!important;color:#fff!important;background:#102a47!important;box-shadow:0 9px 22px rgba(7,24,44,.17)!important;transition:background-color .28s ease,border-color .28s ease,box-shadow .28s ease!important;}
+    .detail-page .detail-demo:before{content:"↓"!important;grid-row:1/3!important;display:grid!important;place-items:center!important;width:34px!important;height:34px!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:9px!important;color:#ff9b4d!important;background:rgba(255,255,255,.07)!important;font-size:18px!important;font-weight:900!important;transition:color .2s ease,background .2s ease,border-color .2s ease!important;}
+    .detail-page .detail-demo strong{grid-column:2;color:#fff;font-size:14px;font-weight:900;line-height:1.15;white-space:nowrap;}
+    .detail-page .detail-demo small{grid-column:2;margin-top:3px;color:#a9bed4;font-size:10px;font-weight:750;line-height:1.15;white-space:nowrap;}
+    .detail-page .detail-demo:hover{border-color:#2f5f8e!important;color:#fff!important;background:#173b60!important;transform:none!important;box-shadow:0 10px 23px rgba(7,24,44,.21)!important;}
+    .detail-page .detail-demo:hover:before{color:#fff!important;border-color:#ff9a4a!important;background:#ff7417!important;}
+    .detail-page .detail-demo:hover strong{color:#fff!important;}
+    .detail-page .detail-demo:hover small{color:#ffc08f!important;}
+    .detail-page .detail-whatsapp{border-radius:12px!important;}
+    .detail-page .detail-delivery > div{border:1px solid #e7ebef!important;background:#fafbfc!important;}
+    .detail-page .detail-content{padding:8px 0 64px!important;background:#fbfcfd!important;}
+    .detail-page .detail-tabs{gap:7px!important;margin-bottom:14px!important;padding:7px!important;border:1px solid #e2e6eb!important;border-radius:16px!important;background:#f5f6f7!important;}
+    .detail-page .detail-tabs button{min-height:40px!important;border-radius:10px!important;background:#fff!important;box-shadow:0 4px 12px rgba(15,23,42,.035)!important;}
+    .detail-page .detail-tabs button.active{border-color:#ff6e04!important;background:#ff6e04!important;color:#fff!important;box-shadow:0 8px 18px rgba(255,110,4,.20)!important;}
+    .detail-page .detail-tab-panel{border:1px solid #e1e6eb!important;border-radius:20px!important;background:#fff!important;box-shadow:0 12px 34px rgba(15,23,42,.045)!important;}
+
+    body.detail-gallery-lock{overflow:hidden!important;}
+    .detail-zoom-modal{z-index:1200!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:24px!important;cursor:default!important;background:rgba(8,12,17,.88)!important;-webkit-backdrop-filter:blur(18px)!important;backdrop-filter:blur(18px)!important;opacity:0;transition:opacity .2s ease!important;}
+    .detail-zoom-modal *{box-sizing:border-box;}
+    .detail-zoom-modal[hidden]{display:none!important;}
+    .detail-zoom-modal.is-open{opacity:1;}
+    .detail-zoom-shell{position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;width:min(1420px,calc(100vw - 48px));max-height:calc(100vh - 48px);overflow:hidden;border:1px solid rgba(255,255,255,.18);border-radius:25px;background:#f7f9fb;box-shadow:0 40px 110px rgba(0,0,0,.48);transform:translateY(12px) scale(.985);transition:transform .22s cubic-bezier(.2,.8,.2,1);}
+    .detail-zoom-modal.is-open .detail-zoom-shell{transform:translateY(0) scale(1);}
+    .detail-zoom-stage{position:relative;display:grid;place-items:center;min-height:360px;height:min(72vh,820px);padding:30px 94px;background:radial-gradient(circle at 50% 45%,#fff 0%,#f7f8fa 58%,#eef1f4 100%);overflow:hidden;touch-action:pan-y;}
+    .detail-zoom-stage:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.42;background-image:linear-gradient(rgba(19,29,40,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(19,29,40,.035) 1px,transparent 1px);background-size:54px 54px;-webkit-mask-image:radial-gradient(circle at center,#000 0%,transparent 72%);mask-image:radial-gradient(circle at center,#000 0%,transparent 72%);}
+    .detail-zoom-stage>img{position:relative;z-index:1;display:block;width:auto!important;height:auto!important;max-width:100%!important;max-height:min(calc(72vh - 60px),760px)!important;object-fit:contain!important;object-position:center!important;border-radius:16px!important;background:transparent!important;box-shadow:0 26px 70px rgba(18,27,38,.18)!important;transition:opacity .14s ease,transform .2s ease!important;}
+    .detail-zoom-stage>img.is-switching{opacity:.28;transform:scale(.985);}
+    .detail-zoom-close,.detail-zoom-nav{z-index:5;display:grid;place-items:center;border:1px solid rgba(18,27,38,.13);color:#26313d;background:rgba(255,255,255,.92);box-shadow:0 12px 28px rgba(18,27,38,.14);cursor:pointer;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:color .18s ease,background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease;}
+    .detail-zoom-close{position:absolute;top:20px;right:20px;width:46px;height:46px;border-radius:14px;}
+    .detail-zoom-nav{position:absolute;top:50%;width:54px;height:54px;border-radius:17px;transform:translateY(-50%);}
+    .detail-zoom-prev{left:22px;}.detail-zoom-next{right:22px;}
+    .detail-zoom-close svg{width:19px;height:19px}.detail-zoom-nav svg{width:22px;height:22px}
+    .detail-zoom-close:hover,.detail-zoom-nav:hover{color:#fff;border-color:#ff6e04;background:linear-gradient(145deg,#ff8121,#ed5900);box-shadow:0 16px 32px rgba(222,89,0,.24);}
+    .detail-zoom-nav:hover{transform:translateY(-50%) scale(1.05);}
+    .detail-zoom-close:hover{transform:rotate(4deg) scale(1.05);}
+    .detail-zoom-close:focus-visible,.detail-zoom-nav:focus-visible,.detail-zoom-thumbs button:focus-visible{outline:3px solid rgba(255,110,4,.28);outline-offset:3px;}
+    .detail-zoom-counter{position:absolute;z-index:4;top:20px;left:20px;display:inline-flex;align-items:center;min-height:38px;padding:0 13px;border:1px solid rgba(18,27,38,.10);border-radius:12px;color:#384553;background:rgba(255,255,255,.90);box-shadow:0 9px 22px rgba(18,27,38,.08);font-size:11px;font-weight:850;letter-spacing:.04em;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);}
+    .detail-zoom-footer{display:grid;grid-template-columns:minmax(190px,.55fr) minmax(260px,1.45fr) auto;align-items:center;gap:22px;min-height:102px;padding:14px 20px;border-top:1px solid #dfe4e9;background:#fff;}
+    .detail-zoom-title{display:flex;min-width:0;flex-direction:column;gap:4px;}
+    .detail-zoom-title small{color:#df5900;font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;}
+    .detail-zoom-title strong{overflow:hidden;color:#17212c;font-size:13px;font-weight:850;text-overflow:ellipsis;white-space:nowrap;}
+    .detail-zoom-thumbs{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;padding:4px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#ff9b56 #eef1f4;}
+    .detail-zoom-thumbs button{display:grid;place-items:center;flex:0 0 72px;width:72px;height:54px;padding:4px;overflow:hidden;border:1px solid #dfe4e9;border-radius:11px;background:#f8fafb;cursor:pointer;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;}
+    .detail-zoom-thumbs button:hover,.detail-zoom-thumbs button.active{border-color:#ff6e04;box-shadow:0 0 0 2px rgba(255,110,4,.12),0 7px 16px rgba(18,27,38,.09);transform:translateY(-1px);}
+    .detail-zoom-thumbs img{display:block;width:100%;height:100%;object-fit:contain;border-radius:7px;background:transparent;}
+    .detail-zoom-keyboard{display:flex;align-items:center;gap:7px;color:#7a8693;font-size:9px;font-weight:750;white-space:nowrap;}
+    .detail-zoom-keyboard kbd{display:grid;place-items:center;width:27px;height:27px;border:1px solid #dce2e7;border-bottom-width:2px;border-radius:8px;color:#df5900;background:#f8fafb;font-family:inherit;font-size:13px;font-weight:850;line-height:1;}
+
+    @@media (max-width:1180px){
+        .detail-page .public-site-header .service-ribbon > .container,.detail-page .public-site-header .detail-nav.container,.detail-page .nsx-product-short-hero > .container,.detail-page .detail-product-stage.container,.detail-page .detail-content.container{width:calc(100% - 32px)!important;}
+        .nsx-product-short-hero h1{font-size:38px!important;}
+        .detail-page .detail-layout{grid-template-columns:minmax(0,1fr) minmax(370px,.88fr)!important;}
+    }
+    @@media (max-width:980px){
+        .detail-page .public-site-header .service-ribbon > .container,.detail-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+        .detail-page .detail-layout{grid-template-columns:1fr!important;}
+        .detail-page .detail-main-image{height:400px!important;min-height:400px!important;}
+        .detail-page .detail-main-image img{max-height:400px!important;transform:translateY(-6px) scale(1.035)!important;}
+        .detail-page .detail-main-image:hover img{transform:translateY(-6px) scale(1.06)!important;}
+    }
+    @@media (max-width:680px){
+        .detail-page .nsx-product-short-hero > .container,.detail-page .detail-product-stage.container,.detail-page .detail-content.container{width:calc(100% - 18px)!important;}
+        .nsx-product-short-hero > .container{padding-top:20px!important;padding-bottom:20px!important;}
+        .nsx-product-short-hero h1{font-size:30px!important;}
+        .nsx-product-short-hero p{font-size:13px!important;}
+        .nsx-product-short-points{gap:7px!important;}
+        .nsx-product-short-points span{min-height:31px!important;padding:0 9px!important;font-size:9px!important;}
+        .detail-page .detail-product-stage{padding:24px 0 28px!important;}
+        .detail-page .detail-main-image{height:300px!important;min-height:300px!important;padding:12px!important;}
+        .detail-page .detail-main-image img{max-height:300px!important;transform:translateY(-3px) scale(1.02)!important;}
+        .detail-page .detail-main-image:hover img{transform:translateY(-3px) scale(1.04)!important;}
+        .detail-page .detail-purchase{padding:20px!important;}
+        .detail-page .detail-primary-actions{grid-template-columns:1fr!important;}
+        .detail-page .detail-product-name{font-size:23px!important;}
+        .detail-page .detail-tabs{padding:6px!important;}
+        .detail-zoom-modal{padding:8px!important;}
+        .detail-zoom-shell{width:calc(100vw - 16px);max-height:calc(100vh - 16px);border-radius:19px;}
+        .detail-zoom-stage{height:68vh;min-height:300px;padding:66px 14px 20px;}
+        .detail-zoom-stage>img{max-height:calc(68vh - 86px)!important;}
+        .detail-zoom-nav{top:50%;width:44px;height:44px;border-radius:14px;}
+        .detail-zoom-prev{left:9px}.detail-zoom-next{right:9px}
+        .detail-zoom-close{top:12px;right:12px;width:42px;height:42px;border-radius:13px;}
+        .detail-zoom-counter{top:14px;left:14px;min-height:34px;}
+        .detail-zoom-footer{grid-template-columns:1fr;gap:9px;min-height:0;padding:11px 12px 13px;}
+        .detail-zoom-title{display:none;}
+        .detail-zoom-thumbs{justify-content:flex-start;width:100%;}
+        .detail-zoom-thumbs button{flex-basis:62px;width:62px;height:47px;}
+        .detail-zoom-keyboard{display:none;}
+    }
+    </style>
+    @Html.Raw(ViewData["JsonLd"])
+<link rel="stylesheet" href="/css/nsx-home-light.css" asp-append-version="true">
+<link rel="stylesheet" href="/css/nsx-global-type.css" asp-append-version="true">
+</head>
+<body class="home-light-theme public-light-theme">
+<main class="detail-page @(isFree ? "free-product-detail" : "")">
+    @await Html.PartialAsync("_PublicHeader")
+
+    <section class="nsx-product-short-hero">
+        <div class="container">
+            <div class="nsx-product-short-copy">
+                <span class="nsx-product-short-kicker">@localizedBrandName · @localizedCategory</span>
+                <h1>@localizedProductName <em>NSX güvencesiyle.</em></h1>
+                <p>@localizedSummary</p>
+                <div class="nsx-product-short-points" aria-label="Ürün avantajları">
+                    @if (isFree)
+                    {
+                        <span><b>✓</b> Ömür boyu ücretsiz</span>
+                        <span><b>✓</b> Bulut + Mobil erişim</span>
+                        <span><b>✓</b> Windows cari / veresiye takibi</span>
+                    }
+                    else
+                    {
+                        <span><b>✓</b> Windows uyumlu</span>
+                        <span><b>✓</b> Dijital teslimat</span>
+                        <span><b>✓</b> NSX teknik destek</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-hero detail-product-stage container">
+        <div class="detail-layout">
+            <div class="detail-media">
+                <div class="detail-status"><span>NSX ORİJİNAL YAZILIM</span><b>@(hasStock ? (isFree ? "Ücretsiz · Dijital indirme" : "Stokta · Dijital teslimat") : "Şu anda stokta yok")</b></div>
+                <button class="detail-main-image" id="zoomOpen" type="button" aria-label="@localizedZoomAria">
+                    <img id="mainProductImage" src="@mainImage" alt="@localizedScreenImageAlt" width="1581" height="995" fetchpriority="high" decoding="async" />
+                    <span class="detail-zoom-hint">⌕ Büyüt</span>
+                </button>
+                @if (images.Count > 1)
+                {
+                    <div class="detail-thumbs" aria-label="Ürün görselleri">
+                        @foreach (var image in images)
+                        {
+                            <button type="button" class="detail-thumb" data-image="@image.ImagePath"><img src="@ProductThumb(image.ImagePath, 360, image.Id)" alt="@localizedProductImageAlt" width="1581" height="995" loading="lazy" decoding="async" fetchpriority="low" /></button>
+                        }
+                    </div>
+                }
+                <div class="detail-media-note"><span>Görsele tıklayarak tam boy inceleyin</span><span>Windows masaüstü yazılımı</span></div>
+            </div>
+
+            <div class="detail-purchase">
+                <div class="detail-category">@localizedCategory <span>★★★★★ <b>@(commentCount > 0 ? averageRating.ToString("0.0") : "Yeni")</b></span></div>
+                <h2 class="detail-product-name">@localizedProductName</h2>
+                <p class="detail-summary">@localizedSummary</p>
+                <div class="detail-trust">
+                    @if (isFree)
+                    {
+                        <span><b class="nsx-public-check" aria-hidden="true">✓</b> Ömür boyu ücretsiz</span><span><b class="nsx-public-check" aria-hidden="true">✓</b> Bulut + Mobil erişim</span><span><b class="nsx-public-check" aria-hidden="true">✓</b> NSX teknik destek</span>
+                    }
+                    else
+                    {
+                        <span><b class="nsx-public-check" aria-hidden="true">✓</b> Hızlı kurulum</span><span><b class="nsx-public-check" aria-hidden="true">✓</b> Teknik destek</span><span><b class="nsx-public-check" aria-hidden="true">✓</b> Güvenli lisans</span>
+                    }
+                </div>
+
+                @if (isFree)
+                {
+                    <div class="free-license-panel"><div><small>Kullanım lisansı</small><strong>Ücretsiz</strong><span>Üye girişiyle doğrudan indirme</span></div><div><b>✓</b><span><strong>Ödeme adımı yok</strong><small>Hemen kullanmaya başlayın</small></span></div></div>
+                }
+                else
+                {
+                    @if (yearlyDiscount > 0 || lifetimeDiscount > 0)
+                    {
+                        <div class="detail-campaign-note"><b>@CampaignLabel(activeCampaign!, localizedDiscountWord)</b><span>@localizedCampaignName · <span>İndirim havale bildiriminde otomatik uygulanır.</span></span></div>
+                    }
+                    <div class="license-options" role="radiogroup" aria-label="Lisans türü">
+                        <button class="license-card selected" type="button" data-license="Yearly" data-price="@yearlyPayable.ToString("0.##", CultureInfo.InvariantCulture)"><small>Yıllık lisans</small><strong>@yearlyPayable.ToString("C0", CultureInfo.GetCultureInfo("tr-TR"))</strong>@if(yearlyDiscount > 0){<del>@Model.YearlyPrice.ToString("C0", CultureInfo.GetCultureInfo("tr-TR"))</del>}<span>365 gün kullanım</span></button>
+                        <button class="license-card" type="button" data-license="Lifetime" data-price="@lifetimePayable.ToString("0.##", CultureInfo.InvariantCulture)"><small>Sınırsız lisans</small><strong>@lifetimePayable.ToString("C0", CultureInfo.GetCultureInfo("tr-TR"))</strong>@if(lifetimeDiscount > 0){<del>@Model.LifetimePrice.ToString("C0", CultureInfo.GetCultureInfo("tr-TR"))</del>}<span>Ömür boyu kullanım</span></button>
+                    </div>
+                }
+
+                <div class="detail-primary-actions">
+                    @if (hasStock)
+                    {
+                        <a class="detail-buy" id="buyLink" href="@(isFree ? $"/store/free-download-start?productId={Model.Id}" : $"/Odeme?productId={Model.Id}&licenseType=Yearly")" data-free-download="@(isFree ? "true" : null)">@(isFree ? "Ücretsiz İndir" : "Satın Al")<span>→</span></a>
+                        @if (isFree)
+                        {
+                            <a class="detail-demo" href="#features"><strong>Özellikleri İncele</strong><small>Programın tüm özelliklerini görün</small></a>
+                        }
+                        else
+                        {
+                            <a class="detail-demo" href="/store/downloaddemo?productId=@Model.Id"><strong>Demo / İndirme</strong><small>Kurulum dosyasını alın</small></a>
+                        }
+                    }
+                    else
+                    {
+                        <span class="detail-buy is-disabled">Stokta Yok</span><a class="detail-demo" href="/iletisim">Bilgi Al</a>
+                    }
+                </div>
+                <button class="nsx-install-guide-spotlight" type="button" data-guide-open aria-haspopup="dialog">
+                    <span class="nsx-install-guide-spotlight__shield" aria-hidden="true">✓</span>
+                    <span class="nsx-install-guide-spotlight__copy"><small>Dosya açılmıyor mu?</small><strong>Güvenli Kurulum Rehberini İnceleyin</strong><em>Sağ tık → Engellemeyi kaldır</em></span>
+                    <span class="nsx-install-guide-spotlight__action">Rehberi Aç <b aria-hidden="true">→</b></span>
+                </button>
+                <a class="detail-whatsapp" href="https://wa.me/905434624226?text=@whatsappText" target="_blank" rel="noreferrer"><span>WA</span><div><small>Ürün uzmanına sorun</small><strong>WhatsApp ile bilgi alın</strong></div><b>↗</b></a>
+                <div class="detail-delivery"><div><b>01</b><span><strong>@(isFree ? "Ücretsiz indirme" : "Dijital teslimat")</strong><small>@(isFree ? "Üye girişi sonrası anında erişim" : "Onay sonrası hızlı erişim")</small></span></div><div><b>02</b><span><strong>Uzaktan kurulum</strong><small>NSX destek ekibi yanınızda</small></span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="detail-content container">
+        <div class="detail-tabs" role="tablist">
+            <button class="active" type="button" data-tab="features">Ürün Özellikleri</button>
+            <button type="button" data-tab="technical">Teknik Bilgiler</button>
+            <button type="button" data-tab="support">Kurulum &amp; Destek</button>
+            <button type="button" data-tab="reviews"><span>Yorumlar</span> (@commentCount)</button>
+            <button type="button" data-tab="questions">Soru &amp; Cevap</button>
+            <button type="button" data-tab="bank">@(isFree ? "İndirme Bilgileri" : "Havale Bilgileri")</button>
+        </div>
+        <div class="detail-tab-panel" id="features" data-panel="features">
+            <div>
+                <span class="detail-eyebrow">ÜRÜNÜ TANIYIN</span>
+                <h2>@localizedProductName · @accelerateLabel</h2>
+                <div class="detail-rich-copy">
+                    @* Tam ürün içeriği hiçbir dilde kısaltılmaz. HTML dil middleware'i,
+                       DB'den gelen paragraf/metin düğümlerini hedef dile çevirir. *@
+                    @Html.Raw(ProductContentSanitizer.NormalizeForEditor(Model.Description))
+                </div>
+            </div>
+            <div class="detail-feature-grid">
+                @for (var i = 0; i < productFeatures.Count; i++)
+                {
+                    <span><b>@((i + 1).ToString("00"))</b>@productFeatures[i]</span>
+                }
+            </div>
+            @if (isFreeVeresiye)
+            {
+                <div class="detail-free-video">
+                    <div class="detail-free-video__copy">
+                        <span class="detail-eyebrow">KURULUM VE KULLANIM</span>
+                        <h3>NSX Veresiye Takip Pro Free'yi yakından görün.</h3>
+                        <p>Kurulum ve temel kullanım videosunu izleyin; ardından ücretsiz lisansınızla güvenli indirmeyi başlatın.</p>
+                    </div>
+                    <div class="detail-free-video__frame">
+                        <iframe src="https://www.youtube-nocookie.com/embed/ypsXQY6iOl4?rel=0" title="NSX Veresiye Takip Pro Free kurulum ve kullanım videosu" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="detail-tab-panel" data-panel="technical" hidden><div><span class="detail-eyebrow">TEKNİK BİLGİLER</span><h2>Kuruluma hazır, anlaşılır yapı.</h2><p>@(isFree ? "İndirmeden önce temel kullanım, lisans ve kurulum bilgilerini tek bakışta inceleyin." : "Satın almadan önce temel kullanım ve teslimat bilgilerini tek bakışta inceleyin.")</p></div><dl class="detail-specs"><div><dt>Platform</dt><dd>Windows masaüstü</dd></div><div><dt>Teslimat</dt><dd>@(isFree ? "Dijital indirme" : "Dijital lisans / indirme")</dd></div><div><dt>Lisans</dt><dd>@(isFree ? "Ücretsiz" : "Yıllık veya sınırsız")</dd></div><div><dt>Ürün kodu</dt><dd>@(Model.ProductCode ?? $"NSX-{Model.Id}")</dd></div></dl></div>
+        <div class="detail-tab-panel" data-panel="support" hidden><div><span class="detail-eyebrow">NSX DESTEK</span><h2>Kurulumda yalnız değilsiniz.</h2><p>@(isFree ? "Ücretsiz indirme sonrasında ihtiyaç halinde uzaktan bağlantıyla kurulum ve başlangıç desteği alabilirsiniz." : "Lisans ve indirme sonrasında ihtiyaç halinde uzaktan bağlantıyla kurulum ve başlangıç desteği alabilirsiniz.")</p></div><div class="detail-support-steps"><span><b>1</b>@(isFree ? "Hesabınıza giriş yapın" : "Ürünü ve lisansı seçin")</span><span><b>2</b>@(isFree ? "Ücretsiz indirin" : "İşlemi tamamlayın")</span><span><b>3</b>Kurulum desteği alın</span></div></div>
+        <div class="detail-tab-panel" id="yorumlar" data-panel="reviews" hidden>
+            <div class="detail-review-intro">
+                <span class="detail-eyebrow">MÜŞTERİ YORUMLARI</span>
+                <h2>
+                    @if (commentCount > 0)
+                    {
+                        <span>@averageRating.ToString("0.0") / 5 @localizedCustomerRatingLabel</span>
+                    }
+                    else
+                    {
+                        <span>İlk yorumu siz yapın</span>
+                    }
+                </h2>
+                <p>Yorumlar gerçek kullanıcı deneyimlerini yansıtır ve yayın öncesi kontrol edilir.</p>
+                @if (isSignedIn)
+                {
+                    @await Html.PartialAsync("_CommentForm", Model)
+                }
+                else
+                {
+                    <a class="detail-review-action" href="@commentLoginUrl">Yorum yapmak için giriş yap</a>
+                }
+            </div>
+            <div class="detail-review-list">
+                @if (comments.Any())
+                {
+                    foreach (var review in comments.Take(3))
+                    {
+                        <article class="detail-review-card"><div><strong>@review.FullName</strong><span>@(new string('★', Math.Clamp(review.Rating, 1, 5)))</span></div><p>@review.Comment</p><small>@review.CreatedAt.ToString("dd.MM.yyyy")</small></article>
+                    }
+                }
+                else
+                {
+                    <article class="detail-review-card"><strong>Henüz yorum yok</strong><p>Bu ürün hakkındaki deneyiminizi paylaşan ilk kişi olabilirsiniz.</p></article>
+                }
+            </div>
+        </div>
+        <div class="detail-tab-panel" data-panel="questions" hidden>
+            <div><span class="detail-eyebrow">SIK SORULAN SORULAR</span><h2>@(isFree ? "İndirmeden önce bilmeniz gerekenler." : "Satın almadan önce bilmeniz gerekenler.")</h2><p>Ürün, lisans veya kurulum hakkında farklı bir sorunuz varsa destek ekibimize ulaşabilirsiniz.</p></div>
+            <div class="detail-faq-list">
+                <details open><summary>Program hangi işletim sisteminde çalışır?</summary><p>NSX masaüstü yazılımları Windows ortamında çalışır. Ürün özel gereksinimleri destek ekibinden doğrulanabilir.</p></details>
+                <details><summary>Kurulum desteği veriliyor mu?</summary><p>Evet. İhtiyaç halinde uzaktan bağlantı ile kurulum ve ilk kullanım desteği sağlanır.</p></details>
+                @if (isFree)
+                {
+                    <details><summary>Ücretsiz lisansımı nasıl alırım?</summary><p>Hesabınıza giriş yaptıktan sonra Ücretsiz İndir düğmesine basmanız yeterlidir. Ücretsiz kullanım lisansı hesabınıza otomatik tanımlanır; ödeme veya havale gerekmez.</p></details>
+                }
+                else
+                {
+                    <details><summary>Lisansı nasıl teslim alırım?</summary><p>Ödeme onayından sonra lisans kullanıcı hesabına tanımlanır ve indirme erişimi açılır.</p></details>
+                }
+                <a href="/iletisim">Başka bir soru sorun →</a>
+            </div>
+        </div>
+        <div class="detail-tab-panel" data-panel="bank" hidden>
+            <div><span class="detail-eyebrow">@(isFree ? "GÜVENLİ İNDİRME" : "GÜVENLİ ÖDEME")</span><h2>@(isFree ? "Üye girişiyle hemen indirin." : "Havale / EFT bilgileri.")</h2><p>@(isFree ? "Bu ürün için ödeme veya havale bildirimi gerekmez." : "Satın alma bildirimini gönderdikten sonra ödeme kontrol edilir; lisans ve indirme erişimi hesabınıza tanımlanır.")</p></div>
+            @if (!isFree && !string.IsNullOrWhiteSpace(iban))
+            {
+                <dl class="detail-specs detail-bank-specs"><div><dt>Banka</dt><dd>@bankName</dd></div><div><dt>Alıcı</dt><dd>@accountHolder</dd></div><div><dt>IBAN</dt><dd>@iban</dd></div><div><dt>Açıklama</dt><dd>Lütfen boş bırakınız</dd></div><div><dt>Tutar</dt><dd id="bankAmount">@Model.YearlyPrice.ToString("C0", CultureInfo.GetCultureInfo("tr-TR"))</dd></div></dl>
+            }
+            else
+            {
+                <div class="detail-support-steps"><span><b>1</b>Hesabınıza giriş yapın</span><span><b>2</b>@(isFree ? "Ücretsiz İndir düğmesine basın" : "Demo / İndirme düğmesine basın")</span><span><b>3</b>Dosyanıza güvenli şekilde erişin</span></div>
+            }
+        </div>
+    </section>
+
+    @await Html.PartialAsync("_ModernDetailFooter")
+</main>
+
+@if (isFreeVeresiye)
+{
+    <style>
+    .detail-free-video{grid-column:1/-1;display:grid;grid-template-columns:minmax(260px,.75fr) minmax(420px,1.25fr);gap:24px;align-items:center;margin-top:14px;padding:24px;border:1px solid #e2e7eb;border-radius:18px;background:linear-gradient(135deg,#fff 0%,#fafbfc 100%)}
+    .detail-free-video__copy h3{margin:7px 0 9px;color:#171c22;font-size:24px;line-height:1.15;font-weight:900;letter-spacing:-.03em}.detail-free-video__copy p{margin:0;color:#6f7a85;font-size:12px;line-height:1.7}
+    .detail-free-video__frame{position:relative;overflow:hidden;aspect-ratio:16/9;border-radius:14px;background:#0d1117;box-shadow:0 14px 34px rgba(15,23,42,.12)}.detail-free-video__frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    @@media(max-width:850px){.detail-free-video{grid-template-columns:1fr;padding:17px}.detail-free-video__copy h3{font-size:21px}}
+    </style>
+}
+
+@if (isFree)
+{
+    <script>
+    document.addEventListener('click', function (event) {
+        var link = event.target.closest('a[data-free-download="true"]');
+        if (!link || typeof window.gtag !== 'function') return;
+        window.gtag('event', 'free_download_intent', {
+            product_id: '@Model.Id',
+            product_name: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(sourceProductName)),
+            signed_in: @(isSignedIn ? "true" : "false")
+        });
+    });
+    </script>
+}
+
+<link rel="stylesheet" href="/css/nsx-public-light-parity.css" asp-append-version="true" />
+<div class="detail-zoom-modal" id="zoomModal" role="dialog" aria-modal="true" aria-labelledby="zoomModalTitle" aria-hidden="true" hidden>
+    <div class="detail-zoom-shell">
+        <div class="detail-zoom-stage" id="zoomStage">
+            <span class="detail-zoom-counter" id="zoomCounter">1 / @Math.Max(images.Count, 1)</span>
+            <button class="detail-zoom-close" id="zoomClose" type="button" aria-label="Galeriyi kapat">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg>
+            </button>
+            <button class="detail-zoom-nav detail-zoom-prev" id="zoomPrev" type="button" aria-label="Önceki görsel">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7" /></svg>
+            </button>
+            <img id="zoomImage" src="@mainImage" alt="@localizedLargeImageAlt" width="1581" height="995" loading="lazy" decoding="async" fetchpriority="low" />
+            <button class="detail-zoom-nav detail-zoom-next" id="zoomNext" type="button" aria-label="Sonraki görsel">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7" /></svg>
+            </button>
+        </div>
+        <div class="detail-zoom-footer">
+            <span class="detail-zoom-title"><small>NSX ürün galerisi</small><strong id="zoomModalTitle">@localizedProductName</strong></span>
+            <div class="detail-zoom-thumbs" id="zoomThumbs" aria-label="Galeri küçük görselleri">
+                @if (images.Count > 0)
+                {
+                    @for (var imageIndex = 0; imageIndex < images.Count; imageIndex++)
+                    {
+                        var galleryImage = images[imageIndex];
+                        <button type="button" data-zoom-index="@imageIndex" aria-label="@(imageIndex + 1). görseli göster"><img src="@ProductThumb(galleryImage.ImagePath, 360, galleryImage.Id)" alt="" width="1581" height="995" loading="lazy" decoding="async" /></button>
+                    }
+                }
+            </div>
+            <span class="detail-zoom-keyboard" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> ile gezinin</span>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_InstallGuide", false)
+<script>
+(() => {
+  const productId = @Model.Id;
+  const buy = document.getElementById('buyLink');
+  document.querySelectorAll('.license-card').forEach(card => card.addEventListener('click', () => {
+    document.querySelectorAll('.license-card').forEach(x => x.classList.remove('selected'));
+    card.classList.add('selected');
+    if (buy) buy.href = `/Odeme?productId=${productId}&licenseType=${card.dataset.license}`;
+    const bankAmount = document.getElementById('bankAmount');
+    if (bankAmount) bankAmount.textContent = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(Number(card.dataset.price));
+  }));
+  document.querySelectorAll('.detail-tabs [data-tab]').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('.detail-tabs [data-tab]').forEach(x => x.classList.toggle('active', x === button));
+    document.querySelectorAll('[data-panel]').forEach(panel => panel.hidden = panel.dataset.panel !== button.dataset.tab);
+  }));
+  const openHashTab = () => {
+    if (window.location.hash === '#yorumlar') document.querySelector('.detail-tabs [data-tab="reviews"]')?.click();
+  };
+  openHashTab();
+  window.addEventListener('hashchange', openHashTab);
+  const ratingInput = document.getElementById('ratingInput');
+  const ratingButtons = [...document.querySelectorAll('#ratingPicker [data-rating]')];
+  ratingButtons.forEach(button => button.addEventListener('click', () => {
+    const rating = Number(button.dataset.rating || 5);
+    if (ratingInput) ratingInput.value = String(rating);
+    ratingButtons.forEach(star => {
+      const selected = Number(star.dataset.rating) <= rating;
+      star.classList.toggle('selected', selected);
+      star.setAttribute('aria-pressed', String(star === button));
+    });
+  }));
+  const mainImage = document.getElementById('mainProductImage');
+  const pageThumbs = [...document.querySelectorAll('.detail-thumb')];
+  const modal = document.getElementById('zoomModal');
+  const modalImage = document.getElementById('zoomImage');
+  const modalCounter = document.getElementById('zoomCounter');
+  const modalThumbs = [...document.querySelectorAll('[data-zoom-index]')];
+  const modalStage = document.getElementById('zoomStage');
+  const imageSources = pageThumbs.length
+    ? pageThumbs.map(thumb => thumb.dataset.image).filter(Boolean)
+    : (mainImage?.src ? [mainImage.src] : []);
+  let currentImageIndex = Math.max(0, imageSources.findIndex(src => mainImage && (mainImage.getAttribute('src') === src || mainImage.src === src)));
+  let galleryReturnFocus = null;
+  let touchStartX = 0;
+
+  const renderGalleryImage = index => {
+    if (!imageSources.length || !mainImage || !modalImage) return;
+    currentImageIndex = (index + imageSources.length) % imageSources.length;
+    const nextSource = imageSources[currentImageIndex];
+    modalImage.classList.add('is-switching');
+    modalImage.src = nextSource;
+    mainImage.src = nextSource;
+    if (modalCounter) modalCounter.textContent = `${currentImageIndex + 1} / ${imageSources.length}`;
+    pageThumbs.forEach((thumb, thumbIndex) => thumb.classList.toggle('active', thumbIndex === currentImageIndex));
+    modalThumbs.forEach((thumb, thumbIndex) => {
+      thumb.classList.toggle('active', thumbIndex === currentImageIndex);
+      thumb.setAttribute('aria-current', thumbIndex === currentImageIndex ? 'true' : 'false');
+    });
+    modalThumbs[currentImageIndex]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    const reveal = () => modalImage.classList.remove('is-switching');
+    if (modalImage.complete) requestAnimationFrame(reveal);
+    else modalImage.addEventListener('load', reveal, { once: true });
+  };
+
+  pageThumbs.forEach((thumb, index) => {
+    thumb.addEventListener('click', () => renderGalleryImage(index));
+    thumb.addEventListener('mouseenter', () => {
+      if (currentImageIndex !== index) renderGalleryImage(index);
+    });
+  });
+  modalThumbs.forEach((thumb, index) => {
+    thumb.addEventListener('click', () => renderGalleryImage(index));
+    thumb.addEventListener('mouseenter', () => {
+      if (modal && !modal.hidden && currentImageIndex !== index) renderGalleryImage(index);
+    });
+  });
+
+  const openModal = () => {
+    if (!modal || !imageSources.length) return;
+    galleryReturnFocus = document.activeElement;
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('detail-gallery-lock');
+    renderGalleryImage(currentImageIndex);
+    requestAnimationFrame(() => {
+      modal.classList.add('is-open');
+      document.getElementById('zoomClose')?.focus({ preventScroll: true });
+    });
+  };
+  const closeModal = () => {
+    if (!modal || modal.hidden) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('detail-gallery-lock');
+    window.setTimeout(() => { modal.hidden = true; }, 200);
+    if (galleryReturnFocus instanceof HTMLElement) galleryReturnFocus.focus({ preventScroll: true });
+  };
+
+  document.getElementById('zoomOpen')?.addEventListener('click', openModal);
+  document.getElementById('zoomClose')?.addEventListener('click', closeModal);
+  document.getElementById('zoomPrev')?.addEventListener('click', () => renderGalleryImage(currentImageIndex - 1));
+  document.getElementById('zoomNext')?.addEventListener('click', () => renderGalleryImage(currentImageIndex + 1));
+  modal?.addEventListener('click', event => { if (event.target === modal) closeModal(); });
+  modalStage?.addEventListener('touchstart', event => { touchStartX = event.changedTouches[0]?.clientX || 0; }, { passive: true });
+  modalStage?.addEventListener('touchend', event => {
+    const distance = (event.changedTouches[0]?.clientX || 0) - touchStartX;
+    if (Math.abs(distance) > 48) renderGalleryImage(currentImageIndex + (distance < 0 ? 1 : -1));
+  }, { passive: true });
+  document.addEventListener('keydown', event => {
+    if (!modal || modal.hidden) return;
+    if (event.key === 'Escape') closeModal();
+    if (event.key === 'ArrowLeft') { event.preventDefault(); renderGalleryImage(currentImageIndex - 1); }
+    if (event.key === 'ArrowRight') { event.preventDefault(); renderGalleryImage(currentImageIndex + 1); }
+  });
+  const hasMultipleImages = imageSources.length > 1;
+  document.getElementById('zoomPrev')?.toggleAttribute('hidden', !hasMultipleImages);
+  document.getElementById('zoomNext')?.toggleAttribute('hidden', !hasMultipleImages);
+  document.getElementById('zoomThumbs')?.toggleAttribute('hidden', !hasMultipleImages);
+  renderGalleryImage(currentImageIndex);
+})();
+</script>
+<script src="/js/online-presence.js" asp-append-version="true" defer></script>
+<script src="/js/nsx-pro-v2.js" asp-append-version="true" defer></script>
+<script src="/js/nsx-install-guide.js" asp-append-version="true" defer></script>
+</body>
+</html>
+
+@functions {
+    private static string ProductThumb(string imagePath, int width, int version)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath) || !imagePath.StartsWith("/uploads/products/images/", StringComparison.OrdinalIgnoreCase)) return imagePath;
+        var fileName = System.IO.Path.GetFileName(imagePath);
+        return string.IsNullOrWhiteSpace(fileName) ? imagePath : $"{NSYazilim.Web.Services.ProductThumbnailGenerator.GetRelativePath(fileName, width)}?v={version}";
+    }
+
+    private static decimal CampaignDiscount(decimal amount, NSYazilim.Web.Models.Campaign campaign)
+    {
+        if (amount <= 0 || campaign.DiscountValue <= 0 || (campaign.MinimumCartTotal > 0 && amount < campaign.MinimumCartTotal)) return 0;
+        var fixedDiscount = string.Equals(campaign.DiscountType, "Fixed", StringComparison.OrdinalIgnoreCase) || string.Equals(campaign.DiscountType, "FixedAmount", StringComparison.OrdinalIgnoreCase) || string.Equals(campaign.DiscountType, "Amount", StringComparison.OrdinalIgnoreCase);
+        return Math.Round(Math.Clamp(fixedDiscount ? campaign.DiscountValue : amount * campaign.DiscountValue / 100m, 0, amount), 2, MidpointRounding.AwayFromZero);
+    }
+
+    private static string CampaignLabel(NSYazilim.Web.Models.Campaign campaign, string discountLabel)
+    {
+        var fixedDiscount = string.Equals(campaign.DiscountType, "Fixed", StringComparison.OrdinalIgnoreCase) || string.Equals(campaign.DiscountType, "FixedAmount", StringComparison.OrdinalIgnoreCase) || string.Equals(campaign.DiscountType, "Amount", StringComparison.OrdinalIgnoreCase);
+        return fixedDiscount ? $"{campaign.DiscountValue:N0} TL {discountLabel}" : $"%{campaign.DiscountValue:N0} {discountLabel}";
+    }
+
+    private static List<string> ProductFeatures(string name)
+    {
+        var value = (name ?? "").ToLowerInvariant();
+        if (value.Contains("düğün")) return new() { "Rezervasyon ve salon planlama", "Sözleşme oluşturma", "Cari ve kasa takibi", "SMS bilgilendirme", "Müşteri yönetimi", "Etkinlik takvimi" };
+        if (value.Contains("komisyon")) return new() { "Çok kullanıcılı yapı", "Cari hesap yönetimi", "Komisyon hesaplama", "Tahsilat takibi", "Gelişmiş raporlar", "Veri yedekleme" };
+        if (value.Contains("oto tamir")) return new() { "Servis kabul", "Parça ve işçilik", "Araç geçmişi", "Cari hesap", "Müşteri takibi", "Servis raporları" };
+        if (value.Contains("oto galeri")) return new() { "Araç stok yönetimi", "Kapora takibi", "Kâr ve zarar", "Müşteri yönetimi", "Cari takip", "Satış raporları" };
+        if (value.Contains("servispro live")) return new() { "QR canlı takip", "SMS bildirimi", "Müşteri onayı", "Servis kabul", "Cihaz geçmişi", "Canlı durum takibi" };
+        if (value.Contains("klinik") || value.Contains("randevu")) return new() { "Hasta yönetimi", "Randevu takibi", "Kapı üstü sıra", "Hasta monitörü", "Sesli çağrı", "Tahsilat takibi" };
+        if (value.Contains("teknik servis")) return new() { "Servis fişi", "Müşteri geçmişi", "Cihaz kabul", "Arıza takibi", "Teslim yönetimi", "Servis raporları" };
+        if (value.Contains("veresiye")) return new() { "Cari kartlar", "Borç ve alacak", "Tahsilat takibi", "Hatırlatmalar", "Detaylı raporlar", "Veri yedekleme" };
+        if (value.Contains("turbo") || value.Contains("performans")) return new() { "Hızlı temizlik", "Performans modu", "Tek tık optimizasyon", "Başlangıç yönetimi", "Sistem araçları", "Kolay kullanım" };
+        return new() { "Kolay kullanım", "Güvenli veri", "Detaylı raporlar", "Windows uyumu", "Uzaktan kurulum", "Teknik destek" };
+    }
+}

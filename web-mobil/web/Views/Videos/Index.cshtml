@@ -1,0 +1,280 @@
+@model NSYazilim.Web.ViewModels.ProductVideosIndexViewModel
+@inject NSYazilim.Web.Services.SiteLocalizationService SiteLocalization
+@{
+    Layout = "_PublicLayout";
+    ViewData["SkipActiveCampaign"] = true;
+    var currentLanguage = await SiteLocalization.GetCurrentLanguageAsync(Context.RequestAborted);
+    var videoJsTexts = new
+    {
+        all = await SiteLocalization.TranslateAsync("Tümü", currentLanguage.Code, Context.RequestAborted),
+        noVideos = await SiteLocalization.TranslateAsync("Video bulunamadı.", currentLanguage.Code, Context.RequestAborted),
+        changeFilter = await SiteLocalization.TranslateAsync("Arama metnini veya filtreyi değiştirin.", currentLanguage.Code, Context.RequestAborted),
+        videoCover = await SiteLocalization.TranslateAsync("video kapağı", currentLanguage.Code, Context.RequestAborted),
+        programVideo = await SiteLocalization.TranslateAsync("Program Videosu", currentLanguage.Code, Context.RequestAborted),
+        watchVideo = await SiteLocalization.TranslateAsync("Videoyu izle", currentLanguage.Code, Context.RequestAborted),
+        viewProduct = await SiteLocalization.TranslateAsync("Ürünü incele", currentLanguage.Code, Context.RequestAborted),
+        serviceError = await SiteLocalization.TranslateAsync("Video servisi yanıt vermedi.", currentLanguage.Code, Context.RequestAborted),
+        listError = await SiteLocalization.TranslateAsync("Video listesi alınamadı.", currentLanguage.Code, Context.RequestAborted),
+        pageReady = await SiteLocalization.TranslateAsync("Sayfa hazır.", currentLanguage.Code, Context.RequestAborted),
+        unavailable = await SiteLocalization.TranslateAsync("Video listesi şu anda alınamadı. Birkaç saniye sonra tekrar deneyebilirsiniz.", currentLanguage.Code, Context.RequestAborted)
+    };
+    var videoJsTextsJson = System.Text.Json.JsonSerializer.Serialize(videoJsTexts);
+    var videoRoutePrefixJson = System.Text.Json.JsonSerializer.Serialize(Context.Request.PathBase.Value ?? string.Empty);
+}
+
+<style id="nsx-videos-page-pro">
+    .public-content-page{--nsx-subpage-hero-height:286px;background:#fff!important;}
+    .public-content-page .public-site-header .service-ribbon > .container,
+    .public-content-page .public-site-header .detail-nav.container,
+    .nsx-video-hero > .container,
+    .nsx-video-safe-page > .container{
+        width:min(1505px,calc(100% - 48px))!important;
+        max-width:1505px!important;
+        margin-left:auto!important;
+        margin-right:auto!important;
+    }
+    .public-content-page > .container{
+        width:100%!important;
+        max-width:none!important;
+        margin:0!important;
+        padding:0!important;
+    }
+    @@media(min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{display:flex!important;align-items:center!important;min-height:78px!important;gap:8px!important;}
+        .public-content-page .public-site-header .brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;margin:0 auto 0 0!important;padding:0!important;}
+        .public-content-page .public-site-header .brand-logo{display:block!important;width:clamp(142px,10.8vw,184px)!important;max-width:184px!important;height:auto!important;object-fit:contain!important;}
+        .public-content-page .public-site-header .nav-links{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex:0 1 auto!important;width:auto!important;margin-left:auto!important;margin-right:7px!important;gap:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{white-space:nowrap!important;}
+        .public-content-page .public-site-header .nav-cta{flex:0 0 auto!important;margin-left:0!important;}
+        .public-content-page .public-site-header .menu-toggle{display:none!important;}
+    }
+    @@media(max-width:1180px) and (min-width:981px){
+        .public-content-page .public-site-header .detail-nav.container{width:calc(100% - 32px)!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(132px,12.5vw,154px)!important;}
+        .public-content-page .public-site-header .nav-links{gap:7px!important;margin-right:7px!important;}
+        .public-content-page .public-site-header .nav-links > a{font-size:clamp(12px,1.05vw,14px)!important;}
+    }
+
+    .nsx-video-hero{position:relative;height:var(--nsx-subpage-hero-height)!important;min-height:var(--nsx-subpage-hero-height)!important;max-height:var(--nsx-subpage-hero-height)!important;overflow:hidden;color:#fff;background:radial-gradient(ellipse at 80% 50%,rgba(255,110,4,.10) 0%,rgba(255,110,4,.03) 26%,transparent 48%),linear-gradient(118deg,#030405 0%,#06080b 42%,#0a1219 100%);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.03),inset 0 -50px 90px rgba(0,0,0,.22);}
+    .nsx-video-hero:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.10;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:72px 72px;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);mask-image:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 58%,transparent 100%);}
+    .nsx-video-hero > .container{position:relative;z-index:2;height:100%;min-height:0!important;display:flex;align-items:flex-start;padding-top:24px;padding-bottom:24px;}
+    .nsx-video-hero-copy{max-width:980px;}
+    .nsx-video-kicker{display:flex;align-items:center;gap:10px;margin:0 0 14px;color:#39d98a;font-size:12px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-video-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 5px rgba(57,217,138,.12);}
+    .nsx-video-hero h1{max-width:860px;margin:0;color:#fff;font-size:42px;font-weight:900;line-height:1.06;letter-spacing:-.04em;}
+    .nsx-video-hero h1 em{font-style:normal;color:#ff6e04;}
+    .nsx-video-hero p{max-width:900px;margin:12px 0 0;color:#d3d8df;font-size:14px;line-height:1.7;font-weight:520;}
+    .nsx-video-hero-points{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+    .nsx-video-hero-points span{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:0 11px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.045);color:#d9dee4;font-size:10px;font-weight:800;}
+    .nsx-video-hero-points b{color:#39d98a;font-size:11px;}
+
+    .nsx-video-safe-page{padding:40px 0 64px;background:#fff;min-height:60vh;}
+    .nsx-video-safe-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.72fr);gap:48px;align-items:end;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #e5e9ed;}
+    .nsx-video-safe-head span{display:block;margin-bottom:8px;color:#ff6e04;font-size:11px;font-weight:900;letter-spacing:.11em;text-transform:uppercase;}
+    .nsx-video-safe-head h2{margin:0;color:#171b20;font-size:34px;line-height:1.08;font-weight:900;letter-spacing:-.035em;}
+    .nsx-video-safe-head p{margin:0;color:#687480;font-size:13px;line-height:1.72;}
+    .nsx-video-safe-tools{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:0 0 14px;}
+    .nsx-video-safe-search{width:100%;min-height:50px;border:1px solid #d9e0e6;border-radius:14px;padding:0 17px;background:#fff;color:#1c232a;font:inherit;font-size:13px;font-weight:650;outline:none;box-shadow:0 7px 20px rgba(15,23,42,.04);transition:border-color .16s ease,box-shadow .16s ease;}
+    .nsx-video-safe-search:focus{border-color:#ff6e04;box-shadow:0 0 0 3px rgba(255,110,4,.10),0 9px 24px rgba(15,23,42,.06);}
+    .nsx-video-safe-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+    .nsx-video-safe-filters button{min-height:38px;border:1px solid #dce2e7;background:#fff;color:#4f5c68;border-radius:12px;padding:0 14px;cursor:pointer;font-size:11px;font-weight:850;box-shadow:0 5px 14px rgba(15,23,42,.035);transition:transform .16s ease,border-color .16s ease,color .16s ease,background .16s ease;}
+    .nsx-video-safe-filters button:hover{border-color:#ff6e04;color:#ff6e04;transform:translateY(-1px);}
+    .nsx-video-safe-filters button.active,.nsx-video-safe-filters button.active:hover{background:#171b20;border-color:#171b20;color:#fff;box-shadow:0 8px 18px rgba(12,16,22,.14);}
+    .nsx-video-safe-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;}
+    .nsx-video-safe-card{position:relative;background:#fff;border:1px solid #e1e6ea;border-radius:18px;overflow:hidden;box-shadow:0 12px 32px rgba(12,16,22,.07);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
+    .nsx-video-safe-card:hover{transform:translateY(-4px);border-color:#d4dbe1;box-shadow:0 18px 42px rgba(12,16,22,.11);}
+    .nsx-video-safe-cover{display:block;position:relative;aspect-ratio:16/9;background:#edf0f2;overflow:hidden;}
+    .nsx-video-safe-cover:after{content:"";position:absolute;inset:auto 0 0;height:36%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.26));pointer-events:none;}
+    .nsx-video-safe-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .28s ease;}
+    .nsx-video-safe-card:hover .nsx-video-safe-cover img{transform:scale(1.025);}
+    .nsx-video-safe-play{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:#ff6e04;color:#fff;font-size:17px;box-shadow:0 13px 28px rgba(255,110,4,.30),inset 0 1px 0 rgba(255,255,255,.28);transition:transform .18s ease,background .18s ease;}
+    .nsx-video-safe-card:hover .nsx-video-safe-play{transform:translate(-50%,-50%) scale(1.06);background:#171b20;}
+    .nsx-video-safe-type{position:absolute;z-index:3;left:12px;top:12px;display:inline-flex;align-items:center;min-height:28px;background:rgba(255,255,255,.96);color:#171b20;border:1px solid rgba(255,255,255,.7);border-radius:999px;padding:0 10px;font-size:9px;font-weight:900;box-shadow:0 6px 16px rgba(0,0,0,.10);}
+    .nsx-video-safe-body{padding:18px;}
+    .nsx-video-safe-body small{display:block;color:#ff6e04;font-size:9px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;}
+    .nsx-video-safe-body h2{font-size:18px;line-height:1.35;margin:7px 0 8px;color:#171b20;font-weight:900;letter-spacing:-.018em;}
+    .nsx-video-safe-body h2 a{color:inherit;text-decoration:none;}
+    .nsx-video-safe-body p{font-size:12px;line-height:1.65;color:#6b7782;margin:0 0 17px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+    .nsx-video-safe-actions{display:flex;justify-content:space-between;gap:10px;align-items:center;padding-top:14px;border-top:1px solid #edf0f2;}
+    .nsx-video-safe-actions a{text-decoration:none;font-weight:850;font-size:11px;color:#525f6a;transition:color .16s ease,transform .16s ease;}
+    .nsx-video-safe-actions a:not(.watch):hover{color:#ff6e04;transform:translateX(2px);}
+    .nsx-video-safe-actions .watch{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 14px;border:1px solid #ff6e04;border-radius:12px;background:#ff6e04;color:#fff;box-shadow:0 8px 20px rgba(255,110,4,.20);}
+    .nsx-video-safe-actions .watch:hover{background:#171b20;border-color:#171b20;color:#fff;transform:translateY(-1px);}
+    .nsx-video-safe-state{grid-column:1/-1;background:#fafbfc;border:1px dashed #d9e0e5;border-radius:18px;padding:34px;text-align:center;color:#6c7781;}
+    .nsx-video-safe-state strong{display:block;color:#171b20;font-size:18px;margin-bottom:6px;font-weight:900;}
+
+    @@media(max-width:1180px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container,.nsx-video-hero > .container,.nsx-video-safe-page > .container{width:calc(100% - 32px)!important;}
+        .nsx-video-hero > .container{height:100%;min-height:0!important;padding-top:24px;padding-bottom:24px;}
+        .nsx-video-hero h1{font-size:38px;}
+        .nsx-video-safe-head{grid-template-columns:1fr 360px;gap:30px;}
+    }
+    @@media(max-width:980px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 24px)!important;}
+        .public-content-page .public-site-header .detail-nav.container{min-height:68px!important;}
+        .public-content-page .public-site-header .brand{margin-right:auto!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(124px,28vw,154px)!important;max-width:154px!important;height:auto!important;}
+        .public-content-page .public-site-header .menu-toggle{margin-left:auto!important;}
+        .nsx-video-hero > .container{height:100%;min-height:0!important;padding-top:24px;padding-bottom:24px;}
+        .nsx-video-safe-head{grid-template-columns:1fr;gap:9px;align-items:start;}
+        .nsx-video-safe-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+    @@media(max-width:680px){
+        .nsx-video-hero > .container,.nsx-video-safe-page > .container{width:calc(100% - 18px)!important;}
+        .nsx-video-hero > .container{height:100%;min-height:0!important;padding-top:20px;padding-bottom:20px;}
+        .nsx-video-hero h1{font-size:30px;}
+        .nsx-video-hero p{font-size:13px;}
+        .nsx-video-hero-points{gap:7px;}
+        .nsx-video-safe-page{padding-top:30px;padding-bottom:50px;}
+        .nsx-video-safe-head h2{font-size:28px;}
+        .nsx-video-safe-grid{grid-template-columns:1fr;gap:14px;}
+    }
+    @@media(max-width:520px){
+        .public-content-page .public-site-header .service-ribbon > .container,.public-content-page .public-site-header .detail-nav.container{width:calc(100% - 18px)!important;}
+        .public-content-page .public-site-header .brand-logo{width:clamp(112px,34vw,136px)!important;}
+        .nsx-video-hero-points span{width:100%;justify-content:center;}
+        .nsx-video-safe-actions{align-items:stretch;flex-direction:column;}
+        .nsx-video-safe-actions a{width:100%;text-align:center;}
+    }
+</style>
+
+<section class="nsx-video-hero">
+    <div class="container">
+        <div class="nsx-video-hero-copy">
+            <span class="nsx-video-kicker">NSX Video Kütüphanesi</span>
+            <h1>Programları izleyin, <em>yakından keşfedin.</em></h1>
+            <p>Kurulum, kullanım ve tanıtım videolarıyla NSX yazılımlarının çalışma mantığını kısa ve anlaşılır videolarla inceleyin.</p>
+            <div class="nsx-video-hero-points" aria-label="Video sayfası özellikleri">
+                <span><b>✓</b> Ürün tanıtımları</span>
+                <span><b>✓</b> Kullanım videoları</span>
+                <span><b>✓</b> Hızlı erişim</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="nsx-video-safe-page">
+    <div class="container">
+        <div class="nsx-video-safe-head">
+            <div>
+                <span>Tüm Videolar</span>
+                <h2>İzlemek istediğiniz içeriği seçin.</h2>
+            </div>
+            <p>Video veya program adına göre arayın, içerik türüne göre filtreleyin ve ilgili ürün sayfasına tek tıkla geçin.</p>
+        </div>
+
+        <div class="nsx-video-safe-tools">
+            <input id="videoSearch" class="nsx-video-safe-search" type="search" autocomplete="off" placeholder="Video veya program ara..." aria-label="Video veya program ara" />
+        </div>
+        <div id="videoFilters" class="nsx-video-safe-filters" aria-label="Video türleri">
+            <button type="button" class="active" data-type="">Tümü</button>
+        </div>
+
+        <div id="videosGrid" class="nsx-video-safe-grid" aria-live="polite">
+            <div class="nsx-video-safe-state" id="videoLoading">
+                <strong>Videolar hazırlanıyor...</strong>
+                <span>Video listesi yükleniyor.</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+(() => {
+    const grid = document.getElementById('videosGrid');
+    const search = document.getElementById('videoSearch');
+    const filters = document.getElementById('videoFilters');
+    const i18n = @Html.Raw(videoJsTextsJson);
+    const locale = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(currentLanguage.Code));
+    const routePrefix = @Html.Raw(videoRoutePrefixJson);
+    const videoUrl = v => `${routePrefix}/videolar/${encodeURIComponent(v.slug)}`;
+    const localizedPublicUrl = value => {
+        const url = String(value ?? '');
+        if (!routePrefix || !url.startsWith('/') || url === routePrefix || url.startsWith(`${routePrefix}/`)) return url;
+        return `${routePrefix}${url}`;
+    };
+    let videos = [];
+    let selectedType = '';
+
+    const escapeHtml = value => String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+
+    const normalize = value => String(value ?? '').toLocaleLowerCase(locale || 'tr-TR').trim();
+
+    function renderFilters() {
+        const types = [...new Set(videos.map(x => String(x.videoType ?? '').trim()).filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b, locale || 'tr-TR'));
+
+        filters.innerHTML = `<button type="button" class="active" data-type="">${escapeHtml(i18n.all)}</button>` +
+            types.map(type => `<button type="button" data-type="${escapeHtml(type)}">${escapeHtml(type)}</button>`).join('');
+    }
+
+    function render() {
+        const q = normalize(search.value);
+        const type = normalize(selectedType);
+        const rows = videos.filter(v => {
+            const matchesType = !type || normalize(v.videoType) === type;
+            const haystack = normalize(`${v.displayTitle} ${v.productName} ${v.productDescription} ${v.videoType}`);
+            return matchesType && (!q || haystack.includes(q));
+        });
+
+        if (!rows.length) {
+            grid.innerHTML = `<div class="nsx-video-safe-state"><strong>${escapeHtml(i18n.noVideos)}</strong><span>${escapeHtml(i18n.changeFilter)}</span></div>`;
+            return;
+        }
+
+        grid.innerHTML = rows.map(v => `
+            <article class="nsx-video-safe-card">
+                <a class="nsx-video-safe-cover" href="${escapeHtml(videoUrl(v))}" aria-label="${escapeHtml(v.displayTitle)}">
+                    <img src="${escapeHtml(v.thumbnailUrl)}" alt="${escapeHtml(v.displayTitle)} ${escapeHtml(i18n.videoCover)}" width="480" height="270" loading="lazy" decoding="async" />
+                    <span class="nsx-video-safe-type">${escapeHtml(v.videoType || i18n.programVideo)}</span>
+                    <span class="nsx-video-safe-play">▶</span>
+                </a>
+                <div class="nsx-video-safe-body">
+                    <small>${escapeHtml(v.productName)}</small>
+                    <h2><a href="${escapeHtml(videoUrl(v))}">${escapeHtml(v.displayTitle)}</a></h2>
+                    <p>${escapeHtml(v.productDescription)}</p>
+                    <div class="nsx-video-safe-actions">
+                        <a class="watch" href="${escapeHtml(videoUrl(v))}">▶ ${escapeHtml(i18n.watchVideo)}</a>
+                        <a href="${escapeHtml(localizedPublicUrl(v.productUrl))}">${escapeHtml(i18n.viewProduct)} →</a>
+                    </div>
+                </div>
+            </article>`).join('');
+    }
+
+    filters.addEventListener('click', event => {
+        const button = event.target.closest('button[data-type]');
+        if (!button) return;
+        selectedType = button.dataset.type || '';
+        filters.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === button));
+        render();
+    });
+
+    search.addEventListener('input', render);
+
+    const controller = new AbortController();
+    const abortTimer = setTimeout(() => controller.abort(), 10000);
+
+    fetch(`${routePrefix}/videolar/veri`, { headers: { 'Accept': 'application/json' }, signal: controller.signal, cache: 'no-store' })
+        .then(response => {
+            if (!response.ok) throw new Error(i18n.serviceError);
+            return response.json();
+        })
+        .then(data => {
+            videos = Array.isArray(data?.videos) ? data.videos : [];
+            if (!data?.ok && videos.length === 0) throw new Error(data?.message || i18n.listError);
+            renderFilters();
+            render();
+        })
+        .catch(() => {
+            grid.innerHTML = `<div class="nsx-video-safe-state"><strong>${escapeHtml(i18n.pageReady)}</strong><span>${escapeHtml(i18n.unavailable)}</span></div>`;
+        })
+        .finally(() => clearTimeout(abortTimer));
+})();
+</script>
+}

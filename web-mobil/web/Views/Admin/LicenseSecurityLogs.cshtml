@@ -1,0 +1,104 @@
+@model List<NSYazilim.Web.Models.LicenseSecurityLog>
+
+@{
+    ViewData["Title"] = "Şüpheli Kullanımlar";
+    var productCode = ViewBag.ProductCode as string ?? string.Empty;
+    var severity = ViewBag.Severity as string ?? string.Empty;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Şüpheli Kullanımlar</h1>
+            <div class="text-muted">Farklı cihaz, ürün uyuşmazlığı, crack/tamper bildirimi ve güvenlik olayları.</div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-secondary" href="/Admin/LicenseCheckLogs">Kontrol Logları</a>
+            <a class="btn btn-outline-info" href="/Admin/LicenseDevices">Cihazlar</a>
+            <a class="btn btn-outline-dark" href="/Admin/Licenses">Lisanslara Dön</a>
+        </div>
+    </div>
+
+    <form method="get" class="card border-0 shadow-sm rounded-4 mb-3">
+        <div class="card-body row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Ürün Kodu</label>
+                <input class="form-control" name="productCode" value="@productCode" placeholder="NSXVERESIYEDEFTERI" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Seviye</label>
+                <select class="form-select" name="severity">
+                    <option value="">Tümü</option>
+                    <option value="Info" selected="@(severity == "Info")">Info</option>
+                    <option value="Warning" selected="@(severity == "Warning")">Warning</option>
+                    <option value="Critical" selected="@(severity == "Critical")">Critical</option>
+                </select>
+            </div>
+            <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Filtrele</button></div>
+            <div class="col-md-2"><a class="btn btn-outline-secondary w-100" href="/Admin/LicenseSecurityLogs">Temizle</a></div>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Lisans</th>
+                            <th>Ürün</th>
+                            <th>E-posta</th>
+                            <th>Cihaz</th>
+                            <th>Olay</th>
+                            <th>Seviye</th>
+                            <th>IP</th>
+                            <th>Mesaj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var badge = item.Severity == "Critical" ? "bg-danger" : item.Severity == "Warning" ? "bg-warning text-dark" : "bg-info text-dark";
+                        <tr>
+                            <td><small>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm:ss")</small></td>
+                            <td>
+                                @if (item.License != null)
+                                {
+                                    <a href="/Admin/LicenseEdit/@item.LicenseId"><code>@item.LicenseKeyMasked</code></a>
+                                    <div class="text-muted small">@(item.License.User?.FullName ?? "-")</div>
+                                }
+                                else
+                                {
+                                    <code>@item.LicenseKeyMasked</code>
+                                }
+                            </td>
+                            <td>@item.ProductCode</td>
+                            <td><small>@item.RequestEmail</small></td>
+                            <td><small>@item.MachineId</small></td>
+                            <td>@item.EventType<div class="text-muted small">@item.AppVersion</div></td>
+                            <td><span class="badge @badge">@item.Severity</span></td>
+                            <td>@item.IpAddress</td>
+                            <td>@item.Message</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="text-muted text-center py-4">Henüz şüpheli kayıt yok.</div>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+        <form asp-action="LicenseSecurityLogsClear" asp-controller="Admin" method="post"
+              onsubmit="return confirm('Lisans güvenlik loglarının tamamını kalıcı olarak silmek istiyor musunuz? Bu işlem geri alınamaz.');">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger px-4">
+                Listeyi Temizle / Sil
+            </button>
+        </form>
+    </div>
+</div>

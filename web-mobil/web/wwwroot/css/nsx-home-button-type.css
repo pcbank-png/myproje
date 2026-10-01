@@ -1,0 +1,131 @@
+/* Ana sayfa buton tipografisi - net, dar ve okunabilir */
+.home-light-theme .public-site-header .nav-links>a,
+.home-light-theme .public-site-header .nav-products-trigger,
+.home-light-theme .public-site-header .account-menu-button,
+.home-light-theme .public-site-header .account-dropdown a,
+.home-light-theme .public-site-header .nav-products-all,
+.home-light-theme .public-site-header .nav-category-card,
+.home-light-theme .public-campaign-inner>a,
+.home-light-theme .nsx-vh-btn,
+.home-light-theme .home-products-heading>a,
+.home-light-theme .home-products-grid .product-cta,
+.home-light-theme .nsx-final-cta .cta-store-button,
+.home-light-theme .nsx-final-cta .cta-whatsapp,
+.home-light-theme .nsx-footer-v2__support-links a,
+.home-light-theme .nsx-footer-v2__account-links a{
+  font-family:var(--nsx-font)!important;
+  font-stretch:normal!important;
+  font-kerning:normal!important;
+  font-optical-sizing:auto!important;
+  font-variant:normal!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  text-rendering:optimizeLegibility!important;
+  -webkit-font-smoothing:antialiased!important;
+}
+
+.home-light-theme .public-site-header .nav-links>a,
+.home-light-theme .public-site-header .nav-products-trigger{
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1.15!important;
+}
+.home-light-theme .public-site-header .account-welcome-label{
+  font-family:var(--nsx-font)!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:1.15!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+.home-light-theme .public-site-header .account-welcome-name{
+  font-family:var(--nsx-font)!important;
+  font-size:9px!important;
+  font-weight:600!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+}
+.home-light-theme .public-site-header .nav-products-all{
+  font-size:10px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+}
+.home-light-theme .public-site-header .nav-category-copy strong,
+.home-light-theme .public-site-header .account-link-copy{
+  font-family:var(--nsx-font)!important;
+  font-weight:700!important;
+  letter-spacing:0!important;
+}
+.home-light-theme .public-site-header .nav-category-copy small,
+.home-light-theme .public-site-header .account-link-copy small{
+  font-family:var(--nsx-font)!important;
+  font-weight:500!important;
+  letter-spacing:0!important;
+}
+
+.home-light-theme .nsx-vh-btn{
+  font-size:15px!important;
+  font-weight:700!important;
+  line-height:1.15!important;
+}
+.home-light-theme .nsx-vh-btn-copy small{
+  font-family:var(--nsx-font)!important;
+  font-size:10px!important;
+  font-weight:600!important;
+  line-height:1.15!important;
+  letter-spacing:0!important;
+}
+.home-light-theme .home-products-heading>a{
+  font-size:11px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+}
+.home-light-theme .home-products-grid .product-cta>span{
+  font-family:var(--nsx-font)!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1.15!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+
+.home-light-theme .nsx-final-cta .cta-store-button .cta-action-copy small,
+.home-light-theme .nsx-final-cta .cta-whatsapp-copy small{
+  font-family:var(--nsx-font)!important;
+  font-size:9px!important;
+  font-weight:600!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+.home-light-theme .nsx-final-cta .cta-store-button .cta-action-copy strong{
+  font-family:var(--nsx-font)!important;
+  font-size:14px!important;
+  font-weight:750!important;
+  line-height:1.2!important;
+  letter-spacing:-.01em!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp-copy strong{
+  font-family:var(--nsx-font)!important;
+  font-size:15px!important;
+  font-weight:750!important;
+  line-height:1.15!important;
+  letter-spacing:0!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp-copy em{
+  font-family:var(--nsx-font)!important;
+  font-size:9px!important;
+  font-weight:500!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+}
+.home-light-theme .nsx-footer-v2__support-links a,
+.home-light-theme .nsx-footer-v2__account-links a{
+  font-size:9px!important;
+  font-weight:650!important;
+  line-height:1.2!important;
+}
+@media(max-width:520px){
+  .home-light-theme .public-site-header .nav-links>a,
+  .home-light-theme .public-site-header .nav-products-trigger{font-size:11px!important}
+}

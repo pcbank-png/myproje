@@ -1,0 +1,20 @@
+@model NSYazilim.Web.ViewModels.CustomerDashboardViewModel
+@{ ViewData["Title"] = "Hesabım"; ViewData["Robots"] = "noindex, nofollow"; ViewData["SkipActiveCampaign"] = true; }
+<section class="nsx-account-page">
+    <div class="container nsx-account-hero"><div><span>NSX ÜYE PANELİ</span><h1>Merhaba, <em>@Model.User.FullName</em></h1><p>Siparişlerinizi, lisanslarınızı ve indirme haklarınızı tek merkezden yönetin.</p><div class="nsx-account-hero-points"><span><b>✓</b> Güvenli hesap</span><span><b>✓</b> Lisans yönetimi</span><span><b>✓</b> Dijital teslimat</span></div></div><div class="nsx-account-identity"><small>HESAP E-POSTASI</small><strong>@Model.User.Email</strong><span>Güvenli müşteri hesabı</span></div></div>
+    <div class="nsx-info-divider"></div>
+    <div class="container nsx-account-layout">@await Html.PartialAsync("_AccountNav")
+        <main class="nsx-account-main">
+            @if (TempData["Success"] is string success) { <div class="nsx-form-message is-success">@success</div> }
+            <div class="nsx-account-stats"><a href="/Account/Orders"><small>SİPARİŞLER</small><strong>@Model.OrderCount</strong><span>Tüm siparişleri görüntüle →</span></a><a href="/Account/Licenses"><small>AKTİF LİSANSLAR</small><strong>@Model.ActiveLicenseCount</strong><span>@Model.LicenseCount toplam lisans →</span></a><a href="/Account/Downloads"><small>İNDİRME HAKKI</small><strong>@Model.DownloadCount</strong><span>Dosyalarıma git →</span></a></div>
+            <section class="nsx-account-panel"><div class="nsx-account-panel-head"><div><span>SON İŞLEMLER</span><h2>Son siparişler</h2></div><a href="/Account/Orders">Tümünü görüntüle</a></div>
+                @if (!Model.RecentOrders.Any()) { <div class="nsx-account-empty"><b>Henüz siparişiniz bulunmuyor.</b><p>İşletmenize uygun NSX yazılımlarını inceleyerek başlayabilirsiniz.</p><a href="/store">Yazılımları İncele</a></div> }
+                else { <div class="nsx-account-table"><div class="head"><span>Sipariş No</span><span>Ürün</span><span>Tutar</span><span>Durum</span></div>@foreach(var order in Model.RecentOrders){var product=order.OrderItems.FirstOrDefault()?.Product?.Name ?? "Ürün";<a href="/Account/OrderDetail/@order.Id"><span><b>@order.OrderNumber</b><small>@order.CreatedAt.ToString("dd.MM.yyyy")</small></span><span>@product</span><span>@order.TotalAmount.ToString("N2") ₺</span><strong>@StatusTextHelper.OrderStatus(order.OrderStatus)</strong></a>}</div> }
+            </section>
+            <section class="nsx-account-panel"><div class="nsx-account-panel-head"><div><span>LİSANSLAR</span><h2>Son lisanslar</h2></div><a href="/Account/Licenses">Lisanslarıma git</a></div>
+                @if (!Model.RecentLicenses.Any()) { <div class="nsx-account-empty compact"><b>Henüz lisansınız bulunmuyor.</b><p>Satın alma tamamlandığında lisans bilgileriniz burada görünür.</p></div> }
+                else { <div class="nsx-license-list">@foreach(var license in Model.RecentLicenses){<article><div><small>@(license.IsActive ? "AKTİF LİSANS" : "PASİF LİSANS")</small><strong>@(license.Product?.Name ?? "Ürün")</strong></div><code>@license.LicenseKey</code><a href="/Account/Licenses">Detay →</a></article>}</div> }
+            </section>
+        </main>
+    </div>
+</section>

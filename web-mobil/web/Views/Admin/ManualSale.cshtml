@@ -1,0 +1,407 @@
+@model NSYazilim.Web.ViewModels.ManualSaleViewModel
+
+@{
+    ViewData["Title"] = "Manuel Satış Gir";
+    var products = ViewBag.Products as List<NSYazilim.Web.Models.Product> ?? new List<NSYazilim.Web.Models.Product>();
+    var users = ViewBag.Users as List<NSYazilim.Web.Models.User> ?? new List<NSYazilim.Web.Models.User>();
+}
+
+<style>
+    .nsx-manual-sale-pro {
+        width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 18px 18px 30px;
+    }
+
+    .nsx-manual-sale-hero {
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 18px;
+        padding: 22px;
+        border: 1px solid rgba(15, 23, 42, .08);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, .18), transparent 34%),
+            linear-gradient(135deg, #ffffff 0%, #f8fbff 52%, #eef8ff 100%);
+        box-shadow: 0 18px 46px rgba(15, 23, 42, .08);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .nsx-manual-sale-hero::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -58px;
+        top: -58px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, .14);
+    }
+
+    .nsx-manual-sale-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(2, 132, 199, .10);
+        color: #075985;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .nsx-manual-sale-hero h1 {
+        margin: 0;
+        color: #0f172a;
+        font-size: clamp(28px, 3vw, 42px);
+        line-height: 1.05;
+        font-weight: 900;
+        letter-spacing: -.04em;
+    }
+
+    .nsx-manual-sale-hero p {
+        max-width: 690px;
+        margin: 10px 0 0;
+        color: #475569;
+        font-size: 15px;
+        line-height: 1.65;
+    }
+
+    .nsx-manual-sale-actions {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        min-width: 170px;
+    }
+
+    .nsx-manual-sale-card {
+        border: 1px solid rgba(15, 23, 42, .08);
+        border-radius: 28px;
+        background: #ffffff;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, .08);
+        overflow: hidden;
+    }
+
+    .nsx-manual-sale-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 22px 24px;
+        border-bottom: 1px solid rgba(15, 23, 42, .07);
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .nsx-manual-sale-card-top strong {
+        display: block;
+        color: #0f172a;
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: -.02em;
+    }
+
+    .nsx-manual-sale-card-top small {
+        display: block;
+        max-width: 720px;
+        margin-top: 6px;
+        color: #64748b;
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .nsx-manual-sale-badge {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-radius: 999px;
+        background: #ecfeff;
+        color: #03696f;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .nsx-manual-sale-card-body {
+        padding: 24px;
+    }
+
+    .nsx-manual-sale-pro .form-label {
+        margin-bottom: 7px;
+        color: #1e293b;
+        font-size: 13px;
+        font-weight: 800 !important;
+    }
+
+    .nsx-manual-sale-pro .form-control,
+    .nsx-manual-sale-pro .form-select,
+    .nsx-manual-sale-pro .input-group-text {
+        min-height: 50px;
+        border-color: rgba(15, 23, 42, .12);
+        border-radius: 16px;
+        color: #0f172a;
+        font-weight: 650;
+        box-shadow: none;
+    }
+
+    .nsx-manual-sale-pro .input-group .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .nsx-manual-sale-pro .input-group .input-group-text {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        background: #f8fafc;
+        color: #334155;
+        font-weight: 900;
+    }
+
+    .nsx-manual-sale-pro .form-control:focus,
+    .nsx-manual-sale-pro .form-select:focus {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 .22rem rgba(14, 165, 233, .15);
+    }
+
+    .nsx-manual-sale-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 2px 0 16px;
+        color: #0f172a;
+        font-weight: 900;
+    }
+
+    .nsx-manual-sale-section-title span {
+        display: inline-flex;
+        width: 30px;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .nsx-manual-sale-switch-box {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 18px;
+        border: 1px solid rgba(14, 165, 233, .18);
+        border-radius: 22px;
+        background: linear-gradient(135deg, #f8fcff 0%, #f0f9ff 100%);
+    }
+
+    .nsx-manual-sale-switch-box .form-check {
+        min-height: auto;
+        margin: 0;
+    }
+
+    .nsx-manual-sale-switch-box .form-check-input {
+        width: 3.1em;
+        height: 1.55em;
+        margin-top: .15em;
+        cursor: pointer;
+    }
+
+    .nsx-manual-sale-switch-box .form-check-label {
+        color: #0f172a;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .nsx-manual-sale-note {
+        margin-top: 22px;
+        padding: 17px 18px;
+        border: 1px solid rgba(14, 165, 233, .20);
+        border-radius: 22px;
+        background: #f0f9ff;
+        color: #0c4a6e;
+        line-height: 1.6;
+    }
+
+    .nsx-manual-sale-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 18px 24px 24px;
+        border-top: 1px solid rgba(15, 23, 42, .06);
+        background: #ffffff;
+    }
+
+    .nsx-manual-sale-pro .nsx-admin-btn {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        font-weight: 900;
+        text-decoration: none;
+    }
+
+    .nsx-manual-sale-pro button.nsx-admin-btn {
+        border: 0;
+        padding: 0 20px;
+        background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%);
+        color: #ffffff;
+        box-shadow: 0 14px 26px rgba(2, 132, 199, .22);
+    }
+
+    .nsx-manual-sale-alert {
+        border: 0;
+        box-shadow: 0 14px 30px rgba(185, 28, 28, .10);
+    }
+
+    @@media (max-width: 768px) {
+        .nsx-manual-sale-pro {
+            padding: 12px 10px 24px;
+        }
+
+        .nsx-manual-sale-hero,
+        .nsx-manual-sale-card-top,
+        .nsx-manual-sale-switch-box,
+        .nsx-manual-sale-footer {
+            flex-direction: column;
+        }
+
+        .nsx-manual-sale-actions,
+        .nsx-manual-sale-footer .nsx-admin-btn,
+        .nsx-manual-sale-footer button {
+            width: 100%;
+        }
+
+        .nsx-manual-sale-card-body,
+        .nsx-manual-sale-card-top,
+        .nsx-manual-sale-footer,
+        .nsx-manual-sale-hero {
+            padding: 18px;
+        }
+    }
+</style>
+
+<section class="nsx-admin-page nsx-manual-sale-pro">
+    <div class="nsx-manual-sale-hero">
+        <div>
+            <span class="nsx-manual-sale-kicker">NSX Admin</span>
+            <h1>Manuel Satış Gir</h1>
+            <p>Sahada, havale ile veya dışarıdan aldığınız ödemeleri tek ekrandan sipariş/kazanç sistemine işleyin.</p>
+        </div>
+        <div class="nsx-manual-sale-actions">
+            <a class="nsx-admin-btn light" href="/Admin/Orders">Siparişlere Dön</a>
+        </div>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger rounded-4 nsx-manual-sale-alert">
+            <div class="fw-semibold mb-1">Manuel satış kaydedilemedi.</div>
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+
+    <form method="post" action="/Admin/ManualSale" class="nsx-manual-sale-card nsx-standard-form">
+        @Html.AntiForgeryToken()
+
+        <div class="nsx-manual-sale-card-top">
+            <div>
+                <strong>Satış Bilgileri</strong>
+                <small>Ürün, müşteri, ücret ve lisans ayarını seçin. Kayıt anasayfa kazancına otomatik yansır.</small>
+            </div>
+            <span class="nsx-manual-sale-badge">Paid / Completed</span>
+        </div>
+
+        <div class="nsx-manual-sale-card-body">
+            <div class="nsx-manual-sale-section-title"><span>1</span> Ürün ve müşteri seçimi</div>
+            <div class="row g-3 mb-4">
+                <div class="col-lg-6">
+                    <label class="form-label">Ürün</label>
+                    <select asp-for="ProductId" class="form-select" required>
+                        <option value="0">Ürün seç</option>
+                        @foreach (var product in products)
+                        {
+                            <option value="@product.Id">@product.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="ProductId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-lg-6">
+                    <label class="form-label">Üye / Müşteri</label>
+                    <select asp-for="UserId" class="form-select" required>
+                        <option value="0">Üye seç</option>
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.Id">@user.FullName - @user.Email</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UserId" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="nsx-manual-sale-section-title"><span>2</span> Satış ve lisans ayarı</div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Alınan Ücret</label>
+                    <div class="input-group">
+                        <input asp-for="Amount" type="number" step="0.01" min="0.01" class="form-control" placeholder="0,00" required />
+                        <span class="input-group-text">₺</span>
+                    </div>
+                    <span asp-validation-for="Amount" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Satış Tarihi</label>
+                    <input asp-for="SaleDate" type="date" class="form-control" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Lisans Tipi</label>
+                    <select asp-for="LicenseType" class="form-select">
+                        <option value="Yearly">1 Yıllık</option>
+                        <option value="Lifetime">Sınırsız</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <div class="nsx-manual-sale-switch-box">
+                        <div>
+                            <div class="form-check form-switch">
+                                <input asp-for="CreateLicense" class="form-check-input nsx-toggle-switch" type="checkbox" />
+                                <label asp-for="CreateLicense" class="form-check-label fw-semibold">Bu satış için otomatik lisans oluştur</label>
+                            </div>
+                            <div class="text-muted small mt-2">Açık kalırsa sipariş tamamlandı olarak kaydedilir ve seçili üyeye lisans anahtarı otomatik oluşturulur.</div>
+                        </div>
+                        <span class="nsx-manual-sale-badge">Otomatik lisans</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nsx-manual-sale-note">
+                Bu kayıt normal sipariş gibi <b>Paid / Completed</b> durumunda oluşturulur. Bu nedenle anasayfa kazanç alanlarına otomatik eklenir.
+            </div>
+        </div>
+
+        <div class="nsx-manual-sale-footer">
+            <a href="/Admin/Orders" class="nsx-admin-btn light">Vazgeç</a>
+            <button type="submit" class="nsx-admin-btn">Manuel Satışı Kaydet</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

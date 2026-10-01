@@ -1,0 +1,98 @@
+@model List<NSYazilim.Web.Models.ProductUpdate>
+@{
+    ViewData["Title"] = "Program Güncellemeleri";
+    var activeCount = Model.Count(x => x.IsActive);
+    var productCount = Model.Select(x => x.ProductCode).Distinct().Count();
+}
+
+<div class="nsx-admin-page nsx-update-admin-page">
+    <div class="nsx-admin-head">
+        <div>
+            <h1>Program Güncellemeleri</h1>
+            <p>WPF programların otomatik güncelleme paketlerini buradan yönetin.</p>
+        </div>
+        <a class="nsx-admin-btn primary" href="/Admin/ProductUpdateAdd">Yeni Güncelleme Ekle</a>
+    </div>
+
+    <div class="nsx-update-stats">
+        <div>
+            <span>Toplam Paket</span>
+            <strong>@Model.Count</strong>
+        </div>
+        <div>
+            <span>Aktif Paket</span>
+            <strong>@activeCount</strong>
+        </div>
+        <div>
+            <span>Ürün Sayısı</span>
+            <strong>@productCount</strong>
+        </div>
+    </div>
+
+    <div class="nsx-admin-card nsx-update-info-card">
+        <strong>Önemli:</strong>
+        <span>Bir ürün için aktif hale getirilen paket, aynı ürünün diğer aktif paketlerini otomatik pasif yapar. Böylece program her zaman tek güncel paketi görür.</span>
+    </div>
+
+    <div class="nsx-admin-card">
+        <div class="table-responsive">
+            <table class="table align-middle nsx-update-table">
+                <thead>
+                    <tr>
+                        <th>Ürün Kodu</th>
+                        <th>Versiyon</th>
+                        <th>Durum</th>
+                        <th>Zorunlu</th>
+                        <th>Dosya</th>
+                        <th>Not</th>
+                        <th>Tarih</th>
+                        <th class="text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8">
+                                <div class="nsx-update-empty">Henüz güncelleme paketi eklenmemiş.</div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr class="@(item.IsActive ? "is-active" : "")">
+                                <td><b>@item.ProductCode</b></td>
+                                <td><span class="nsx-version-pill">v@item.Version</span></td>
+                                <td>
+                                    <span class="nsx-status-pill @(item.IsActive ? "active" : "passive")">
+                                        @(item.IsActive ? "Aktif" : "Pasif")
+                                    </span>
+                                </td>
+                                <td>@(item.IsRequired ? "Evet" : "Hayır")</td>
+                                <td><a href="@item.DownloadUrl" target="_blank">update.zip</a></td>
+                                <td class="nsx-update-notes">@(!string.IsNullOrWhiteSpace(item.ReleaseNotes) ? item.ReleaseNotes : "-")</td>
+                                <td>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td class="text-end">
+                                    <div class="nsx-update-actions">
+                                        <form method="post" action="/Admin/UpdatePackageToggle">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button class="nsx-admin-btn" type="submit">@(item.IsActive ? "Pasif Yap" : "Aktif Yap")</button>
+                                        </form>
+                                        <form method="post" action="/Admin/UpdatePackageDelete" onsubmit="return confirm('Bu güncelleme paketi silinsin mi?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button class="nsx-admin-btn danger" type="submit">Sil</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

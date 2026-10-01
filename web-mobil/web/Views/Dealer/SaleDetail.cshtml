@@ -1,0 +1,67 @@
+@model NSYazilim.Web.Models.DealerSale
+@{
+    ViewData["Title"] = "Sat\u0131\u015f Detay\u0131";
+    var dealer = ViewBag.Dealer as NSYazilim.Web.Models.Dealer;
+    var transfer = Model.BankTransferNotification?.Status ?? "NotSubmitted";
+    var approved = transfer == "Approved" || Model.Order?.PaymentStatus == "Paid";
+    var rejected = transfer == "Rejected" || Model.Order?.PaymentStatus == "Rejected";
+    var licenses = Model.Order?.Licenses?.ToList() ?? new List<NSYazilim.Web.Models.License>();
+    var programFiles = Model.Product?.Files?.Where(x => x.FileType == "Program").OrderByDescending(x => x.UploadedAt).ToList() ?? new List<NSYazilim.Web.Models.ProductFile>();
+}
+<div class="dealer-head"><div><div class="dealer-kicker">SATIS KONTROLU</div><h1>@(Model.Order?.OrderNumber ?? $"BAYI-{Model.Id}")</h1><p>Sat&#305;&#351;, havale onay&#305;, m&#252;&#351;teri lisans&#305; ve indirme durumu.</p></div><a class="dealer-btn light" href="/Bayi/Satislarim">Sat&#305;&#351;lara D&#246;n</a></div>
+<div class="dealer-grid">
+    <div class="dealer-card dealer-stat"><small>M&#252;&#351;teri</small><strong style="font-size:18px">@(Model.CustomerUser?.FullName ?? "-")</strong><small>@(Model.CustomerUser?.Email ?? "-")</small></div>
+    <div class="dealer-card dealer-stat"><small>Sat&#305;&#351; Tutar&#305;</small><strong>@Model.SaleAmount.ToString("N2") &#8378;</strong></div>
+    <div class="dealer-card dealer-stat"><small>Bayi Alaca&#287;&#305;</small><strong>@Model.CommissionAmount.ToString("N2") &#8378;</strong><small>@(approved ? "Onayli" : rejected ? "Iptal" : "Onay bekliyor")</small></div>
+    <div class="dealer-card dealer-stat"><small>Durum</small><strong style="font-size:18px">@(approved ? "Onaylandi" : rejected ? "Reddedildi" : transfer == "Pending" ? "Admin Onayi Bekliyor" : "Havale Bekliyor")</strong></div>
+</div>
+<div class="dealer-card" style="margin-bottom:18px">
+    <h2>Sat&#305;&#351; Bilgileri</h2>
+    <div class="dealer-form-grid">
+        <div><small>&#220;r&#252;n</small><strong style="display:block;margin-top:5px">@(Model.Product?.Name ?? "-")</strong></div>
+        <div><small>Lisans</small><strong style="display:block;margin-top:5px">@(Model.LicenseType == "Lifetime" ? "Sinirsiz" : "Yillik") x @Model.Quantity</strong></div>
+        <div><small>M&#252;&#351;teri E-posta</small><strong style="display:block;margin-top:5px">@(Model.CustomerUser?.Email ?? "-")</strong></div>
+        <div><small>Bayi K&#226;r Kural&#305;</small><strong style="display:block;margin-top:5px">@(Model.CommissionModeSnapshot == "Fixed" ? $"Sabit {Model.CommissionFixedAmountSnapshot:N2} TL" : $"%{Model.CommissionPercentSnapshot:N2}")</strong></div>
+    </div>
+</div>
+@if (Model.BankTransferNotificationId == null)
+{
+    <div class="dealer-card" style="margin-bottom:18px"><h2>Havale Bildirimi Bekliyor</h2><p>Sat&#305;&#351; kayd&#305; haz&#305;r. Sonraki ad&#305;mda havale/EFT bildiriminizi g&#246;nderin. Nihai onay sadece NSX admin taraf&#305;ndan verilir.</p><a class="dealer-btn primary" href="/Bayi/Satis/@Model.Id/Havale">Havale Bildirimi Yap</a></div>
+}
+else
+{
+    <div class="dealer-card" style="margin-bottom:18px"><h2>Havale / Admin Onay&#305;</h2><div class="dealer-form-grid"><div><small>G&#246;nderen</small><strong style="display:block;margin-top:5px">@Model.BankTransferNotification?.SenderName</strong></div><div><small>Bildirim Tarihi</small><strong style="display:block;margin-top:5px">@Model.BankTransferNotification?.CreatedAt.ToString("dd.MM.yyyy HH:mm")</strong></div><div><small>Durum</small><span class="dealer-pill @(approved ? "ok" : rejected ? "bad" : "warn")" style="margin-top:5px">@(approved ? "Admin Onayladi" : rejected ? "Admin Reddetti" : "Admin Onayi Bekliyor")</span></div><div><small>Admin Notu</small><strong style="display:block;margin-top:5px">@(Model.BankTransferNotification?.AdminNote ?? "-")</strong></div></div></div>
+}
+<div class="dealer-card" style="margin-bottom:18px">
+    <h2>M&#252;&#351;teri Lisanslar&#305;</h2>
+    @if (!approved)
+    {
+        <div class="dealer-note">Lisans, havale bildirimi admin taraf&#305;ndan onayland&#305;&#287;&#305;nda otomatik olu&#351;ur ve <strong>@(Model.CustomerUser?.Email ?? "musteri e-postasi")</strong> hesab&#305;na ba&#287;lan&#305;r.</div>
+    }
+    else if (!licenses.Any())
+    {
+        <div class="dealer-alert error">Sat&#305;&#351; onayl&#305; g&#246;r&#252;n&#252;yor ancak lisans kayd&#305; hen&#252;z bulunamad&#305;.</div>
+    }
+    else
+    {
+        @foreach (var license in licenses)
+        {
+            <div class="dealer-license"><small>@(Model.CustomerUser?.Email ?? "-") / @(license.LicenseType == "Lifetime" ? "Sinirsiz" : "Yillik")</small><strong class="dealer-code" style="display:block;margin-top:6px">@license.LicenseKey</strong><small>Ba&#351;lang&#305;&#231;: @license.StartDate.ToString("dd.MM.yyyy") @if (license.EndDate.HasValue) { <span> / Biti&#351;: @license.EndDate.Value.ToString("dd.MM.yyyy")</span> }</small></div>
+        }
+    }
+</div>
+<div class="dealer-card">
+    <h2>Program &#304;ndirme</h2>
+    @if (!approved || !licenses.Any())
+    {
+        <div class="dealer-note">&#304;ndirme butonlar&#305; admin onay&#305; ve lisans olu&#351;umundan sonra a&#231;&#305;l&#305;r.</div>
+    }
+    else if (!programFiles.Any())
+    {
+        <div class="dealer-note">Bu &#252;r&#252;n i&#231;in aktif program dosyas&#305; bulunamad&#305;.</div>
+    }
+    else
+    {
+        <div class="dealer-actions">@foreach (var file in programFiles) { <a class="dealer-btn primary" href="/Bayi/Satis/@Model.Id/Indir/@file.Id">@(string.IsNullOrWhiteSpace(file.OriginalFileName) ? "Programi Indir" : file.OriginalFileName)</a> }</div>
+    }
+</div>

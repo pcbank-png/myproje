@@ -1,0 +1,130 @@
+/* Ana sayfa alt CTA - premium aksiyon butonlari */
+.home-light-theme .nsx-final-cta .cta-kicker{
+  display:inline-flex!important;align-items:center!important;gap:9px!important;width:max-content!important;max-width:100%!important;
+  min-height:39px!important;margin:0 0 14px!important;padding:0 14px!important;
+  border:1px solid #efbd98!important;border-radius:12px!important;color:#cf5100!important;
+  background:linear-gradient(145deg,#fffaf6,#fff0e4)!important;
+  box-shadow:0 8px 19px rgba(255,110,4,.11),inset 0 1px 0 #fff!important;
+  font-size:11px!important;font-weight:850!important;line-height:1.15!important;letter-spacing:.055em!important;
+}
+.home-light-theme .nsx-final-cta .cta-kicker>span{
+  flex:0 0 8px!important;width:8px!important;height:8px!important;border-radius:50%!important;
+  background:#ff6e04!important;box-shadow:0 0 0 5px rgba(255,110,4,.12)!important;
+}
+.home-light-theme .nsx-final-cta .cta-benefits{gap:9px!important;margin-top:19px!important}
+.home-light-theme .nsx-final-cta .cta-benefits>span{
+  display:inline-flex!important;align-items:center!important;gap:7px!important;min-height:37px!important;padding:0 13px!important;
+  border:1px solid #d4dde4!important;border-radius:999px!important;color:#46535f!important;
+  background:linear-gradient(145deg,#fff,#f7f9fa)!important;
+  box-shadow:0 7px 17px rgba(24,33,43,.065),inset 0 1px 0 #fff!important;
+  font-size:11px!important;font-weight:750!important;line-height:1.2!important;
+}
+.home-light-theme .nsx-final-cta .cta-benefits>span>b{
+  display:grid!important;place-items:center!important;flex:0 0 20px!important;width:20px!important;height:20px!important;
+  border:1px solid #f3c09a!important;border-radius:7px!important;color:#e65c00!important;background:#fff2e8!important;
+  font-size:10px!important;font-weight:900!important;
+}
+.home-light-theme .nsx-final-cta .cta-actions{gap:13px!important}
+.home-light-theme .nsx-final-cta .cta-store-button{
+  position:relative!important;isolation:isolate!important;display:flex!important;align-items:center!important;justify-content:space-between!important;
+  width:100%!important;min-height:68px!important;padding:7px 7px 7px 19px!important;overflow:hidden!important;
+  border:1px solid #ff6e04!important;border-radius:17px!important;color:#fff!important;
+  background:linear-gradient(135deg,#ff8628 0%,#ff6e04 55%,#e95600 100%)!important;
+  box-shadow:0 15px 32px rgba(255,110,4,.27),inset 0 1px 0 rgba(255,255,255,.40)!important;
+  transform:none!important;transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease!important;
+}
+.home-light-theme .nsx-final-cta .cta-store-button::before{
+  content:""!important;position:absolute!important;z-index:-1!important;top:-70%!important;left:-42%!important;width:46%!important;height:240%!important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.34),transparent)!important;transform:rotate(18deg)!important;transition:left .48s ease!important;
+}
+.home-light-theme .nsx-final-cta .cta-store-button .cta-action-copy{position:relative!important;z-index:2!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:4px!important}
+.home-light-theme .nsx-final-cta .cta-store-button .cta-action-copy small{color:rgba(255,255,255,.78)!important;font-size:8px!important;font-weight:800!important;letter-spacing:.08em!important;text-transform:uppercase!important}
+.home-light-theme .nsx-final-cta .cta-store-button .cta-action-copy strong{color:#fff!important;font-size:13px!important;font-weight:950!important;letter-spacing:.005em!important}
+.home-light-theme .nsx-final-cta .cta-store-button .cta-action-arrow{
+  position:relative!important;z-index:2!important;display:grid!important;place-items:center!important;
+  flex:0 0 46px!important;width:46px!important;min-width:46px!important;max-width:46px!important;height:46px!important;min-height:46px!important;max-height:46px!important;
+  margin:0!important;padding:0!important;border:1px solid #fff!important;border-radius:13px!important;color:#f05c00!important;background:#fff!important;
+  box-shadow:0 8px 18px rgba(133,45,0,.16),inset 0 1px 0 #fff!important;transition:transform .2s ease,background .2s ease!important;
+}
+.home-light-theme .nsx-final-cta .cta-store-button .cta-action-arrow .nsx-dir-icon{
+  display:grid!important;place-items:center!important;flex:0 0 20px!important;width:20px!important;min-width:20px!important;max-width:20px!important;height:20px!important;min-height:20px!important;max-height:20px!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#f05c00!important;box-shadow:none!important;transform:none!important;
+}
+.home-light-theme .nsx-final-cta .cta-store-button .cta-action-arrow .nsx-dir-icon>svg{width:18px!important;height:18px!important;stroke:#f05c00!important;stroke-width:2.6!important}
+.home-light-theme .nsx-final-cta .cta-store-button:hover,
+.home-light-theme .nsx-final-cta .cta-store-button:focus-visible{
+  color:#fff!important;border-color:#df5100!important;background:linear-gradient(135deg,#ff7614 0%,#f15c00 60%,#d94d00 100%)!important;
+  box-shadow:0 19px 39px rgba(255,110,4,.34),0 0 0 4px rgba(255,110,4,.09),inset 0 1px 0 rgba(255,255,255,.40)!important;transform:translateY(-3px)!important;
+}
+.home-light-theme .nsx-final-cta .cta-store-button:hover::before,
+.home-light-theme .nsx-final-cta .cta-store-button:focus-visible::before{left:116%!important}
+.home-light-theme .nsx-final-cta .cta-store-button:hover .cta-action-arrow,
+.home-light-theme .nsx-final-cta .cta-store-button:focus-visible .cta-action-arrow{
+  color:#fff!important;border-color:#292e34!important;background:#292e34!important;transform:translate(2px,-2px)!important;
+  box-shadow:0 9px 20px rgba(20,24,29,.24),inset 0 1px 0 rgba(255,255,255,.12)!important;
+}
+.home-light-theme .nsx-final-cta .cta-store-button:hover .cta-action-arrow .nsx-dir-icon,
+.home-light-theme .nsx-final-cta .cta-store-button:focus-visible .cta-action-arrow .nsx-dir-icon{color:#fff!important}
+.home-light-theme .nsx-final-cta .cta-store-button:hover .cta-action-arrow .nsx-dir-icon>svg,
+.home-light-theme .nsx-final-cta .cta-store-button:focus-visible .cta-action-arrow .nsx-dir-icon>svg{stroke:#fff!important}
+
+.home-light-theme .nsx-final-cta .cta-whatsapp{
+  position:relative!important;display:flex!important;align-items:center!important;width:100%!important;min-height:72px!important;padding:8px!important;
+  border:1px solid #28b861!important;border-radius:17px!important;color:#173e29!important;
+  background:linear-gradient(135deg,#f1fff6 0%,#e4f9ec 56%,#d7f3e2 100%)!important;
+  box-shadow:0 14px 30px rgba(32,184,88,.16),inset 0 1px 0 #fff!important;
+  transform:none!important;transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp::before{
+  background:#28b861!important;
+  box-shadow:0 0 0 1px rgba(40,184,97,.18),0 0 12px rgba(40,184,97,.24)!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp>.whatsapp-mark{
+  display:grid!important;place-items:center!important;flex:0 0 50px!important;width:50px!important;height:50px!important;
+  border:1px solid #20aa55!important;border-radius:14px!important;color:#fff!important;background:linear-gradient(145deg,#2dd56d,#18a94d)!important;
+  box-shadow:0 9px 20px rgba(24,169,77,.25),inset 0 1px 0 rgba(255,255,255,.35)!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp>.whatsapp-mark .whatsapp-icon{
+  color:#fff!important;
+  fill:#fff!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp>.whatsapp-mark .whatsapp-icon path{
+  fill:#fff!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp-copy{display:flex!important;min-width:0!important;flex:1 1 auto!important;flex-direction:column!important;align-items:flex-start!important;gap:2px!important}
+.home-light-theme .nsx-final-cta .cta-whatsapp-copy small{color:#5c7666!important;font-size:8px!important;font-weight:850!important;letter-spacing:.07em!important;text-transform:uppercase!important}
+.home-light-theme .nsx-final-cta .cta-whatsapp-copy strong{color:#176137!important;font-size:15px!important;font-weight:950!important}
+.home-light-theme .nsx-final-cta .cta-whatsapp-copy em{color:#6b7d71!important;font-size:8px!important;font-style:normal!important;font-weight:750!important}
+.home-light-theme .nsx-final-cta .cta-whatsapp-arrow{
+  display:grid!important;place-items:center!important;flex:0 0 46px!important;width:46px!important;min-width:46px!important;max-width:46px!important;height:46px!important;min-height:46px!important;max-height:46px!important;
+  margin:0 0 0 auto!important;padding:0!important;border:1px solid #1eaa55!important;border-radius:13px!important;color:#fff!important;background:#20b858!important;box-shadow:0 8px 18px rgba(27,111,61,.18),inset 0 1px 0 rgba(255,255,255,.28)!important;
+  transition:transform .2s ease,background .2s ease,color .2s ease,border-color .2s ease!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp-arrow>svg{width:18px!important;height:18px!important;stroke:#fff!important;stroke-width:2.6!important;transition:stroke .2s ease!important}
+.home-light-theme .nsx-final-cta .cta-whatsapp:hover,
+.home-light-theme .nsx-final-cta .cta-whatsapp:focus-visible{
+  color:#143b26!important;border-color:#1fa854!important;background:linear-gradient(135deg,#eafff1 0%,#d8f6e4 58%,#c9efd8 100%)!important;
+  box-shadow:0 18px 38px rgba(32,184,88,.23),0 0 0 4px rgba(32,184,88,.08),inset 0 1px 0 #fff!important;transform:translateY(-3px)!important;
+}
+.home-light-theme .nsx-final-cta .cta-whatsapp:hover .cta-whatsapp-arrow,
+.home-light-theme .nsx-final-cta .cta-whatsapp:focus-visible .cta-whatsapp-arrow{color:#168c47!important;border-color:#28b861!important;background:#fff!important;transform:translate(2px,-2px)!important}
+.home-light-theme .nsx-final-cta .cta-whatsapp:hover .cta-whatsapp-arrow>svg,
+.home-light-theme .nsx-final-cta .cta-whatsapp:focus-visible .cta-whatsapp-arrow>svg{stroke:#168c47!important}
+.home-light-theme .nsx-final-cta .cta-store-button:active,
+.home-light-theme .nsx-final-cta .cta-whatsapp:active{transform:translateY(-1px)!important}
+@media(max-width:760px){
+  .home-light-theme .nsx-final-cta .cta-benefits>span{flex:1 1 180px!important;justify-content:flex-start!important;white-space:normal!important}
+  .home-light-theme .nsx-final-cta .cta-actions{width:100%!important;align-items:stretch!important}
+  .home-light-theme .nsx-final-cta .cta-store-button,
+  .home-light-theme .nsx-final-cta .cta-whatsapp{
+    box-sizing:border-box!important;
+    display:flex!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:72px!important;
+    min-height:72px!important;
+    max-height:72px!important;
+    margin:0!important;
+  }
+}

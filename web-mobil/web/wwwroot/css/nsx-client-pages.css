@@ -1,0 +1,668 @@
+
+/* NSX Client Page Components */
+.nsx-home-hero {
+    padding: 52px 0 20px;
+}
+
+.nsx-home-hero-card {
+    border-radius: 36px;
+    padding: 46px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(245,104,0,.45), transparent 28%),
+        linear-gradient(135deg, #0f172a 0%, #3a3d46 58%, #24262d 100%);
+    box-shadow: 0 30px 80px rgba(124,45,18,.25);
+    overflow: hidden;
+}
+
+.nsx-eyebrow,
+.nsx-section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-weight: 950;
+    font-size: .78rem;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+}
+
+.nsx-eyebrow {
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.18);
+    color: #fff;
+}
+
+.nsx-section-label {
+    color: #f56800;
+    background: #fff4ec;
+    border: 1px solid #ffe5d2;
+    margin-bottom: 10px;
+}
+
+.nsx-home-hero h1 {
+    margin: 20px 0 14px;
+    font-size: clamp(2.2rem, 5vw, 4.3rem);
+    line-height: .98;
+    font-weight: 950;
+    letter-spacing: -1.7px;
+}
+
+.nsx-home-hero p {
+    color: rgba(255,255,255,.82);
+    font-size: 1.08rem;
+    line-height: 1.75;
+    max-width: 700px;
+}
+
+.nsx-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.nsx-btn-ghost {
+    color: #fff;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.16);
+}
+
+.nsx-showcase-card {
+    max-width: 430px;
+    margin-left: auto;
+    border-radius: 28px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 22px 60px rgba(0,0,0,.18);
+    overflow: hidden;
+}
+
+.nsx-showcase-top {
+    display: flex;
+    gap: 8px;
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.nsx-showcase-top span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.45);
+}
+
+.nsx-showcase-body {
+    padding: 24px;
+}
+
+.nsx-showcase-badge {
+    display: inline-flex;
+    background: rgba(255,255,255,.15);
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-weight: 900;
+    font-size: .82rem;
+}
+
+.nsx-showcase-body h3 {
+    margin: 16px 0 20px;
+    font-weight: 950;
+}
+
+.nsx-progress-row {
+    display: flex;
+    justify-content: space-between;
+    color: rgba(255,255,255,.84);
+    font-weight: 800;
+    margin-bottom: 7px;
+}
+
+.nsx-progress {
+    height: 9px;
+    background: rgba(255,255,255,.15);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.nsx-progress i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg,#fff,#ffd7bd);
+}
+
+.nsx-mini-metric {
+    border-radius: 18px;
+    background: rgba(255,255,255,.12);
+    padding: 13px;
+}
+
+.nsx-mini-metric small {
+    display: block;
+    color: rgba(255,255,255,.68);
+}
+
+.nsx-mini-metric b {
+    font-size: 1.15rem;
+}
+
+.nsx-feature-card,
+.nsx-product-card,
+.nsx-store-card,
+.nsx-detail-card,
+.nsx-auth-card,
+.nsx-account-card,
+.nsx-dashboard-tile,
+.nsx-cart-card,
+.nsx-empty-state,
+.nsx-policy-box {
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(226,232,240,.96);
+    border-radius: 30px;
+    box-shadow: 0 14px 38px rgba(15,23,42,.08);
+}
+
+.nsx-feature-card {
+    padding: 25px;
+    height: 100%;
+}
+
+.nsx-feature-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background: #fff4ec;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 16px;
+}
+
+.nsx-feature-card h3,
+.nsx-product-body h3,
+.nsx-store-body h3,
+.nsx-policy-box h3 {
+    font-weight: 950;
+    font-size: 1.18rem;
+}
+
+.nsx-feature-card p,
+.nsx-product-body p,
+.nsx-store-body p,
+.nsx-policy-box p {
+    color: #6b7280;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.nsx-product-card {
+    overflow: hidden;
+    height: 100%;
+}
+
+.nsx-product-art {
+    min-height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.2rem;
+    font-weight: 950;
+    color: #fff;
+    letter-spacing: -1px;
+}
+
+.nsx-product-art-blue { background: linear-gradient(135deg,#3a3d46,#ffb066); }
+.nsx-product-art-purple { background: linear-gradient(135deg,#3a3d46,#ec4899); }
+.nsx-product-art-dark { background: linear-gradient(135deg,#0f172a,#475569); }
+
+.nsx-product-body,
+.nsx-store-body {
+    padding: 23px;
+}
+
+.nsx-product-tag {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 6px 10px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+}
+
+.nsx-product-link {
+    display: inline-flex;
+    margin-top: 16px;
+    color: #f56800;
+    font-weight: 950;
+    text-decoration: none;
+}
+
+.nsx-page-hero {
+    padding: 34px 0 0;
+}
+
+.nsx-page-hero-card {
+    border-radius: 32px;
+    padding: 34px;
+    color: #fff;
+    background: linear-gradient(135deg,#0f172a,#3a3d46);
+    box-shadow: 0 22px 60px rgba(124,45,18,.18);
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nsx-page-hero-card h1 {
+    font-weight: 950;
+    font-size: clamp(2rem,4vw,3.2rem);
+    margin: 0 0 8px;
+}
+
+.nsx-page-hero-card p {
+    color: rgba(255,255,255,.78);
+    margin: 0;
+    max-width: 650px;
+}
+
+.nsx-page-search {
+    min-width: 300px;
+    display: flex;
+    background: #fff;
+    border-radius: 999px;
+    padding: 6px;
+}
+
+.nsx-page-search input {
+    border: 0;
+    outline: 0;
+    padding: 10px 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.nsx-page-search button {
+    border: 0;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 950;
+}
+
+.nsx-store-card {
+    overflow: hidden;
+}
+
+.nsx-store-image {
+    display: block;
+    position: relative;
+    height: 230px;
+    background: #eef2f7;
+    overflow: hidden;
+}
+
+.nsx-store-image img,
+.nsx-detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nsx-stock-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #fff;
+    font-weight: 950;
+    font-size: .82rem;
+}
+
+.nsx-stock-badge.in { background: #16a34a; }
+.nsx-stock-badge.out { background: #dc2626; }
+
+.nsx-price-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.nsx-price-row > div,
+.nsx-license-option {
+    border-radius: 18px;
+    background: #f8fafc;
+    border: 1px solid #e5eaf2;
+    padding: 13px;
+}
+
+.nsx-price-row small,
+.nsx-license-option span {
+    display: block;
+    color: #6b7280;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.nsx-price-row strong,
+.nsx-license-option strong {
+    font-size: 1.15rem;
+    font-weight: 950;
+}
+
+.nsx-empty-state,
+.nsx-cart-empty {
+    text-align: center;
+    padding: 55px 24px;
+}
+
+.nsx-empty-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff4ec;
+    margin: 0 auto 18px;
+    font-size: 34px;
+}
+
+.nsx-detail-card {
+    padding: 28px;
+}
+
+.nsx-detail-image {
+    position: relative;
+    border-radius: 28px;
+    height: 430px;
+    background: #eef2f7;
+    overflow: hidden;
+}
+
+.nsx-thumb-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    overflow-x: auto;
+}
+
+.nsx-thumb-row img {
+    width: 82px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid #e5eaf2;
+}
+
+.nsx-detail-info {
+    padding: 12px 4px;
+}
+
+.nsx-detail-info h1 {
+    font-weight: 950;
+    font-size: clamp(2rem,4vw,3.4rem);
+    letter-spacing: -1.1px;
+}
+
+.nsx-detail-desc {
+    white-space: pre-line;
+    color: #6b7280;
+    line-height: 1.8;
+    font-size: 1.03rem;
+}
+
+.nsx-license-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.nsx-license-option.featured {
+    background: #fff4ec;
+    border-color: #ffd7bd;
+}
+
+.nsx-action-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.nsx-detail-note {
+    border-radius: 20px;
+    padding: 15px;
+    background: #f8fafc;
+    color: #475569;
+}
+
+.nsx-auth-section {
+    padding: 56px 0;
+}
+
+.nsx-auth-card {
+    padding: 32px;
+}
+
+.nsx-auth-card h1 {
+    font-weight: 950;
+}
+
+.nsx-auth-card p {
+    color: #6b7280;
+}
+
+.nsx-account-card {
+    padding: 28px;
+    text-align: center;
+}
+
+.nsx-account-avatar {
+    width: 92px;
+    height: 92px;
+    border-radius: 30px;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg,#f56800,#3a3d46);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 950;
+    font-size: 1.4rem;
+}
+
+.nsx-dashboard-tile {
+    padding: 24px;
+    height: 100%;
+}
+
+.nsx-dashboard-tile span {
+    font-size: 28px;
+}
+
+.nsx-dashboard-tile h3 {
+    margin-top: 12px;
+    font-weight: 950;
+}
+
+.nsx-dashboard-tile p {
+    color: #6b7280;
+}
+
+.nsx-dashboard-tile a {
+    color: #f56800;
+    font-weight: 950;
+    text-decoration: none;
+}
+
+.nsx-cart-card {
+    padding: 20px;
+}
+
+.nsx-policy-box {
+    padding: 22px;
+    height: 100%;
+}
+
+@media (max-width: 991px) {
+    .nsx-home-hero-card {
+        padding: 30px;
+    }
+
+    .nsx-showcase-card {
+        margin-left: 0;
+        max-width: none;
+    }
+
+    .nsx-detail-image {
+        height: 320px;
+    }
+}
+
+@media (max-width: 575px) {
+    .nsx-home-hero {
+        padding-top: 26px;
+    }
+
+    .nsx-home-hero-card,
+    .nsx-page-hero-card,
+    .nsx-detail-card,
+    .nsx-auth-card {
+        border-radius: 24px;
+        padding: 22px;
+    }
+
+    .nsx-license-options,
+    .nsx-price-row {
+        grid-template-columns: 1fr;
+    }
+
+    .nsx-page-search {
+        min-width: 100%;
+    }
+}
+
+/* NSX Legal / Corporate Pages */
+.nsx-legal-page {
+    padding: 44px 0 70px;
+}
+
+.nsx-legal-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 34px;
+    padding: 38px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 14% 20%, rgba(245,104,0,.42), transparent 32%),
+        radial-gradient(circle at 88% 18%, rgba(168,85,247,.32), transparent 30%),
+        linear-gradient(135deg, #0f172a, #3a3d46 62%, #24262d);
+    box-shadow: 0 26px 70px rgba(124,45,18,.22);
+    margin-bottom: 22px;
+}
+
+.nsx-legal-hero span {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.18);
+    font-weight: 950;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-size: .76rem;
+}
+
+.nsx-legal-hero h1 {
+    margin: 14px 0 10px;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    font-weight: 950;
+    letter-spacing: -1.1px;
+}
+
+.nsx-legal-hero p {
+    max-width: 850px;
+    margin: 0;
+    color: rgba(255,255,255,.82);
+    line-height: 1.75;
+    font-weight: 650;
+}
+
+.nsx-legal-card {
+    border-radius: 28px;
+    padding: 30px;
+    background: rgba(255,255,255,.96);
+    border: 1px solid rgba(226,232,240,.96);
+    box-shadow: 0 18px 46px rgba(15,23,42,.08);
+}
+
+.nsx-legal-card h2 {
+    color: #0f172a;
+    font-size: 1.18rem;
+    font-weight: 950;
+    margin: 20px 0 8px;
+}
+
+.nsx-legal-card h2:first-child {
+    margin-top: 0;
+}
+
+.nsx-legal-card p {
+    color: #475569;
+    line-height: 1.8;
+    font-weight: 650;
+    margin-bottom: 10px;
+}
+
+.nsx-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.nsx-legal-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    border-radius: 16px;
+    padding: 12px 18px;
+    color: #fff;
+    background: linear-gradient(135deg, #f56800, #0f172a);
+    text-decoration: none;
+    font-weight: 950;
+    box-shadow: 0 14px 30px rgba(245,104,0,.20);
+}
+
+.nsx-legal-btn:hover {
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 767px) {
+    .nsx-legal-hero {
+        padding: 26px;
+        border-radius: 26px;
+    }
+
+    .nsx-legal-card {
+        padding: 22px;
+        border-radius: 22px;
+    }
+
+    .nsx-contact-grid {
+        grid-template-columns: 1fr;
+    }
+}

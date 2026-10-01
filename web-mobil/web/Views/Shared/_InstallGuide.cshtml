@@ -1,0 +1,86 @@
+@model bool
+<div class="nsx-guide" data-install-guide data-duration="60" data-auto-open="@(Model ? "true" : "false")" role="dialog" aria-modal="true" aria-labelledby="nsx-guide-title" aria-describedby="nsx-guide-description" hidden>
+    <div class="nsx-guide__backdrop" data-guide-close></div>
+    <section class="nsx-guide__panel" tabindex="-1">
+        <header class="nsx-guide__header">
+            <div class="nsx-guide__heading">
+                <span class="nsx-guide__shield" aria-hidden="true">✓</span>
+                <div>
+                    <h2 id="nsx-guide-title">Güvenli Kurulum Rehberi</h2>
+                    <p id="nsx-guide-description">İndirdiğiniz dosya açılmıyorsa aşağıdaki adımlarla engellemeyi kaldırın.</p>
+                </div>
+            </div>
+            <button class="nsx-guide__icon-close" type="button" data-guide-close aria-label="Kurulum rehberini kapat">×</button>
+        </header>
+
+        <div class="nsx-guide__body">
+            <ol class="nsx-guide__list">
+                <li class="nsx-guide__item">
+                    <span class="nsx-guide__number">1</span>
+                    <div>
+                        <strong>İndirdiğiniz kurulum dosyasına sağ tıklayın.</strong>
+                        <p>İndirilenler klasöründeki exe kurulum dosyasını bulun.</p>
+                    </div>
+                </li>
+                <li class="nsx-guide__item">
+                    <span class="nsx-guide__number">2</span>
+                    <div>
+                        <strong>Özellikler seçeneğine tıklayın.</strong>
+                        <p>Açılan menüden Özellikler satırını seçin.</p>
+                    </div>
+                </li>
+                <li class="nsx-guide__item">
+                    <span class="nsx-guide__number">3</span>
+                    <div>
+                        <strong>Engellemeyi kaldır kutusunu işaretleyin.</strong>
+                        <p>Pencerenin altında Engellemeyi kaldır seçeneğini işaretleyip Tamam düğmesine basın.</p>
+                    </div>
+                </li>
+                <li class="nsx-guide__item">
+                    <span class="nsx-guide__number">4</span>
+                    <div>
+                        <strong>Dosyayı çift tıklayarak kurulumu başlatın.</strong>
+                        <p>Engelleme kalktıktan sonra kurulum normal şekilde açılır.</p>
+                    </div>
+                </li>
+            </ol>
+
+            <aside class="nsx-guide__shots" aria-label="Özellikler penceresi örneği">
+                <figure class="nsx-guide__shot">
+                    <img src="/images/install-guide/properties-general.webp"
+                         width="420"
+                         height="560"
+                         alt="Windows Özellikler penceresi Genel sekmesi"
+                         loading="lazy"
+                         decoding="async" />
+                    <figcaption>1) Sağ tık → Özellikler</figcaption>
+                </figure>
+                <figure class="nsx-guide__shot nsx-guide__shot--focus">
+                    <img src="/images/install-guide/properties-unblock.webp"
+                         width="420"
+                         height="560"
+                         alt="Windows Özellikler penceresinde Engellemeyi Kaldır seçeneği"
+                         loading="lazy"
+                         decoding="async" />
+                    <figcaption>2) Engellemeyi Kaldır → Tamam</figcaption>
+                </figure>
+            </aside>
+        </div>
+
+        <div class="nsx-guide__tip">
+            <span aria-hidden="true">💡</span>
+            <div>
+                <strong>Kısaca:</strong>
+                <p>Sağ tık → Özellikler → Engellemeyi kaldır → Tamam → Dosyayı çalıştır.</p>
+            </div>
+        </div>
+
+        <footer class="nsx-guide__footer">
+            <div class="nsx-guide__trust"><span class="nsx-guide__shield nsx-guide__shield--small" aria-hidden="true">✓</span><strong>%100 Güvenli</strong><small>Resmî NSX Yazılım kurulumu</small></div>
+            <div class="nsx-guide__timer" aria-live="polite"><span>Bu pencere <b data-guide-count>60</b> saniye sonra kapanacaktır.</span><i style="--guide-progress:1"><strong data-guide-count-ring>60</strong></i></div>
+            <label class="nsx-guide__remember"><input type="checkbox" data-guide-remember><span></span> Bir daha gösterme</label>
+            <button class="nsx-guide__close" type="button" data-guide-close><span aria-hidden="true">×</span> Kapat</button>
+        </footer>
+        <div class="nsx-guide__official">🔒 Yalnızca <strong>nsxyazilim.com</strong> adresinden indirdiğiniz dosyaları kullanın.</div>
+    </section>
+</div>

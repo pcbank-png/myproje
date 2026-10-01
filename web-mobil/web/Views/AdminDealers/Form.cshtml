@@ -1,0 +1,51 @@
+@model NSYazilim.Web.ViewModels.AdminDealerFormViewModel
+@{
+    var isEdit = Model.Id.HasValue;
+    ViewData["Title"] = isEdit ? "Bayi D\u00fczenle" : "Yeni Bayi";
+}
+<section class="nsx-admin-page">
+    <div class="nsx-admin-page-head">
+        <div>
+            <span>NSX BAYI KANALI</span>
+            <h1>@(isEdit ? "Bayi D\u00fczenle" : "Yeni Bayi")</h1>
+            <p>Bayi hesab&#305;, il bilgisi ve sat&#305;&#351;tan verilecek k&#226;r modelini tan&#305;mlay&#305;n.</p>
+        </div>
+        <a class="nsx-admin-btn light" href="/Admin/Bayiler">Bayilere D&#246;n</a>
+    </div>
+
+    <div class="nsx-admin-card p-4">
+        <form class="nsx-standard-form" method="post" action="@(isEdit ? $"/Admin/Bayiler/Duzenle/{Model.Id}" : "/Admin/Bayiler/Yeni")">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Bayi / Firma Ad&#305;</label><input asp-for="BusinessName" class="form-control" /><span asp-validation-for="BusinessName" class="text-danger small"></span></div>
+                <div class="col-md-6"><label class="form-label">Yetkili Ad Soyad</label><input asp-for="ContactName" class="form-control" /><span asp-validation-for="ContactName" class="text-danger small"></span></div>
+                <div class="col-md-6"><label class="form-label">Bayi E-posta</label><input asp-for="Email" class="form-control" /><span asp-validation-for="Email" class="text-danger small"></span></div>
+                <div class="col-md-6"><label class="form-label">Telefon</label><input asp-for="Phone" class="form-control" /></div>
+                <div class="col-md-4">
+                    <label class="form-label">&#304;l</label>
+                    <select asp-for="Province" class="form-select">
+                        <option value="">&#304;l se&#231;in</option>
+                        @foreach (var province in Model.Provinces) { <option value="@province">@province</option> }
+                    </select>
+                    <span asp-validation-for="Province" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4"><label class="form-label">&#304;l&#231;e</label><input asp-for="District" class="form-control" /></div>
+                <div class="col-md-4"><label class="form-label">Durum</label><select asp-for="IsActive" class="form-select"><option value="true">Aktif</option><option value="false">Pasif</option></select></div>
+                <div class="col-12"><label class="form-label">Adres</label><textarea asp-for="Address" class="form-control" rows="2"></textarea></div>
+                <div class="col-md-6">
+                    <label class="form-label">K&#226;r Hesaplama T&#252;r&#252;</label>
+                    <select asp-for="CommissionMode" class="form-select">
+                        <option value="Percent">Y&#252;zde (%)</option>
+                        <option value="Fixed">Sabit TL</option>
+                    </select>
+                </div>
+                <div class="col-md-3"><label class="form-label">K&#226;r Oran&#305; (%)</label><input asp-for="CommissionPercent" class="form-control" type="number" min="0" max="100" step="0.01" /><span asp-validation-for="CommissionPercent" class="text-danger small"></span></div>
+                <div class="col-md-3"><label class="form-label">Manuel Sabit K&#226;r (TL / Sat&#305;&#351;)</label><input asp-for="CommissionFixedAmount" class="form-control" type="number" min="0" step="0.01" /><span asp-validation-for="CommissionFixedAmount" class="text-danger small"></span></div>
+                <div class="col-12"><div class="alert alert-info mb-0">Her iki de&#287;eri de kaydedebilirsiniz. Sat&#305;&#351;ta <strong>K&#226;r Hesaplama T&#252;r&#252;</strong> alan&#305;nda se&#231;ili olan y&#246;ntem kullan&#305;l&#305;r ve tutar sat&#305;&#351; kayd&#305;na sabitlenir.</div></div>
+                <div class="col-md-6"><label class="form-label">@(isEdit ? "Yeni Sifre (degistirmeyecekseniz bos birakin)" : "Bayi Giris Sifresi")</label><input asp-for="Password" class="form-control" type="password" autocomplete="new-password" /><span asp-validation-for="Password" class="text-danger small"></span></div>
+            </div>
+            <div class="d-flex gap-2 mt-4"><button class="nsx-admin-btn success" type="submit">Kaydet</button><a class="nsx-admin-btn light" href="/Admin/Bayiler">Vazge&#231;</a></div>
+        </form>
+    </div>
+</section>

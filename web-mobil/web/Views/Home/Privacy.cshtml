@@ -1,0 +1,37 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Gizlilik Politikası";
+    ViewData["MetaDescription"] = "NSX Yazılım internet sitesi gizlilik politikası; toplanan bilgiler, kullanım amaçları, çerezler ve veri güvenliği hakkında bilgiler.";
+}
+
+<section class="nsx-info-page">
+    <header class="nsx-info-hero">
+        <div class="container nsx-info-hero-inner">
+            <div class="nsx-info-hero-copy">
+                <span class="nsx-info-kicker">GİZLİLİK VE GÜVEN</span>
+                <h1>Gizlilik <em>Politikası</em></h1>
+                <p>Siteyi kullanırken oluşan bilgileri neden işlediğimizi ve gizliliğinizi nasıl koruduğumuzu öğrenin.</p>
+                <div class="nsx-info-hero-points" aria-label="Gizlilik politikası başlıkları">
+                    <span><b>✓</b> Veri güvenliği</span>
+                    <span><b>✓</b> Şeffaf kullanım</span>
+                    <span><b>✓</b> Gizlilik ilkesi</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="nsx-info-divider" aria-hidden="true"></div>
+    <div class="container nsx-info-layout">
+        <article class="nsx-legal-content">
+            <p class="nsx-legal-date">Son güncelleme: 17 Temmuz 2026</p>
+            <section><h2>1. Politikanın kapsamı</h2><p>Bu politika, NSX Yazılım internet sitesini ziyaret ettiğinizde, hesap oluşturduğunuzda, sipariş verdiğinizde veya destek talebi ilettiğinizde oluşabilecek bilgi işleme faaliyetlerini açıklar.</p></section>
+            <section><h2>2. Toplanan bilgiler</h2><p>Ad, soyad, e-posta, telefon, fatura ve sipariş bilgileri; hesap, lisans ve destek kayıtları ile IP adresi, tarayıcı, cihaz ve sayfa erişimi gibi teknik bilgiler işlenebilir.</p></section>
+            <section><h2>3. Bilgilerin kullanım amacı</h2><p>Bilgiler; hesabınızı ve siparişinizi yönetmek, ürün veya lisans teslimini gerçekleştirmek, destek sağlamak, güvenlik kontrollerini yürütmek, hataları gidermek ve yasal yükümlülükleri yerine getirmek için kullanılır.</p></section>
+            <section><h2>4. Çerezler</h2><p>Site işlevlerinin çalışması, oturum güvenliği ve tercihlerin korunması için zorunlu çerezler kullanılabilir. İstatistik veya pazarlama amaçlı ek çerezler kullanıldığında gerekli bilgilendirme ve tercih seçenekleri sunulur.</p></section>
+            <section><h2>5. Bilgilerin paylaşılması</h2><p>Bilgileriniz satılmaz veya kiralanmaz. Hizmetin sunulması için gerekli olduğu ölçüde ödeme, barındırma, e-posta ve muhasebe hizmeti sağlayıcılarıyla ya da yasal zorunluluk hâlinde yetkili mercilerle paylaşılabilir.</p></section>
+            <section><h2>6. Güvenlik ve saklama</h2><p>Kişisel bilgileri yetkisiz erişime karşı korumak için uygun teknik ve idari tedbirler uygulanır. Kayıtlar yalnızca kullanım amacı ve yasal yükümlülükler için gerekli süre boyunca saklanır.</p></section>
+            <section><h2>7. Üçüncü taraf bağlantıları</h2><p>Sitede üçüncü taraf internet sitelerine yönlendiren bağlantılar bulunabilir. Bu sitelerin içerik ve gizlilik uygulamaları kendi sorumluluklarındadır.</p></section>
+            <section><h2>8. İletişim</h2><p>Gizlilik uygulamalarımız hakkında soru ve talepleriniz için <a href="mailto:destek@@nsxyazilim.com">destek@nsxyazilim.com</a> adresinden bize ulaşabilirsiniz. Kişisel veri haklarınıza ilişkin ayrıntılar için <a href="/kvkk">KVKK Aydınlatma Metni</a>'ni inceleyin.</p></section>
+        </article>
+        @await Html.PartialAsync("_CorporateAside")
+    </div>
+</section>

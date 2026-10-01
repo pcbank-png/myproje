@@ -1,0 +1,230 @@
+@model List<NSYazilim.Web.Models.DemoDownload>
+
+@functions {
+    private static string NormalizeLocationKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var decomposed = value.Trim().Normalize(System.Text.NormalizationForm.FormD);
+        var normalized = new System.Text.StringBuilder(decomposed.Length);
+
+        foreach (var character in decomposed)
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character) == System.Globalization.UnicodeCategory.NonSpacingMark)
+            {
+                continue;
+            }
+
+            if (char.IsLetterOrDigit(character))
+            {
+                normalized.Append(char.ToUpperInvariant(character));
+            }
+        }
+
+        return normalized.ToString();
+    }
+
+    private static string NormalizeCountryName(string? country)
+    {
+        if (string.IsNullOrWhiteSpace(country))
+        {
+            return string.Empty;
+        }
+
+        return NormalizeLocationKey(country) switch
+        {
+            "TR" or "TURKEY" or "TURKIYE" => "Türkiye",
+            _ => country.Trim()
+        };
+    }
+}
+
+@{
+    ViewData["Title"] = "Demo / Ücretsiz Program İndirenler";
+    var demoItems = Model ?? new List<NSYazilim.Web.Models.DemoDownload>();
+    var cityKnownCount = demoItems.Count(x => !string.IsNullOrWhiteSpace(x.City));
+    var topCities = demoItems
+        .Where(x => !string.IsNullOrWhiteSpace(x.City))
+        .GroupBy(x => NormalizeLocationKey(x.City))
+        .Select(group =>
+        {
+            var city = group
+                .Select(x => x.City!.Trim())
+                .GroupBy(x => x, StringComparer.Create(new System.Globalization.CultureInfo("tr-TR"), true))
+                .OrderByDescending(x => x.Count())
+                .ThenBy(x => x.Key)
+                .First()
+                .Key;
+            var country = group
+                .Select(x => NormalizeCountryName(x.Country))
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .GroupBy(x => x, StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(x => x.Count())
+                .ThenBy(x => x.Key)
+                .Select(x => x.Key)
+                .FirstOrDefault();
+
+            return new
+            {
+                Name = string.IsNullOrWhiteSpace(country) ? city : $"{city} / {country}",
+                Count = group.Count()
+            };
+        })
+        .OrderByDescending(x => x.Count)
+        .ThenBy(x => x.Name)
+        .Take(8)
+        .ToList();
+}
+
+<div class="container py-4 nsx-demo-page">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold mb-1">Demo / Ücretsiz Program İndirenler</h1>
+            <p class="text-muted mb-0">Demo indiren müşterileri ve IP tahmini konum bilgilerini buradan takip edebilirsiniz.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <form asp-action="DemoDownloadRefreshLocations" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-primary rounded-4 fw-bold">Eksik Tahmini Konumları Güncelle</button>
+            </form>
+            <a class="btn btn-outline-dark" href="/Admin">Admin Panel</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success rounded-4">@TempData["Success"]</div>
+    }
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info rounded-4">@TempData["Info"]</div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning rounded-4">@TempData["Warning"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger rounded-4">@TempData["Error"]</div>
+    }
+
+    <div class="alert alert-warning rounded-4">
+        IP konumu kesin şehir bilgisi değildir; internet sağlayıcısı, mobil ağ, CGNAT, VPN/proxy veya IP veritabanı nedeniyle farklı il görünebilir. Gerçek istatistik için ileride demo/kayıt formuna ayrıca kullanıcı şehir seçimi eklemek daha doğru olur.
+    </div>
+
+    @if (demoItems.Any())
+    {
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="text-muted small">Toplam Demo / Ücretsiz İndirme</div>
+                        <div class="fs-4 fw-bold">@demoItems.Count</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="text-muted small">Tahmini Konumu Bulunan Kayıt</div>
+                        <div class="fs-4 fw-bold">@cityKnownCount</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="text-muted small mb-1">En Çok Görünen IP Tahmini Şehirler</div>
+                        @if (topCities.Any())
+                        {
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var city in topCities)
+                                {
+                                    <span class="badge bg-dark rounded-pill">@city.Name: @city.Count</span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Henüz tahmini konum verisi yok</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            @if (Model == null || !Model.Any())
+            {
+                <div class="alert alert-info rounded-4 mb-0">Henüz demo indirme kaydı yok.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle nsx-demo-table">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Ürün</th>
+                                <th>Üye Adı</th>
+                                <th>E-posta</th>
+                                <th>Telefon</th>
+                                <th>IP</th>
+                                <th>Tahmini Şehir</th>
+                                <th>Ülke</th>
+                                <th class="text-end">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.DownloadedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@(item.Product?.Name ?? "Ürün")</td>
+                                <td>@(item.User?.FullName ?? item.FullName)</td>
+                                <td>@(item.User?.Email ?? item.Email)</td>
+                                <td>@(item.User?.Phone ?? item.Phone ?? "-")</td>
+                                <td>@(item.IpAddress ?? "-")</td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.City))
+                                    {
+                                        <div class="fw-semibold">@item.City</div>
+                                        @if (!string.IsNullOrWhiteSpace(item.Region) && item.Region != item.City)
+                                        {
+                                            <small class="text-muted">@item.Region</small>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Henüz yok</span>
+                                    }
+                                </td>
+                                <td>@(item.Country ?? "-")</td>
+                                <td class="text-end">
+                                    <div class="nsx-admin-table-actions">
+                                        <form asp-action="DemoDownloadRefreshLocation" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-primary rounded-4">Tahmini Konum Bul</button>
+                                        </form>
+                                        <form asp-action="DemoDownloadDelete" method="post" onsubmit="return confirm('Bu demo indirme kaydı silinsin mi?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm btn-danger rounded-4">Sil</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
