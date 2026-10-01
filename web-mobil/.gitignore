@@ -14,7 +14,8 @@ mobile-audit-*.json
 **/*.pyc
 **/*.tsbuildinfo
 **/expo-env.d.ts
-**/*backup*
+**/*.backup*
+**/*.rotate-backup-*
 
 # Secrets, runtime databases and user files
 **/.env
